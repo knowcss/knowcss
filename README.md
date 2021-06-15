@@ -10,5 +10,5 @@ KnowCSS, the NoCSS Engine
 <br>);
 <br><\/script>
 <br><div id=\"root\">
-<br><div class=\"bold color-black font-size-16px\">Hello, world!</div>
+<br><div class=\"bold color-black font-size-16px\">Hello, world!<\/div>
 <br><\/div>
