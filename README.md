@@ -1,6 +1,5 @@
 # KnowCSS
 KnowCSS, the NoCSS Engine
-<<<<<<< main
 https://www.knowcss.com/
 
 ```javascript
