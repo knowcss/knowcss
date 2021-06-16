@@ -2,7 +2,7 @@
 KnowCSS, the NoCSS Engine
 <br>https://www.knowcss.com/
 <br>
-<br><script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss/knowcss.js">
+<br><script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/knowcss.js">
 <br></script>
 <br><script>
 <br>window.addEventListener(
