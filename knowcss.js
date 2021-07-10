@@ -426,6 +426,9 @@ function KwCm (hR) {
 function gHD() {
 	return document.getElementsByTagName('html')[0];
 }
+function KnowedCSS (hA) {
+	return KwRn(hA, null, null);
+}
 function KnowCSS (hA) {
 	var ret = KwRn(hA, null, null);
 	var cssID = 'css_' + hA;
@@ -559,6 +562,7 @@ function KwRn(hA, eV, eS) {
 			else { hA = jU.innerHTML; }
 		}
 	}
+	else if ('innerHTML' in hA) { jU = hA.innerHTML; hA = jU; }
 	else { jU = hA; }
 	if (typeof eS === 'object') {
 		for (var eE in eS) {
