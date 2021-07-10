@@ -1,5 +1,5 @@
 # KnowCSS
-KnowCSS, the NoCSS Engine
+KnowCSS, the NoCSS Engine (beta v1.0.7)
 https://www.knowcss.com/
 
 ```javascript
