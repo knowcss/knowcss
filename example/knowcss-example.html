@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
@@ -12,9 +11,26 @@
 <meta property="og:type" content="website" />
 <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
 <meta property="og:url" content="https://www.knowcss.com/" />
-<script src="knowcss-shorthand.js"></script>
-<script src="knowcss-colors.js"></script>
-<script src="knowcss.js"></script>
+<script src="../src/knowcss-shorthand.js"></script>
+<script src="../src/knowcss-colors.js"></script>
+<script src="../dist/js/knowcss.min.js"></script>
+<script>
+    var addEvents = ['scroll', 'click', 'resize'];
+    var addedEvents = false;
+    addEvents.forEach(function (val) { console.log(val); window.addEventListener(val, addEvent); });
+    function addEvent() {
+        if (!addedEvents) {
+            addedEvents = true;
+            addEvents.forEach(function (val) { window.removeEventListener(val, addEvent); });
+            var s = document.createElement('link');
+            s.rel = 'stylesheet';
+            s.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css';
+            s.type = 'text/css';
+            var g = document.getElementsByTagName('link')[0];
+            g.parentNode.insertBefore(s, g);
+        }
+    }
+</script>
 </head>
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
 <style>
@@ -39,39 +55,39 @@
         "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
     };
     const localMixins = {
-            "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-            "no": "color-2D862D font-weight-400",
-            "nt": "color-2D862D font-weight-400",
-            "go": "color-339 font-weight-400",
-            "hd": "font-size-32px aligncenter normal-important",
-            "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
-            "mx": "center",
-            "ft": "font-size-16px aligncenter",
-            "hr": "border-top-3px/solid/#f3f3f3 center",
-            "bx": "padding-15px/5px {{$box}}",
-            "h1": "margin-20px/auto/10px/auto padding-0",
-            "ic": "padding-5px/5px all{color-666}",
-            "na": "hover>a{color-933}",
-            "ni": "hover>i{color-933} min-width-48px min-height-55px display-inline-block",
-            "nv": "color-666 font-size-18px nounderline",
-            "ys": "aligncenter center",
-            "ml": "padding-left-20px",
-            "mm": "padding-left-40px",
-            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-            "ct": "table center aligncenter margin-top-10px max-width-96%",
-            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
-            "blue": "{{$blue}}",
-            "orange": "{{$orange}}",
-            "pink": "{{$pink}}",
-            "red": "{{$red}}",
-            "black": "{{$black}}"
-        };
+        "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+        "no": "color-2D862D font-weight-400",
+        "nt": "color-2D862D font-weight-400",
+        "go": "color-339 font-weight-400",
+        "hd": "font-size-32px aligncenter normal-important",
+        "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
+        "mx": "center",
+        "ft": "font-size-16px aligncenter",
+        "hr": "border-top-3px/solid/#f3f3f3 center",
+        "bx": "padding-15px/5px {{$box}}",
+        "h1": "margin-20px/auto/10px/auto padding-0",
+        "ic": "padding-5px/5px all{color-666}",
+        "na": "hover>a{color-933}",
+        "ni": "hover>i{color-933} min-width-48px min-height-55px display-inline-block",
+        "nv": "color-666 font-size-18px nounderline",
+        "ys": "aligncenter center",
+        "ml": "padding-left-20px",
+        "mm": "padding-left-40px",
+        "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+        "ct": "table center aligncenter margin-top-10px max-width-96%",
+        "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
+        "blue": "{{$blue}}",
+        "orange": "{{$orange}}",
+        "pink": "{{$pink}}",
+        "red": "{{$red}}",
+        "black": "{{$black}}"
+    };
 </script>
 <div id="root" role="main">
 	<div know="center all{font-weight-300 {{$box}} {{$family}}}" class="noshift3">
 		<div know="height-36px max-height-36px overflow-hidden background-color-f6f6f6 border-bottom-4px/solid/#cfcfcf padding-3px/10px/3px/10px all{color-633 font-size-14px {{$family}}}">
-			<div know="float-right color-333 margin-5px/0"><a href="/docs/" know="nounderline"><i know="bi-file-earmark-code"></i> DOCS</a></div>
-			<div know="hover>a{color-933} margin-5px/0"><a href="https://github.com/knowcss" rel="noreferrer" target="_blank" know="nounderline">July 9, 2021 / Beta v1.0.7 Released! <i know="bi-download"></i></a></div>
+			<div know="float-right color-333 margin-5px/0"><a href="/docs/" know="nounderline"><i class="bi-file-earmark-code"></i> DOCS</a></div>
+			<div know="hover>a{color-933} margin-5px/0"><a href="https://github.com/knowcss" rel="noreferrer" target="_blank" know="nounderline">Nov 12, 2022 - v2.0 Released! <i class="bi-download"></i></a></div>
 			<div know="clear-both"></div>
 		</div>
 	</div>
@@ -79,19 +95,19 @@
 		<div know="[mt] center aligncenter"><a href="/"><img src="logo-700.png" alt="KnowCSS, The NoCSS Engine" width="350" height="63" know="margin-top-0px width-pct100 max-width-350px height-auto"></a></div>
 		<h1 know="[h1] [bx] font-size-40px aligncenter color-333 nounderline">Introducing <span know="[red]">KnowCSS,</span> the revolutionary NoCSS&nbsp;Engine</h1>
 		<div know="[ic] aligncenter" class="retain-noshift2">
-			<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" title="Github" know="[ni]"><i know="[bi] bi-github"></i></a>
-			<a href="https://www.npmjs.com/package/knowcss" target="_blank" rel="noreferrer" title="NPM" know="[ni]"><i know="[bi] bi-box-seam"></i></a>
-			<a href="https://twitter.com/knowcss" target="_blank" rel="noreferrer" title="Twitter" know="[ni]"><i know="[bi] bi-twitter"></i></a>
-			<a href="https://www.linkedin.com/company/knowcss/" target="_blank" rel="noreferrer" title="Linkedin" know="[ni]"><i know="[bi] bi-linkedin"></i></a>
-			<a href="mailto:&#106;&#101;&#114;&#101;&#109;&#121;&#064;&#107;&#110;&#111;&#119;&#099;&#115;&#115;&#046;&#099;&#111;&#109;" know="[ni]"><i know="[bi] bi-mailbox2" title="Contact"></i></a>
+			<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" title="Github" know="[ni]"><i know="[bi]" class="bi-github"></i></a>
+			<a href="https://www.npmjs.com/package/knowcss" target="_blank" rel="noreferrer" title="NPM" know="[ni]"><i know="[bi]" class="bi-box-seam"></i></a>
+			<a href="https://twitter.com/knowcss" target="_blank" rel="noreferrer" title="Twitter" know="[ni]"><i know="[bi]" class="bi-twitter"></i></a>
+			<a href="https://www.linkedin.com/company/knowcss/" target="_blank" rel="noreferrer" title="Linkedin" know="[ni]"><i know="[bi]" class="bi-linkedin"></i></a>
+			<a href="mailto:&#106;&#101;&#114;&#101;&#109;&#121;&#064;&#107;&#110;&#111;&#119;&#099;&#115;&#115;&#046;&#099;&#111;&#109;" know="[ni]"><i class="bi-mailbox2" know="[bi]" title="Contact"></i></a>
 		</div>
 		<div know="[bx] font-size-24px aligncenter margin-5px">
 			<div>Create responsive, modern, optimized, dynamic, cross-compatible layouts as you type in-browser with real-time preview.</div>
 			<div know="[mt] [red]">No pre-processing or post-processing required!</div>
 			<div know="[mt]" class="retain-noshift">
-				<a href="#getstarted" know="nounderline"><span know="[bn] background-333 color-ccc"><i know="[biw] bi-file-text"></i> Install</span></a>
-				<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i know="[biw] bi-cloud-arrow-down"></i> Beta</span></a>
-				<a href="/docs/" know="nounderline"><span know="[bn] background-993333 color-fff"><i know="[biw] bi-file-earmark-code"></i> Docs</span></a>
+				<a href="#getstarted" know="nounderline"><span know="[bn] background-333 color-ccc"><i know="[biw]" class="bi-file-text"></i> Install</span></a>
+				<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i class="bi-cloud-arrow-down" know="[biw]"></i> Beta</span></a>
+				<a href="/docs/" know="nounderline"><span know="[bn] background-993333 color-fff"><i know="[biw]" class="bi-file-earmark-code"></i> Docs</span></a>
 			</div>
 			<div know="center aligncenter font-size-16px color-666">{ Shorthand guide available soon }</div>
 		</div>
@@ -244,7 +260,7 @@
 		</div>
 		<div know="[bx] [hr]">
 			<div know="[hd]">Can I still use my own, existing custom classes?</div>
-			<div know="[ys] [mt]">No problem! Just wrap those in a retain{}, keep{} or my{} grouping.
+			<div know="[ys] [mt]">No problem! Use standard class and style attributes or, with the know attribute, just wrap classes those in a retain{}, keep{} or my{} grouping.
 			<br>Or prefix individual classes with retain-, keep-, or my- and {{$knowcss}} will convert those to your original classnames at runtime.</div>
 			<div know="[mt] [ft]">
 				<div know="[nt] text-align-left">
@@ -273,7 +289,7 @@
 				<div know="[mt]">
 					<div know="[mt] [ct]">
 						<div know="[cd]" class="noshift3">
-							 <i know="bi-files cursor-pointer float-right" onClick="
+							 <i class="bi-files" know="cursor-pointer float-right" onClick="
 								event.preventDefault();
 								var cH = KwLy('install').innerText;
 								 if (window.clipboardData) {  window.clipboardData.setData('text/plain', cH); }
@@ -306,7 +322,7 @@
 			<div know="[ft] center aligncenter">
 				<div know="[mt] [ct]">
 					<div know="[cd]" class="noshift3">
-						$ <span id="knowedcss">npm install knowcss</span> <i know="bi-files cursor-pointer" onClick="
+						$ <span id="knowedcss">npm install knowcss</span> <i class="bi-files" know="cursor-pointer" onClick="
 						event.preventDefault();
 						var cH = KwLy('knowedcss').innerHTML;
 						 if (window.clipboardData) {  window.clipboardData.setData('text/plain', cH); }

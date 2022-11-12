@@ -1,12 +1,5 @@
 'use strict';
 
-/*
-getRandom() // allow random value on page load, after X seconds etc
-getAnimations() // add animations from KnowMotion
-KnowMotion // animations add-on - ex knowmotion="timing(1s ease 1s) trigger(hover) from(border-0px) to(border=1px/solid/red)"
-var knowMotion = { "font-face": ["font-face", "99999"], "animate": ["animate", "99999"] };
-*/
-
 var knowCSS = {
     settings: function (vals) {
         if (vals) {
@@ -37,18 +30,30 @@ var knowCSS = {
         return this;
     },
 
+    document: function () {
+        getDocument();
+        return this;
+    },
+
+    // TODO - add/remove observer
     watch: function (val) {
         val = val || true;
-        // TODO - add/remove observer
+        return this;
+    },
+
+    init: function () {
+        this.document();
+        this.render();
+        return this;
     },
 
     constructor: knowCSSProto
 };
 
-var hexColors = hexColors || {};
-var shortHand = shortHand || {};
+var hexColors = (typeof window.hexColors !== 'undefined') ? window.hexColors : (hexColors || {});
+var shortHand = (typeof window.shortHand !== 'undefined') ? window.shortHand : (shortHand || {});
 
-var runningValue = '', allMixins = {}, classNext = "";
+var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
 for (var key in screenSized) {
@@ -562,14 +567,10 @@ function getContainers(classString) {
     return ret.join(' ');
 }
 function knowCSSRender(uI, uC, uO) {
-    getDocument();
     var uX = {
-        'minifyhtml': false,
-        'minifycss': false,
-        'classes': 'sequential', // sequential or random or detail
+        'minifycss': true,
+        'classes': 'sequential',
         'normalize': false
-        //'mobilefirst': true,
-        //'mobilelast': true
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
@@ -693,9 +694,7 @@ function knowCSSRender(uI, uC, uO) {
                             className.indexOf('border') > -1 ||
                             className.indexOf('spacing') > -1 ||
                             className.indexOf('padding') > -1
-                        ) {
-                            classValue += 'px';
-                        }
+                        ) { classValue += 'px'; }
                     }
                     stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
                     if (classWebKit || getWebKit(className)) {
@@ -711,11 +710,9 @@ function knowCSSRender(uI, uC, uO) {
         styles += end;
     }
     if (uX.minifycss) { styles = styles.replace(/[\n\r\t]/gi, '').replace(/;\}/gi, '}').replace(/ \{/gi, '{').replace(/; /gi, ';').replace(/, /gi, ',').trim(); }
-    if (uC) {
-        return [div, styles];
-    }
-    else {
-        var cssID = 'css_' + div.id;
+    if (uC) { return [div, styles]; }
+    else if (styles.length > 0) {
+        var cssID = 'css_' + div.id + '_' + cssIncrement;
         var heAD = document.getElementsByTagName('head')[0];
         var cssTag = knowLayer(cssID);
         if (!cssTag) {
@@ -724,6 +721,7 @@ function knowCSSRender(uI, uC, uO) {
             heAD.appendChild(cssTag);
         }
         cssTag.innerHTML = styles;
+        cssIncrement++;
         return true;
     }
 }
@@ -736,7 +734,7 @@ if (typeof window !== 'undefined') {
         this.debugging = false;
     };
     knowCSSProto.prototype = knowCSS;
-    if (["interactive","complete"].includes(document.readyState)) { $know().render(); }
-    else { document.addEventListener('DOMContentLoaded', function() { $know().render(); }); }
+    if (["interactive", "complete"].includes(document.readyState)) { $know().init(); }
+    else { document.addEventListener('DOMContentLoaded', function () { $know().init(); }); }
 }
-else { module.exports = knowCSS; }
+else if (typeof module !== '') { module.exports = knowCSS; }

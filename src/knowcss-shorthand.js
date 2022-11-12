@@ -1,4 +1,4 @@
-var shortHand = {
+window.shortHand = {
     /* white-space */
     "nowrap": "white-space-nowrap",
     "pre": "white-space-pre",

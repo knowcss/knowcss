@@ -1,4 +1,4 @@
-var hexColors = {
+window.hexColors = {
     "pink": "ffc0cb",
     "lightpink": "ffb6c1",
     "palevioletred": "db7093",
