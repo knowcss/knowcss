@@ -1,5 +1,6 @@
 'use strict';
 
+var knowStartup = null;
 var knowCSS = {
     settings: function (vals) {
         if (vals) {
@@ -20,7 +21,8 @@ var knowCSS = {
         return ret;
     },
 
-    render: function (val) {
+    render: function (val, refresh) {
+        if (refresh) { cssIncrement = 0; }
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key);
         if (this.z === 'undefined' || this.z == null) { this.z = []; }
@@ -40,6 +42,8 @@ var knowCSS = {
         val = val || true;
         return this;
     },
+
+    startup: function () { return knowStartup; },
 
     init: function () {
         this.document();
@@ -613,6 +617,7 @@ function knowCSSRender(uI, uC, uO) {
     else {
         if (typeof uI === 'string') { div = knowLayer(uI); }
         else if ('innerHTML' in uI) { div = uI; }
+        if (knowStartup == null) { knowStartup = div.innerHTML; }
         classTags = document.querySelectorAll("[know]");
     }
     getLocalMixins();
