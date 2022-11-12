@@ -15,9 +15,10 @@
 <script src="../src/knowcss-colors.js"></script>
 <script src="../dist/js/knowcss.min.js"></script>
 <script>
-    var addEvents = ['scroll', 'click', 'resize'];
+    var addEvents = ['mousemove', 'touchstart', 'click', 'resize', 'keydown'];
     var addedEvents = false;
-    addEvents.forEach(function (val) { console.log(val); window.addEventListener(val, addEvent); });
+    addEvents.forEach(function (val) { window.addEventListener(val, addEvent); });
+    function gtag(){window.dataLayer.push(arguments);}
     function addEvent() {
         if (!addedEvents) {
             addedEvents = true;
@@ -34,12 +35,12 @@
 </head>
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
 <style>
-	.noshift i{display:inline-block; width:18px; height:18px;}
+	.noshift i{display:inline-block; margin-top:1px; width:18px; height:18px; max-height:18px; overflow:hidden;}
 	.noshift i:before{width:18px; height:18px;}
-	.noshift2 i{display:inline-block; width:48px; height:48px;}
+	.noshift2 i{display:inline-block; margin-top:1px; width:48px; height:48px; max-height:15px; overflow:hidden;}
 	.noshift2 i::before{width:48px; height:48px;}
-	.noshift3 i{display:inline-block; width:14px; height:14px;}
-	.noshift3 i::before{width:14px; height:14px;}
+	.noshift3 i{display:inline-block; margin-top:1px; width:14px; height:15px; max-height:15px; overflow:hidden;}
+	.noshift3 i::before{width:14px; height:15px;}
 </style>
 <script>
     const cssVars = {
@@ -68,7 +69,7 @@
         "h1": "margin-20px/auto/10px/auto padding-0",
         "ic": "padding-5px/5px all{color-666}",
         "na": "hover>a{color-933}",
-        "ni": "hover>i{color-933} min-width-48px min-height-55px display-inline-block",
+        "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
         "nv": "color-666 font-size-18px nounderline",
         "ys": "aligncenter center",
         "ml": "padding-left-20px",
@@ -126,6 +127,12 @@
 			</div>
 		</div>
 		<div know="[bx] [hr]">
+			<div know="[hd]">Does KnowCSS affect site performance?</div>
+			<div know="[ft]">
+				<div know="[mt]">No! {{$knowcss}} is entirely built for speed to render all your {{$css}} instantaneously, in real-time, on every page render with no slowdown and no CLS! Your visitors will see no page render difference between a traditional {{$css}} file and {{$knowcss}}! However, {{$knowcss}} renders even faster than a blocking ${{css}} file, especially if a large set of styles are in use. Run this site through <a href="https://pagespeed.web.dev/report?url=https%3A%2F%2Fwww.knowcss.com%2F" target="_blank">Lighthouse</a> and see the results for yourself!</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
 			<div know="[hd]">What is "KnowCSS&nbsp;Now?" <span know="color-fff bg-color-933 border-radius-4px padding-1px/4px/1px/4px font-size-16px-!">Coming&nbsp;Soon</span></div>
 			<div know="[ys] [mt]"><span know="[go]">KnowCSS Now</span> is the {{$knowcss}} IDE that runs entirely in browser, offering real-time preview, optimization, and minification of your {{$html}} and {{$css}}.
 			<br>
@@ -175,7 +182,7 @@
 		<div know="[bx] [hr]">
 			<div know="[hd]">What about tables?</div>
 			<div know="[mt] [ft]">
-				<div know="display-inline-block">
+				<div know="display=inline-block">
 					<div know="[mt] [ct]">
 						<div know="[cd]">
 							<div know="[nt] text-align-left"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;table center collapse all{padding-5px border-1px/solid/black alignmiddle}&quot;</span>&gt;</span>
@@ -204,10 +211,10 @@
 			</div>
 		</div>
 		<div know="[bx] [hr]">
-			<div know="[hd]">Can KnowCSS Target Screen Sizes?</div>
+			<div know="[hd]">Can KnowCSS target screen sizes?</div>
 			<div know="[ys] [mt]">Yes! You may use standard screen sizes (Ex: sm, md, lg) or target by exact width (ex: 480, 640, 768).</div>
 			<div know="[mt] [ft]">
-				<div know="display-inline-block">
+				<div know="display=inline-block">
 					<div know="[nt] text-align-left">
 						<div know="[mt] [ct]">
 							<div know="[cd]">
@@ -236,7 +243,7 @@
 			</div>
 		</div>
 		<div know="[bx] [hr]">
-			<div know="[hd]">And Images? With Hover/Touch Effects?!</div>
+			<div know="[hd]">And images? With hover/touch effects?!</div>
 			<div know="[ys] [mt]">To reduce redundancy in code, and to reuse common sets of attributes and actions, you may use the &lt;define&gt; tag to assign a variable to be referenced by other elements. In this example, [ro] is defined and used to apply repeated styles to each of the 3 images while [hl] and [hr] define the hover actions.</div>
 			<div know="[mt] [ft]">
 				<div know="[mt] [ct]">
@@ -283,6 +290,13 @@
 			</div>
 		</div>
 
+		<div know="[bx] [hr]">
+			<div know="[hd]">Does KnowCSS work with React, Next.js, and other frameworks/libraries?</div>
+			<div know="[ft]">
+				<div know="[mt]">Yes! ${{knowcss}} will do an initial render when on DOMContentLoaded.. From there, call $know.render() on useEffect() or other hooks and ${{knowcss}} will immediately re-render.</div>
+			</div>
+		</div>
+
 		<a name="getstarted"></a><div know="[bx] [hr]">
 			<div know="[hd]">Ok! How do I install KnowCSS?</div>
 			<div know="[ft]">
@@ -306,10 +320,19 @@
  								this.blur();
     								return false;
     							"></i>
-							<span id="install"><span know="[blue]">&lt;script <span know="[orange]">src=</span><span know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/knowcss.js"</span>&gt;&lt;/script&gt;
+							<span id="install">
+								<span know="[no] font-weight-300!">&lt!-- Copy these 2 files locally to customize colors and shorthand --&gt;</span>
+								<br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/src/knowcss-colors.js"</span>&gt;&lt;/script&gt;
+								<br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/src/knowcss-shorthand.js"</span>&gt;&lt;/script&gt;
+								<br>
+								<br><span know="[no] font-weight-300!">&lt!-- Use latest stable, minified version --&gt;</span>
+								<br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/dist/js/knowcss.min.js"</span>&gt;&lt;/script&gt;
+								<br>
 							<br>&lt;div <span know="[orange]">id=</span><span know="[pink]">"root"</span>&gt;
-							<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bold color-black font-size-16px&quot;</span>&gt;<span know="[black]">Hello, world</span>!&lt;/div&gt;</span>
-							<br>&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bold color-black font-size-16px&quot;</span>&gt;<span know="[black]">Hello, world.</span>&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-666 font-size-12px italic&quot;</span>&gt;<span know="color-333 font-size-12px italic">KnowCSS was here!</span>&lt;/div&gt;</span>
+								<br>&lt;/div&gt;
+							</span>
 						</div>
 					</div>
 				</div>
