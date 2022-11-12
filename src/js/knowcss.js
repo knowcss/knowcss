@@ -192,8 +192,12 @@ function getModifier(classList, classSecondary) {
                                 for (var actionKey in actionSet) {
                                     var containerPrefix = actionSet[actionKey];
                                     if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('-'); }
-                                    if (containerPrefix.length > 0) { classList[screenKey + '_' + containerPrefix + actionKey + '_'] = aM[2]; }
-                                    else if (containerKey !== 'none' || modifierKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) { classList[containerKey + '_' + modifierKey + '_' + actionKey] = aM[2]; }
+                                    if (containerPrefix.length > 0) {
+                                        classList[screenKey + '_' + containerPrefix + actionKey + '_'] = aM[2];
+                                    }
+                                    else if (containerKey !== 'none' || modifierKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) {
+                                        classList[containerKey + '_' + modifierKey + '_' + actionKey] = aM[2];
+                                    }
                                 }
                             }
                         }
@@ -544,22 +548,39 @@ function crossMixins(classString) {
     };
     return rW.join(' ');
 }
+function getScreenPrefixes(classString) {
+    var ret = [];
+    if (classString.indexOf('-') > -1) {
+        var key = '', prefix = '', suffix = '';
+        var classesFound = classString.split(' ');
+        for (var i = 0; i < classesFound.length; i++) {
+            key = classesFound[i];
+            if (key.indexOf('-') > -1) {
+                [prefix, suffix] = key.split('-', 2);
+                if (prefix in screenSizes) {  key = prefix + '{' + suffix + '}'; }
+            }
+            ret.push(key);
+        };
+    }
+    else { ret = [classString]; }
+    return ret.join(' ');
+}
 function getContainers(classString) {
-    var ret = [], key = '';
+    var ret = [];
     if (classString.indexOf('container') > -1) {
+        var key = '';
         var classesFound = classString.split(' ');
         for (var i = 0; i < classesFound.length; i++) {
             key = classesFound[i];
             if (key == 'container') {
-                key = "width-100%";
                 ret.push(
+                    "width-100%",
                     "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto",
                     "max-width-100%", "1230{max-width-1550}", "1200{max-width-1140}", "1024{max-width-940}", "768{max-width-720}"
                 );
             }
             else if (key == 'container-fluid') {
-                key = "width-100%";
-                ret.push("padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto");
+                ret.push("width-100%", "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto");
             }
         };
     }
@@ -568,9 +589,10 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
-        'minifycss': true,
+        'minifycss': false,
         'classes': 'sequential',
-        'normalize': false
+        'normalize': false,
+        'share': true
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
@@ -594,10 +616,12 @@ function knowCSSRender(uI, uC, uO) {
     }
     getLocalMixins();
     var attr = "";
+    var sharedClasses = {};
+    var sharedClassKey = "";
     for (var ii = 0; ii < classTags.length; ii++) {
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));
-        classList = { 'none_none_none': getContainers(getMixins(getVariables(attr))) };
+        classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
         classFirst = '';
@@ -646,9 +670,19 @@ function knowCSSRender(uI, uC, uO) {
                         }
                         classLink = screen + '_' + action;
                         if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
+                        if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
                         if (modifier == 'none') { modifier = ''; }
                         if (classTags[ii].tagName != 'DEFINE') {
+                            if (!uX.share) {
+                                sharedClassKey = classKey + '__' + modifier;
+                                if (sharedClassKey in sharedClasses == false) {
+                                    classNext = getNextLetter(classNext);
+                                    sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                }
+                                classNew = sharedClasses[sharedClassKey];
+                                classesHere.push(classNew);
+                            }
+
                             // JAA TODO - build array of unique values instead of appending strings
                             if (classKey in css[screen][action][0]) {
                                 if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
