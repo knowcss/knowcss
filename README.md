@@ -3,9 +3,13 @@ KnowCSS, the NoCSS Engine (version 2.0)
 https://www.knowcss.com/
 
 ```javascript
-<script src="src/knowcss-shorthand.js"></script>
-<script src="src/knowcss-colors.js"></script>
-<script src="dist/js/knowcss.min.js"></script>
+<!-- Copy these 2 files locally to customize colors and shorthand -->
+<script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/src/knowcss-colors.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/src/knowcss-shorthand.js"></script>
+
+<!-- Use latest stable, minified version -->
+<script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss@2.0.0/dist/js/knowcss.min.js"></script>
+
 <div id="root">
 <div class="bold color-black font-size-16px">Hello, world!</div>
 </div>
