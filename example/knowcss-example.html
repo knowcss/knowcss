@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="UTF-8">
+<title>KnowCSS, The Revolutionary NoCSS Engine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
+<link rel="icon" type="image/png" href="favicon.png" />
+<meta name="description" content="KnowCSS, The Revolutionary NoCSS Engine">
+<meta property="og:title" content="KnowCSS, The Revolutionary NoCSS Engine" />
+<meta property="og:image" content="https://www.knowcss.com/i/og.png" />
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
+<meta property="og:url" content="https://www.knowcss.com/" />
+<script src="../src/knowcss-shorthand.js"></script>
+<script src="../src/knowcss-colors.js"></script>
+<script src="../dist/js/knowcss.min.js"></script>
+<script>
+    var addEvents = ['scroll', 'click', 'resize'];
+    var addedEvents = false;
+    addEvents.forEach(function (val) { console.log(val); window.addEventListener(val, addEvent); });
+    function addEvent() {
+        if (!addedEvents) {
+            addedEvents = true;
+            addEvents.forEach(function (val) { window.removeEventListener(val, addEvent); });
+            var s = document.createElement('link');
+            s.rel = 'stylesheet';
+            s.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css';
+            s.type = 'text/css';
+            var g = document.getElementsByTagName('link')[0];
+            g.parentNode.insertBefore(s, g);
+        }
+    }
+</script>
+</head>
+<body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
+<style>
+	.noshift i{display:inline-block; width:18px; height:18px;}
+	.noshift i:before{width:18px; height:18px;}
+	.noshift2 i{display:inline-block; width:48px; height:48px;}
+	.noshift2 i::before{width:48px; height:48px;}
+	.noshift3 i{display:inline-block; width:14px; height:14px;}
+	.noshift3 i::before{width:14px; height:14px;}
+</style>
+<script>
+    const cssVars = {
+        "box": "box-sizing=border-box",
+        "red": "color-933",
+        "orange": "color-B65B0C",
+        "pink": "color-C83B82",
+        "blue": "color-384EF4",
+        "black": "color-000",
+        "family": "font-family-Helvetica font-display-swap",
+        "css": '<span know="[go]">CSS</span>',
+        "html": '<span know="[go]">HTML</span>',
+        "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
+    };
+    const localMixins = {
+        "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+        "no": "color-2D862D font-weight-400",
+        "nt": "color-2D862D font-weight-400",
+        "go": "color-339 font-weight-400",
+        "hd": "font-size-32px aligncenter normal-important",
+        "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
+        "mx": "center",
+        "ft": "font-size-16px aligncenter",
+        "hr": "border-top-3px/solid/#f3f3f3 center",
+        "bx": "padding-15px/5px {{$box}}",
+        "h1": "margin-20px/auto/10px/auto padding-0",
+        "ic": "padding-5px/5px all{color-666}",
+        "na": "hover>a{color-933}",
+        "ni": "hover>i{color-933} min-width-48px min-height-55px display-inline-block",
+        "nv": "color-666 font-size-18px nounderline",
+        "ys": "aligncenter center",
+        "ml": "padding-left-20px",
+        "mm": "padding-left-40px",
+        "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+        "ct": "table center aligncenter margin-top-10px max-width-96%",
+        "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
+        "blue": "{{$blue}}",
+        "orange": "{{$orange}}",
+        "pink": "{{$pink}}",
+        "red": "{{$red}}",
+        "black": "{{$black}}"
+    };
+</script>
+<div id="root" role="main">
+	<div know="center all{font-weight-300 {{$box}} {{$family}}}" class="noshift3">
+		<div know="height-36px max-height-36px overflow-hidden background-color-f6f6f6 border-bottom-4px/solid/#cfcfcf padding-3px/10px/3px/10px all{color-633 font-size-14px {{$family}}}">
+			<div know="float-right color-333 margin-5px/0"><a href="/docs/" know="nounderline"><i class="bi-file-earmark-code"></i> DOCS</a></div>
+			<div know="hover>a{color-933} margin-5px/0"><a href="https://github.com/knowcss" rel="noreferrer" target="_blank" know="nounderline">Nov 12, 2022 - v2.0 Released! <i class="bi-download"></i></a></div>
+			<div know="clear-both"></div>
+		</div>
+	</div>
+	<div know="center all{font-weight-300 {{$box}} {{$family}}} padding-5px">
+		<div know="[mt] center aligncenter"><a href="/"><img src="logo-700.png" alt="KnowCSS, The NoCSS Engine" width="350" height="63" know="margin-top-0px width-pct100 max-width-350px height-auto"></a></div>
+		<h1 know="[h1] [bx] font-size-40px aligncenter color-333 nounderline">Introducing <span know="[red]">KnowCSS,</span> the revolutionary NoCSS&nbsp;Engine</h1>
+		<div know="[ic] aligncenter" class="retain-noshift2">
+			<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" title="Github" know="[ni]"><i know="[bi]" class="bi-github"></i></a>
+			<a href="https://www.npmjs.com/package/knowcss" target="_blank" rel="noreferrer" title="NPM" know="[ni]"><i know="[bi]" class="bi-box-seam"></i></a>
+			<a href="https://twitter.com/knowcss" target="_blank" rel="noreferrer" title="Twitter" know="[ni]"><i know="[bi]" class="bi-twitter"></i></a>
+			<a href="https://www.linkedin.com/company/knowcss/" target="_blank" rel="noreferrer" title="Linkedin" know="[ni]"><i know="[bi]" class="bi-linkedin"></i></a>
+			<a href="mailto:&#106;&#101;&#114;&#101;&#109;&#121;&#064;&#107;&#110;&#111;&#119;&#099;&#115;&#115;&#046;&#099;&#111;&#109;" know="[ni]"><i class="bi-mailbox2" know="[bi]" title="Contact"></i></a>
+		</div>
+		<div know="[bx] font-size-24px aligncenter margin-5px">
+			<div>Create responsive, modern, optimized, dynamic, cross-compatible layouts as you type in-browser with real-time preview.</div>
+			<div know="[mt] [red]">No pre-processing or post-processing required!</div>
+			<div know="[mt]" class="retain-noshift">
+				<a href="#getstarted" know="nounderline"><span know="[bn] background-333 color-ccc"><i know="[biw]" class="bi-file-text"></i> Install</span></a>
+				<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i class="bi-cloud-arrow-down" know="[biw]"></i> Beta</span></a>
+				<a href="/docs/" know="nounderline"><span know="[bn] background-993333 color-fff"><i know="[biw]" class="bi-file-earmark-code"></i> Docs</span></a>
+			</div>
+			<div know="center aligncenter font-size-16px color-666">{ Shorthand guide available soon }</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Ok, what is "KnowCSS"?</div>
+			<div know="[ft]">
+				<div know="[mt]">{{$knowcss}} is a free-form, class-based, <span know="[go]">JavaScript</span> engine which generates, optimizes, and minimizes your {{$css}} for you, in real-time, without ever requiring you to leave your code!</div>
+				<div know="[mt]">{{$knowcss}} has no restrictions and no&nbsp;limitations.</div>
+				<div know="[mt]">If you know {{$css}}, you already {{$knowcss}}!</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">And, what is "NoCSS"?</div>
+			<div know="[ft]">
+				<div know="[mt]"><span know="[go]">NoCSS</span>, literally meaning <span know="[red]">"No CSS"</span>, is a new approach to generating {{$css}} without creating separate stylesheets or adding style tags to elements. With classes alone, added directly into your {{$html}} tags, you can design an entire website as you type in a single {{$html}} template with NO CSS!</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">What is "KnowCSS&nbsp;Now?" <span know="color-fff bg-color-933 border-radius-4px padding-1px/4px/1px/4px font-size-16px-!">Coming&nbsp;Soon</span></div>
+			<div know="[ys] [mt]"><span know="[go]">KnowCSS Now</span> is the {{$knowcss}} IDE that runs entirely in browser, offering real-time preview, optimization, and minification of your {{$html}} and {{$css}}.
+			<br>
+			<br>By developing directly in your favorite browser, there is no need to post-process, upload, refresh, or WAIT!
+			<br>
+			<br>With <span know="[go]">KnowCSS Now</span>, the power to develop layouts fast and efficiently is at your fingertips!</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">How is KnowCSS different from other frameworks?</div>
+			<div know="[ys] [mt]">First off, {{$knowcss}} is not a framework. Frameworks incur restrictions and limitations. Also, most frameworks force you to abandon existing knowledge, requiring you to completely learn new concepts and methods.
+			<br>
+			<br>The goal of {{$knowcss}} is to give you complete freedom to write your own code using everything that you already know about {{$css}}. Or, if you are a beginner, to help you learn {{$css}} concepts and methods with an easily consumable approach.
+			<br>
+			<br>Anything you could do in traditional {{$css}} can be accomplished entirely with {{$knowcss}}!</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Can I see a basic example?</div>
+			<div know="[mt] [ft]">
+				<div know="[mt] [ct]">
+					<div know="[cd]">
+						<div know="[nt]">
+							<span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-000 font-size-18px light&quot;</span>&gt;</span><span know="color-000 font-size-18px light">black 18px light</span><span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00 font-size-24px bold&quot;</span>&gt;</span><span know="color-f00 font-size-24px bold">red 24px bold</span><span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-00f font-size-18px semibold&quot;</span>&gt;</span><span know="color-00f font-size-14px semibold">blue 14px semibold</span><span know="[blue]">&lt;/div&gt;</span>
+						</div>
+					</div>
+				</div>
+				<div know="[ys] [mt]">The above {{$html}} with {{$knowcss}} classes will convert to the {{$html}} and {{$css}} below.
+				<br>Notice that the 2 layers with font-size-18px have been grouped in the resulting {{$css}}?</div>
+				<div know="[mt] [ct]">
+					<div know="[cd]">
+						<div know="[nt]">
+						<span know="[blue]">&lt;style&gt;
+						<br><span know="[orange] [ml]">.yf</span> {<span know="[pink]">color:#000;  font-weight:300;</span>}
+						<br><span know="[orange] [ml]">.bv</span> {<span know="[pink]">color:#f00; font-size:24px; font-weight:700;</span>}
+						<br><span know="[orange] [ml]">.ay</span> {<span know="[pink]">color:#00f; font-weight:600;</span>}
+						<br><span know="[orange] [ml]">.yf, .ay</span> {<span know="[pink]">font-size:18px;</span>}
+						<br>&lt;/style&gt;
+						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;yf&quot;</span>&gt;<span know="[black]">black 18px ligh</span>t&lt;/div&gt;
+						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bv&quot;</span>&gt;<span know="[black]">red 24px bold</span>&lt;/div&gt;
+						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;ay&quot;</span>&gt;<span know="[black]">blue 14px semibold</span>&lt;/div&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">What about tables?</div>
+			<div know="[mt] [ft]">
+				<div know="display-inline-block">
+					<div know="[mt] [ct]">
+						<div know="[cd]">
+							<div know="[nt] text-align-left"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;table center collapse all{padding-5px border-1px/solid/black alignmiddle}&quot;</span>&gt;</span>
+							<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;row&quot;</span>&gt;</span>
+							<br><span know="[mm] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;cell&quot;</span>&gt;</span>Top Left<span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[mm] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;cell&quot;</span>&gt;</span>Top Right<span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[ml] [blue]">&lt;/div&gt;</span>
+							<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;row&quot;</span>&gt;</span>
+							<br><span know="[mm] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;cell&quot;</span>&gt;</span>Bottom Left<span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[mm] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;cell&quot;</span>&gt;</span>Bottom Right<span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[ml] [blue]">&lt;/div&gt;</span>
+							<br><span know="[blue]">&lt;/div&gt;</span></div>
+						</div>
+					</div>
+					<div know="[mt] table center collapse all{padding-5px border-1px/solid/black alignmiddle}">
+						<div know="row">
+							<div know="cell">Top Left</div>
+							<div know="cell">Top Right</div>
+						</div>
+						<div know="row">
+							<div know="cell">Bottom Left</div>
+							<div know="cell">Bottom Right</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Can KnowCSS Target Screen Sizes?</div>
+			<div know="[ys] [mt]">Yes! You may use standard screen sizes (Ex: sm, md, lg) or target by exact width (ex: 480, 640, 768).</div>
+			<div know="[mt] [ft]">
+				<div know="display-inline-block">
+					<div know="[nt] text-align-left">
+						<div know="[mt] [ct]">
+							<div know="[cd]">
+								<span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;all{color-gray display-inline margin-0/10px  padding-2px}&quot;</span>&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;xxsm{color-000 semibold}  xxsm-border=2px/solid/#000&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;xsm{color-300 semibold} xsm-border=2px/solid/#300&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;sm{color-600 semibold} sm-border=2px/solid/#600&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;md{color-900 semibold} md-border=2px/solid/#900&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;lg{color-c00 semibold} lg-border=2px/solid/#c00&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;xl{color-f00 semibold} xl-border=2px/solid/#f00&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;xxl{color-f00 semibold} xxl-border=2px/solid/#f00&quot;</span>&gt;&lt;/div&gt;</span>
+								<br><span know="[blue]">&lt;/div&gt;</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div know="[mt] aligncenter all{color-707070 display-inline margin-0/10px padding-2px}">
+					<div know="xxsm{color-000 semibold} xxsm-border=2px/solid/#000">xxsm</div>
+					<div know="xsm{color-300 semibold} xsm-border=2px/solid/#300">xsm</div>
+					<div know="sm{color-600 semibold} sm-border=2px/solid/#600">sm</div>
+					<div know="md{color-900 semibold} md-border=2px/solid/#900">md</div>
+					<div know="lg{color-c00 semibold} lg-border=2px/solid/#c00">lg</div>
+					<div know="xl{color-f00 semibold} xl-border=2px/solid/#f00">xl</div>
+					<div know="xxl{color-f00 semibold} xxl-border=2px/solid/#f00">xxl</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">And Images? With Hover/Touch Effects?!</div>
+			<div know="[ys] [mt]">To reduce redundancy in code, and to reuse common sets of attributes and actions, you may use the &lt;define&gt; tag to assign a variable to be referenced by other elements. In this example, [ro] is defined and used to apply repeated styles to each of the 3 images while [hl] and [hr] define the hover actions.</div>
+			<div know="[mt] [ft]">
+				<div know="[mt] [ct]">
+					<div know="[cd]">
+						<div know="[nt] [mx]">
+							<span know="[blue]">&lt;define <span know="[orange]">know=</span><span know="[pink]">&quot;[ro] width-100px height-100px border-radius-pct50 border-1px/solid/#ccc opacity-0.75 margin-0/5px transition-transform/1s/linear&quot;</span>&gt;&lt;/define&gt;</span>
+							<br><span know="[blue]">&lt;define <span know="[orange]">know=</span><span know="[pink]">&quot;[hl] hover{border-1px/solid/#933 opacity-1.0 transform=rotate(20deg)}&quot;</span>&gt;&lt;/define&gt;</span>
+							<br><span know="[blue]">&lt;define <span know="[orange]">know=</span><span know="[pink]">&quot;[hr] hover{border-1px/solid/#933 opacity-1.0 transform=rotate(-20deg)}&quot;</span>&gt;&lt;/define&gt;</span>
+						</div>
+						<define know="[ro] width-100px height-100px border-radius-50% border-1px/solid/#ccc opacity-0.75 margin-0/5px transition-transform/1s/linear"></define>
+						<define know="[hl] hover{border-1px/solid/#933 opacity-1.0 transform=rotate(20deg)}"></define>
+						<define know="[hr] hover{border-1px/solid/#933 opacity-1.0 transform=rotate(-20deg)}"></define>
+
+						<div know="[nt] [mx]"><span know="[blue]">&lt;img <span know="[orange]">src=</span><span know="[pink]">&quot;lion.jpg&quot;</span> <span know="[orange]">know=</span><span know="[pink]">&quot;[ro] [hl]&quot;</span>&gt;</span></div>
+						<div know="[nt] [mx]"><span know="[blue]">&lt;img <span know="[orange]">src=</span><span know="[pink]">&quot;dog.jpg&quot;</span> <span know="[orange]">know=</span><span know="[pink]">&quot;[ro] [hr]&quot;</span>&gt;</span></div>
+						<div know="[nt] [mx]"><span know="[blue]">&lt;img <span know="[orange]">src=</span><span know="[pink]">&quot;owl.jpg&quot;</span> <span know="[orange]">know=</span><span know="[pink]">&quot;[ro] [hl]&quot;</span>&gt;</span></div>
+					</div>
+				</div>
+				<div know="[nt] [mt]"><img loading="lazy" src="lion.jpg" alt="Lion" know="[ro] hover{border-1px/solid/#933 opacity-1.0 transform-rotate(20deg)}"> <img loading="lazy" src="dog.jpg" alt="Dog" know="[ro] hover{border-1px/solid/#933 opacity-1.0 transform=rotate(-20deg)}"> <img loading="lazy" src="owl.jpg" alt="Owl" know="[ro] hover{border-1px/solid/#933 opacity-1.0 transform-rotate(20deg)}"></div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Can I still use my own, existing custom classes?</div>
+			<div know="[ys] [mt]">No problem! Use standard class and style attributes or, with the know attribute, just wrap classes those in a retain{}, keep{} or my{} grouping.
+			<br>Or prefix individual classes with retain-, keep-, or my- and {{$knowcss}} will convert those to your original classnames at runtime.</div>
+			<div know="[mt] [ft]">
+				<div know="[nt] text-align-left">
+					<div know="[mt] [ct]">
+						<div know="[cd]">
+							<span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;my{col-6 col-sm-4} retain-existing-class keep-this-class&quot;</span>&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div know="[ys] [mt]">The above {{$html}} has no {{$knowcss}} classes defined. Your existing classes would be reverted so that you may include your existing stylesheet to retain those classes.</div>
+			<div know="[mt] [ft]">
+				<div know="[nt] text-align-left">
+					<div know="[mt] [ct]">
+						<div know="[cd]">
+							<span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;col-6 col-sm-4 existing-class this-class&quot;</span>&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<a name="getstarted"></a><div know="[bx] [hr]">
+			<div know="[hd]">Ok! How do I install KnowCSS?</div>
+			<div know="[ft]">
+				<div know="[mt]">
+					<div know="[mt] [ct]">
+						<div know="[cd]" class="noshift3">
+							 <i class="bi-files" know="cursor-pointer float-right" onClick="
+								event.preventDefault();
+								var cH = KwLy('install').innerText;
+								 if (window.clipboardData) {  window.clipboardData.setData('text/plain', cH); }
+								else if (event.clipboardData) { event.clipboardData.setData('text/plain', cH); }
+								else if (navigator.clipboard) { navigator.clipboard.writeText(cH).then(() => {}, () => { }); }
+								else {
+									var cB = document.createElement('textarea');
+									document.body.appendChild(cB);
+									cB.value = cH;
+									cB.select();
+									var cS = document.execCommand('copy');
+									document.body.removeChild(cB);
+								}
+ 								this.blur();
+    								return false;
+    							"></i>
+							<span id="install"><span know="[blue]">&lt;script <span know="[orange]">src=</span><span know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/knowcss.js"</span>&gt;&lt;/script&gt;
+							<br>&lt;div <span know="[orange]">id=</span><span know="[pink]">"root"</span>&gt;
+							<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bold color-black font-size-16px&quot;</span>&gt;<span know="[black]">Hello, world</span>!&lt;/div&gt;</span>
+							<br>&lt;/div&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Can I include KnowCSS in my node.js project?</div>
+			<div know="[ys] [mt]">Yes! By installing <a href="https://github.com/knowcss/knowedcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nt]">KnowedCSS</span></a>, the node.js module, you can easily create {{$knowcss}} templates in your project with <span know="[go]">KnowCSS Now</span>.
+			<br>Your raw {{$html}} with {{$knowcss}} classes will be converted to usable {{$css}} and {{$html}}.</div>
+			<div know="[ft] center aligncenter">
+				<div know="[mt] [ct]">
+					<div know="[cd]" class="noshift3">
+						$ <span id="knowedcss">npm install knowcss</span> <i class="bi-files" know="cursor-pointer" onClick="
+						event.preventDefault();
+						var cH = KwLy('knowedcss').innerHTML;
+						 if (window.clipboardData) {  window.clipboardData.setData('text/plain', cH); }
+						else if (event.clipboardData) { event.clipboardData.setData('text/plain', cH); }
+						else if (navigator.clipboard) { navigator.clipboard.writeText(cH).then(() => {}, () => { }); }
+						else {
+							var cB = document.createElement('input');
+							document.body.appendChild(cB);
+							cB.value = cH;
+							cB.select();
+							var cS = document.execCommand('copy');
+							document.body.removeChild(cB);
+						}
+ 						this.blur();
+    						return false;
+    						"></i>
+					</div>
+				</div>
+				<div know="[mt] [ct]">
+					<div know="[cd]">
+						<span know="[blue]">const</span> knowedcss = require(<span know="[pink]">'knowcss'</span>);
+						<br><span know="[blue]">const</span> replace = require(<span know="[pink]">'replace'</span>);
+						<br><span know="[blue]">var</span> ret = knowedcss(<span know="[pink]">'&lt;div know=<!---->&quot;font-size-16px&quot;&gt;Hello, world!&lt;/div&gt;'</span>);
+						<br>console.log(<span know="[pink]">'css == '</span> + ret[<span know="[pink]">1</span>]);
+						<br>console.log(<span know="[pink]">'html == '</span> + ret[<span know="[pink]">2</span>]);
+					</div>
+				</div>
+				<div know="[mt] [ct]">
+					<div know="[cd]">
+						<span know="color-333 font-size-14px">css == .bz{font-size:16px}
+						<br>html == &lt;div class<!---->=&quot;bz&quot;&gt;Hello, world!&lt;/div&gt;</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr]">
+			<div know="[hd]">Any final words?</div>
+			<div know="[ft]">
+				<div know="[mt]">
+					<div>Prepare to be impressed. This entire website is built in {{$knowcss}}! <span onClick="this.blur(); return KwEd('root');">View source</span> now to see how it was accomplished within the <span know="[blue] nowrap">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;root&quot;</span>&gt;&lt;/div&gt;</span> block.</div>
+				</div>
+			</div>
+		</div>
+		<div know="[bx] [hr] padding-top-10px margin-bottom-10px">
+			<div know="aligncenter"><a href="http://www.jaydoublay.com/" rel="noreferrer" target="_blank" know="font-size-12px color-707070 nounderline">&copy; 2021 Jay Doublay</a></div>
+			<div know="aligncenter"><span know="color-333 font-size-14px normal">{ knowcss }</span> <span know="color-933 font-size-12px normal">&lt;The-NoCSS-Engine/&gt;</span></div>
+			<div know="aligncenter"><span know="color-707070 font-size-12px normal" id="render"></span></div>
+        </div>
+	</div>
+</div>
+
+</body>
+</html>
