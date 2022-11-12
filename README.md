@@ -3,14 +3,9 @@ KnowCSS, the NoCSS Engine (beta v1.0.7)
 https://www.knowcss.com/
 
 ```javascript
-<script src="https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/knowcss.js">
-</script>
-<script>
-window.addEventListener(
-"load",
-event=>{KnowCSS("root")}
-);
-</script>
+<script src="../src/knowcss-shorthand.js"></script>
+<script src="../src/knowcss-colors.js"></script>
+<script src="../dist/js/knowcss.min.js"></script>
 <div id="root">
 <div class="bold color-black font-size-16px">Hello, world!</div>
 </div>
