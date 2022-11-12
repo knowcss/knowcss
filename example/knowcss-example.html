@@ -11,14 +11,15 @@
 <meta property="og:type" content="website" />
 <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
 <meta property="og:url" content="https://www.knowcss.com/" />
+<!--<script src="../src/knowcss-colors.js"></script>-->
 <script src="../src/knowcss-shorthand.js"></script>
-<script src="../src/knowcss-colors.js"></script>
 <script src="../src/js/knowcss.js"></script>
 <script>
     var addEvents = ['mousemove', 'touchstart', 'click', 'resize', 'keydown'];
     var addedEvents = false;
     addEvents.forEach(function (val) { window.addEventListener(val, addEvent); });
     function gtag(){window.dataLayer.push(arguments);}
+    function KwLy (eA) { return document.getElementById(eA); }
     function addEvent() {
         if (!addedEvents) {
             addedEvents = true;
@@ -50,7 +51,7 @@
         "pink": "color-C83B82",
         "blue": "color-384EF4",
         "black": "color-000",
-        "family": "font-family-Helvetica font-display-swap",
+        "family": "font-family-Helvetica", //font-display-auto font-display-swap
         "css": '<span know="[go]">CSS</span>',
         "html": '<span know="[go]">HTML</span>',
         "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
@@ -107,10 +108,39 @@
 			<div know="[mt] [red]">No pre-processing or post-processing required!</div>
 			<div know="[mt]" class="retain-noshift">
 				<a href="#getstarted" know="nounderline"><span know="[bn] background-333 color-ccc"><i know="[biw]" class="bi-file-text"></i> Install</span></a>
-				<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i class="bi-cloud-arrow-down" know="[biw]"></i> Beta</span></a>
+				<a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i class="bi-cloud-arrow-down" know="[biw]"></i> Download</span></a>
 				<a href="/docs/" know="nounderline"><span know="[bn] background-993333 color-fff"><i know="[biw]" class="bi-file-earmark-code"></i> Docs</span></a>
 			</div>
-			<div know="center aligncenter font-size-16px color-666">{ Shorthand guide available soon }</div>
+		</div>
+		
+		<div know="[bx] [hr]">
+			<div know="[hd]">Stop Doing This:</div>		
+			<div know="[mt] [ft]">
+				<div know="[nt] text-align-left">
+					<div know="[mt] [ct]">
+						<div know="[cd]">
+							<span know="[blue]">&lt;style&gt;
+							<br><span know="[orange]">&nbsp;&nbsp;&nbsp;.page { padding: 24px 0; width: 100%; font-size: 12px; color: #f00; }</span>
+							<br><span know="[orange]">&nbsp;&nbsp;&nbsp;@media and (min-width: 768px) { font-size: 14px; }</span>
+							<br>&lt;/style&gt;
+							<br>&lt;div <span know="[orange]">class=</span><span know="[pink]">&quot;page&quot;</span>&gt;&lt;/div&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div know="[hd]">Start Doing This:</div>		
+			<div know="[mt] [ft]">
+				<div know="[nt] text-align-left">
+					<div know="[mt] [ct]">
+						<div know="[cd]">
+							Dynamic: <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;padding-24px/0 width-100% font-size-12px color-red md{font-size-14px}&quot;</span>&gt;&lt;/div&gt;</span>
+							<br>Shorthand: <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;p-24/0 w-100% px-12 red md{px-14}&quot;</span>&gt;&lt;/div&gt;</span>
+							<br>Minified: <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;p-24/0 full 12 red md{14}&quot;</span>&gt;&lt;/div&gt;</span>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div know="[bx] [hr]">
 			<div know="[hd]">Ok, what is "KnowCSS"?</div>
@@ -144,6 +174,8 @@
 			<div know="[hd]">How is KnowCSS different from other frameworks?</div>
 			<div know="[ys] [mt]">First off, {{$knowcss}} is not a framework. Frameworks incur restrictions and limitations. Also, most frameworks force you to abandon existing knowledge, requiring you to completely learn new concepts and methods.
 			<br>
+			<br>Many frameworks require you to spend time with configuration files, build processes, and development headaches. {{$knowcss}} eliminates all of that!
+			<br>
 			<br>The goal of {{$knowcss}} is to give you complete freedom to write your own code using everything that you already know about {{$css}}. Or, if you are a beginner, to help you learn {{$css}} concepts and methods with an easily consumable approach.
 			<br>
 			<br>Anything you could do in traditional {{$css}} can be accomplished entirely with {{$knowcss}}!</div>
@@ -156,7 +188,7 @@
 						<div know="[nt]">
 							<span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-000 font-size-18px light&quot;</span>&gt;</span><span know="color-000 font-size-18px light">black 18px light</span><span know="[blue]">&lt;/div&gt;</span>
 							<br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00 font-size-24px bold&quot;</span>&gt;</span><span know="color-f00 font-size-24px bold">red 24px bold</span><span know="[blue]">&lt;/div&gt;</span>
-							<br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-00f font-size-18px semibold&quot;</span>&gt;</span><span know="color-00f font-size-14px semibold">blue 14px semibold</span><span know="[blue]">&lt;/div&gt;</span>
+							<br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-00f font-size-18px semibold&quot;</span>&gt;</span><span know="color-00f font-size-18px semibold">blue 14px semibold</span><span know="[blue]">&lt;/div&gt;</span>
 						</div>
 					</div>
 				</div>
@@ -173,7 +205,7 @@
 						<br>&lt;/style&gt;
 						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;yf&quot;</span>&gt;<span know="[black]">black 18px ligh</span>t&lt;/div&gt;
 						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bv&quot;</span>&gt;<span know="[black]">red 24px bold</span>&lt;/div&gt;
-						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;ay&quot;</span>&gt;<span know="[black]">blue 14px semibold</span>&lt;/div&gt;</span>
+						<br>&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;ay&quot;</span>&gt;<span know="[black]">blue 18 px semibold</span>&lt;/div&gt;</span>
 						</div>
 					</div>
 				</div>
@@ -267,7 +299,7 @@
 		</div>
 		<div know="[bx] [hr]">
 			<div know="[hd]">Can I still use my own, existing custom classes?</div>
-			<div know="[ys] [mt]">No problem! Use standard class and style attributes or, with the know attribute, just wrap classes those in a retain{}, keep{} or my{} grouping.
+			<div know="[ys] [mt]">No problem! Use standard class and style attributes or, with the know attribute, just wrap classes in a retain{}, keep{} or my{} grouping.
 			<br>Or prefix individual classes with retain-, keep-, or my- and {{$knowcss}} will convert those to your original classnames at runtime.</div>
 			<div know="[mt] [ft]">
 				<div know="[nt] text-align-left">
@@ -293,7 +325,7 @@
 		<div know="[bx] [hr]">
 			<div know="[hd]">Does KnowCSS work with React, Next.js, and other frameworks/libraries?</div>
 			<div know="[ft]">
-				<div know="[mt]">Yes! {{$knowcss}} will do an initial render when on DOMContentLoaded.. From there, call $know.render() on useEffect() or other hooks and {{$knowcss}} will immediately re-render.</div>
+				<div know="[mt]">Yes! {{$knowcss}} will do an initial render on <span know="[blue]">DOMContentLoaded</span>. From there, call <span know="[red]">$know.render()</span> on <span know="[blue]">useEffect()</span> or other hooks and {{$knowcss}} will immediately re-render.</div>
 			</div>
 		</div>
 
@@ -330,7 +362,7 @@
 								<br>
 							<br>&lt;div <span know="[orange]">id=</span><span know="[pink]">"root"</span>&gt;
 								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;bold color-black font-size-16px&quot;</span>&gt;<span know="[black]">Hello, world.</span>&lt;/div&gt;</span>
-								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-666 font-size-12px italic&quot;</span>&gt;<span know="color-333 font-size-12px italic">KnowCSS was here!</span>&lt;/div&gt;</span>
+								<br><span know="[ml] [blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-333 font-size-12px italic&quot;</span>&gt;<span know="color-333 font-size-12px italic">KnowCSS was here!</span>&lt;/div&gt;</span>
 								<br>&lt;/div&gt;
 							</span>
 						</div>
