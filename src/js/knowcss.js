@@ -112,7 +112,8 @@ function getGridSystem(classFound, classesFound) {
 }
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
-    if (typeof shortHand !== 'undefined') {
+    if (!isNaN(classFound)) { classFound = "font-size-" + classFound + "px"; }
+    else if (typeof shortHand !== 'undefined') {
         if (classFound.indexOf('-webkit-') > -1) { classFound = classFound.replace('-webkit-', ''); classWebKit = true; }
         else if (classFound.indexOf('-moz-') > -1) { classFound = classFound.replace('-moz-', ''); classWebKit = true; }
         else if (classFound.indexOf('-ms-') > -1) { classFound = classFound.replace('-ms-', ''); classWebKit = true; }
@@ -557,7 +558,7 @@ function getScreenPrefixes(classString) {
             key = classesFound[i];
             if (key.indexOf('-') > -1) {
                 [prefix, suffix] = key.split('-', 2);
-                if (prefix in screenSizes) {  key = prefix + '{' + suffix + '}'; }
+                if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '{' + suffix + '}'; }
             }
             ret.push(key);
         };
@@ -673,14 +674,14 @@ function knowCSSRender(uI, uC, uO) {
                         if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
                         if (modifier == 'none') { modifier = ''; }
                         if (classTags[ii].tagName != 'DEFINE') {
-                            if (!uX.share) {
+                            if (uX.share) {
                                 sharedClassKey = classKey + '__' + modifier;
                                 if (sharedClassKey in sharedClasses == false) {
                                     classNext = getNextLetter(classNext);
                                     sharedClasses[sharedClassKey] = classNext.toLowerCase();
                                 }
                                 classNew = sharedClasses[sharedClassKey];
-                                classesHere.push(classNew);
+                                if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
                             }
 
                             // JAA TODO - build array of unique values instead of appending strings

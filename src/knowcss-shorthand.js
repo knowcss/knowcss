@@ -42,10 +42,10 @@ window.shortHand = {
     "alignbottom": "vertical-align-bottom",
 
     /* width % */
-    "full": "width-pct100",
-    "half": "width-pct50",
-    "third": "width-pct33.3333",
-    "quarter": "width-pct25",
+    "full": "width-100%",
+    "half": "width-50%",
+    "third": "width-33.3333%",
+    "quarter": "width-25%",
 
     /* display */
     "div": "display=block",
