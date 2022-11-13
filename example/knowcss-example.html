@@ -560,10 +560,10 @@
             </div>
             <div know="[bx] [hr]">
                 <div know="[hd]">Can I include KnowCSS in my node.js project?</div>
-                <div know="[ys] [mt]">Yes. By installing <a href="https://github.com/knowcss/knowedcss" rel="noreferrer"
-                        target="_blank" know="nounderline"><span know="[nt]">KnowedCSS</span></a>, the node.js module,
-                    you can easily create {{$knowcss}} templates in your project with <span know="[go]">KnowCSS
-                        Now</span>.
+                <div know="[ys] [mt]">Yes. By installing <a href="https://github.com/knowcss/knowcss" rel="noreferrer"
+                        target="_blank" know="nounderline"><span know="[nt]">KnowedCSS</span></a>, the node.js module
+                    (Express, React, and Next.js compatible), you can easily create {{$knowcss}} templates in your
+                    project with <span know="[go]">KnowCSS Now</span>.
                     <br>Your raw {{$html}} with {{$knowcss}} classes will be converted to usable {{$css}} and {{$html}}.
                 </div>
                 <div know="[ft] center aligncenter">
@@ -592,11 +592,10 @@
                     <div know="[mt] [ct]">
                         <div know="[cd]">
                             <span know="[blue]">const</span> knowedcss = require(<span know="[pink]">'knowcss'</span>);
-                            <br><span know="[blue]">const</span> replace = require(<span
-                                know="[pink]">'replace'</span>);
-                            <br><span know="[blue]">var</span> ret = knowedcss(<span know="[pink]">'&lt;div know=
+                            <br><span know="[blue]">var</span> ret = knowedcss.compile(<span know="[pink]">'&lt;div
+                                know=
                                 <!---->&quot;font-size-16px&quot;&gt;Hello, world!&lt;/div&gt;'
-                            </span>);
+                            </span>, <span know="[blue]">true</span>);
                             <br>console.log(<span know="[pink]">'css == '</span> + ret[<span know="[pink]">1</span>]);
                             <br>console.log(<span know="[pink]">'html == '</span> + ret[<span know="[pink]">2</span>]);
                         </div>
