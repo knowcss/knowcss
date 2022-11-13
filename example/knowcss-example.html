@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
     <meta charset="UTF-8">
     <title>KnowCSS, The Revolutionary NoCSS Engine</title>
@@ -13,6 +12,48 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
+    <script>
+        const cssVars = {
+            "box": "box-sizing=border-box",
+            "red": "color-933",
+            "orange": "color-B65B0C",
+            "pink": "color-C83B82",
+            "blue": "color-384EF4",
+            "black": "color-000",
+            "family": "font-family-Helvetica", //font-display-auto font-display-swap
+            "css": '<span know="[go]">CSS</span>',
+            "html": '<span know="[go]">HTML</span>',
+            "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
+        };
+        const localMixins = {
+            "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+            "no": "color-2D862D font-weight-400",
+            "nt": "color-2D862D font-weight-400",
+            "go": "color-339 font-weight-400",
+            "hd": "font-size-32px aligncenter normal-important",
+            "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
+            "mx": "center",
+            "ft": "font-size-16px aligncenter",
+            "hr": "border-top-3px/solid/#f3f3f3 center",
+            "bx": "padding-15px/5px {{$box}}",
+            "h1": "margin-20px/auto/10px/auto padding-0",
+            "ic": "padding-5px/5px all{color-666}",
+            "na": "hover>a{color-933}",
+            "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
+            "nv": "color-666 font-size-18px nounderline",
+            "ys": "aligncenter center",
+            "ml": "padding-left-20px",
+            "mm": "padding-left-40px",
+            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+            "ct": "table center aligncenter margin-top-10px max-width-96%",
+            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
+            "blue": "{{$blue}}",
+            "orange": "{{$orange}}",
+            "pink": "{{$pink}}",
+            "red": "{{$red}}",
+            "black": "{{$black}}"
+        };
+    </script>
     <!--<script src="../src/knowcss-colors.js"></script>-->
     <script src="../src/knowcss-shorthand.js"></script>
     <script src="../src/js/knowcss.js"></script>
@@ -79,48 +120,6 @@
             height: 15px;
         }
     </style>
-    <script>
-        const cssVars = {
-            "box": "box-sizing=border-box",
-            "red": "color-933",
-            "orange": "color-B65B0C",
-            "pink": "color-C83B82",
-            "blue": "color-384EF4",
-            "black": "color-000",
-            "family": "font-family-Helvetica", //font-display-auto font-display-swap
-            "css": '<span know="[go]">CSS</span>',
-            "html": '<span know="[go]">HTML</span>',
-            "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
-        };
-        const localMixins = {
-            "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-            "no": "color-2D862D font-weight-400",
-            "nt": "color-2D862D font-weight-400",
-            "go": "color-339 font-weight-400",
-            "hd": "font-size-32px aligncenter normal-important",
-            "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
-            "mx": "center",
-            "ft": "font-size-16px aligncenter",
-            "hr": "border-top-3px/solid/#f3f3f3 center",
-            "bx": "padding-15px/5px {{$box}}",
-            "h1": "margin-20px/auto/10px/auto padding-0",
-            "ic": "padding-5px/5px all{color-666}",
-            "na": "hover>a{color-933}",
-            "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
-            "nv": "color-666 font-size-18px nounderline",
-            "ys": "aligncenter center",
-            "ml": "padding-left-20px",
-            "mm": "padding-left-40px",
-            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-            "ct": "table center aligncenter margin-top-10px max-width-96%",
-            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
-            "blue": "{{$blue}}",
-            "orange": "{{$orange}}",
-            "pink": "{{$pink}}",
-            "red": "{{$red}}",
-            "black": "{{$black}}"
-        };
-    </script>
     <div id="root" role="main">
         <div know="center all{font-weight-300 {{$box}} {{$family}}}" class="noshift3">
             <div
@@ -560,10 +559,10 @@
             </div>
             <div know="[bx] [hr]">
                 <div know="[hd]">Can I include KnowCSS in my node.js project?</div>
-                <div know="[ys] [mt]">Yes. By installing <a href="https://github.com/knowcss/knowedcss" rel="noreferrer"
-                        target="_blank" know="nounderline"><span know="[nt]">KnowedCSS</span></a>, the node.js module,
-                    you can easily create {{$knowcss}} templates in your project with <span know="[go]">KnowCSS
-                        Now</span>.
+                <div know="[ys] [mt]">Yes. By installing <a href="https://github.com/knowcss/knowcss" rel="noreferrer"
+                        target="_blank" know="nounderline"><span know="[nt]">KnowedCSS</span></a>, the node.js module
+                    (Express, React, and Next.js compatible), you can easily create {{$knowcss}} templates in your
+                    project with <span know="[go]">KnowCSS Now</span>.
                     <br>Your raw {{$html}} with {{$knowcss}} classes will be converted to usable {{$css}} and {{$html}}.
                 </div>
                 <div know="[ft] center aligncenter">
@@ -592,13 +591,12 @@
                     <div know="[mt] [ct]">
                         <div know="[cd]">
                             <span know="[blue]">const</span> knowedcss = require(<span know="[pink]">'knowcss'</span>);
-                            <br><span know="[blue]">const</span> replace = require(<span
-                                know="[pink]">'replace'</span>);
-                            <br><span know="[blue]">var</span> ret = knowedcss(<span know="[pink]">'&lt;div know=
+                            <br><span know="[blue]">var</span> ret = knowedcss.compile(<span know="[pink]">'&lt;div
+                                know=
                                 <!---->&quot;font-size-16px&quot;&gt;Hello, world!&lt;/div&gt;'
                             </span>);
                             <br>console.log(<span know="[pink]">'css == '</span> + ret[<span know="[pink]">1</span>]);
-                            <br>console.log(<span know="[pink]">'html == '</span> + ret[<span know="[pink]">2</span>]);
+                            <br>console.log(<span know="[pink]">'html == '</span> + ret[<span know="[pink]">0</span>]);
                         </div>
                     </div>
                     <div know="[mt] [ct]">
