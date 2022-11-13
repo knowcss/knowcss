@@ -1,12 +1,11 @@
-window.shorterHand = {
+const shorterHand = {
     /* Minified - Check for Integer value or values and add px */
     "w": "width",
     "p": "padding",
-    "px": "font-size",
+    "px": "font-size"
 };
 
-window.shortHand = {
-    /* Minified */
+const shortHand = {
     "w": "width",
     "p": "padding",
     "px": "font-size",
@@ -136,3 +135,8 @@ window.shortHand = {
     "scale-down": "object-cover=scale-down",
     "scale": "object-cover=scale-down"
 };
+if (typeof window !== 'undefined') { }
+else if (typeof module !== 'undefined') {
+	module.exports.shortHand = shortHand;
+	module.exports.shorterHand = shorterHand;
+}

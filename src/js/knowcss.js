@@ -8,7 +8,13 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
-var knowStartup = null;
+var knowCSSOptions = {
+	hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
+	shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
+	cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
+	localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
+};
+
 var knowCSS = {
     settings: function (vals) {
         if (vals) {
@@ -23,14 +29,25 @@ var knowCSS = {
         return this;
     },
 
-    compile: function (val, compile) {
+    options: function (options) {
+	    if (options) {
+    		for (var key in options) {
+    			if (key in knowCSSOptions) { knowCSSOptions[key] = options[key]; }
+    		}
+    	}
+    	return this;
+    },
+
+    compile: function (val, options) {
+    	this.options(options);
         var startTime = new Date().getTime();
         var ret = knowCSSRender(val, true);
         return ret;
     },
 
-    render: function (val, refresh) {
+    render: function (val, refresh, options) {
         if (refresh) { cssIncrement = 0; }
+    	this.options(options);
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key);
         if (this.z === 'undefined' || this.z == null) { this.z = []; }
@@ -62,11 +79,7 @@ var knowCSS = {
     constructor: knowCSSProto
 };
 
-var hexColors = (typeof window.hexColors !== 'undefined') ? window.hexColors : (hexColors || {});
-var shortHand = (typeof window.shortHand !== 'undefined') ? window.shortHand : (shortHand || {});
-var shorterHand = (typeof window.shorterHand !== 'undefined') ? window.shorterHand : (shorterHand || {});
-
-var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0;
+var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0, knowStartup = null;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
 for (var key in screenSized) {
@@ -96,6 +109,7 @@ function knowLayer(name) {
 }
 function getImportant(val) {
     var important = '';
+    val = (typeof val === 'string') ? val : '';
     val = val.replace('-!', '!').replace('-important', '!').replace('!important', '!').replace(/\!\!+/g, '!');
     if (val.indexOf('!') > -1) {
         val = val.replace('!', '');
@@ -115,7 +129,7 @@ function getGridSystem(classFound, classesFound) {
         var whichCol = classFound.replace(/^col-/, '');
         var whichPct = (parseInt(whichCol) / 12) * 100;
         classFound = "width-" + parseFloat(whichPct.toFixed(6)) + "%";
-        classesFound.push("flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + classFound, "position-relative");
+        classesFound.push("flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + classFound, "position-relative", classFound);
     }
     else if (classFound.indexOf('offset-') == 0) {
         var whichOffset = classFound.replace(/^offset-/, '');
@@ -133,14 +147,14 @@ function getShorterHand(classFound, classesFound) {
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     if (!isNaN(classFound)) { classFound = "font-size-" + classFound + "px"; }
-    else if (typeof shortHand !== 'undefined') {
+    else if (defined(knowCSSOptions.shortHand)) {
         if (classFound.indexOf('-webkit-') > -1) { classFound = classFound.replace('-webkit-', ''); classWebKit = true; }
         else if (classFound.indexOf('-moz-') > -1) { classFound = classFound.replace('-moz-', ''); classWebKit = true; }
         else if (classFound.indexOf('-ms-') > -1) { classFound = classFound.replace('-ms-', ''); classWebKit = true; }
         else if (classFound.indexOf('-o-') > -1) { classFound = classFound.replace('-o-', ''); classWebKit = true; }
         if (classFound.indexOf('--') > -1) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
-        if (classFound in shortHand) {
-            classFound = shortHand[classFound].trim();
+        if (classFound in knowCSSOptions.shortHand) {
+            classFound = knowCSSOptions.shortHand[classFound].trim();
             if (classFound.indexOf(' ') > -1) {
                 var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
                 classFound = classMore.shift();
@@ -153,12 +167,12 @@ function getShortHand(classFound, classesFound) {
     return [classFound, classesFound, classWebKit];
 }
 function getValue(val) {
-    if (typeof hexColors !== 'undefined' && val.indexOf('/') > -1) {
+    if (defined(knowCSSOptions.hexColors) && val.indexOf('/') > -1) {
         val = val.replace(/\//g, ' ');
         var vals = val.split(' ');
         if (vals.length > 2) {
-            if (vals[2] in hexColors) {
-                vals[2] = '#' + getShortColor(hexColors[vals[2]]);
+            if (vals[2] in knowCSSOptions.hexColors) {
+                vals[2] = '#' + getShortColor(knowCSSOptions.hexColors[vals[2]]);
                 val = vals.join(' ');
             }
         }
@@ -258,7 +272,7 @@ function getColor(hE, hC) {
                 if (zY[0]) { break; }
             }
             var hF = hE.replace('#', '');
-            if (typeof hexColors !== 'undefined' && hF in hexColors) { hF = hexColors[hF].trim(); }
+            if (defined(knowCSSOptions.hexColors) && hF in knowCSSOptions.hexColors) { hF = knowCSSOptions.hexColors[hF].trim(); }
             var zH = new RegExp('^([0-9a-f]{1,6})$', 'i');
             if (zH.test(hF)) {
                 hF = getShade(hF, zY[1]);
@@ -377,7 +391,7 @@ function getWebKit(wS) {
         var wK = ['align-content', 'align-items', 'align-self', 'alt', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-template', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after', 'margin-after-collapse', 'margin-before', 'margin-before-collapse', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'mask', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position', 'mask-position-x', 'mask-position-y', 'mask-repeat', 'mask-repeat-x', 'mask-repeat-y', 'mask-size', 'mask-source-type', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke', 'text-stroke-color', 'text-stroke-width', 'text-underline-position', 'text-zoom', 'transform', 'transform-2d', 'transform-3d', 'transform-origin', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'];
         webkitGrep = "^" + wK.join("|").replace('/-/gi', '\\-');
     }
-    return false; //new RegExp(webkitGrep).test(wS);
+    return new RegExp(webkitGrep).test(wS);
 }
 var actionGrep = [];
 function getActions(mS, mD) {
@@ -444,8 +458,8 @@ function getCleanStyles(style) {
     return style.replace(/(;){2,}/g, ';');
 }
 function getLocalMixins() {
-    if (typeof localMixins !== 'undefined') {
-        for (var key in localMixins) { allMixins[key] = getVariables(localMixins[key]); }
+    if (defined(knowCSSOptions.localMixins)) {
+        for (var key in knowCSSOptions.localMixins) { allMixins[key] = getVariables(knowCSSOptions.localMixins[key]); }
     }
 }
 function getMixins(mA) {
@@ -472,7 +486,7 @@ function getMixins(mA) {
     return mA;
 }
 function getDocument() {
-    if (typeof cssVars === 'object') {
+    if (defined(knowCSSOptions.cssVars)) {
         var root = document.querySelector('#root');
         if (root && root.innerHTML.indexOf('$') > -1) { root.innerHTML = getVariables(root.innerHTML); }
     }
@@ -482,8 +496,8 @@ function getVariables(html) {
         var zZ = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), varKey = '';
         while ((varKey = zZ.exec(html)) !== null) {
             var varsFound = 0, varFound = '';
-            if (typeof cssVars === 'object') {
-                if (varKey[1] in cssVars) { varFound = cssVars[varKey[1]].replace('/\\\\/gis', ''); }
+            if (defined(knowCSSOptions.cssVars)) {
+                if (varKey[1] in knowCSSOptions.cssVars) { varFound = knowCSSOptions.cssVars[varKey[1]].replace('/\\\\/gis', ''); }
             }
             while (html.indexOf(varKey[0]) > -1) {
                 html = html.replace(varKey[0], varFound);
@@ -498,7 +512,7 @@ var usedClass = {};
 var letters = "abcdefghijklmnopqrstuvwxyz";
 var shuffled = letters.split('').sort(function () { return 0.5 - Math.random() }).join('');
 function getNextLetter(nA) {
-    if (nA.length == 0) { return shuffled.substr(0, 1); }
+    if (nA.length == 0) { return "a"; }
     var nI = nA.length - 1;
     var nC = nA.charCodeAt(nI);
     var nD = "z".charCodeAt();
@@ -672,7 +686,8 @@ function knowCSSRender(uI, uC, uO) {
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        [classFound, classesFound, classWebKit] = getShortHand(getEM(getShorterHand(classFound, classesFound)));
+                        //[classFound, classesFound, classWebKit] = getShortHand(getEM(getShorterHand(classFound, classesFound)));
+                        [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         [classFound, classImportant] = getImportant(classFound);
                         className = '';
@@ -690,7 +705,7 @@ function knowCSSRender(uI, uC, uO) {
                             classValue = classParts.pop();
                             className = classParts.join('-');
                         }
-                        if (className in shortHand) { className = shortHand[className]; }
+                        if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);

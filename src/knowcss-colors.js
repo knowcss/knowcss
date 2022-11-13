@@ -1,4 +1,4 @@
-window.hexColors = {
+const hexColors = {
     "pink": "ffc0cb",
     "lightpink": "ffb6c1",
     "palevioletred": "db7093",
@@ -141,3 +141,5 @@ window.hexColors = {
     "darkslategray": "2f4f4f",
     "black": "000000"
 };
+if (typeof window !== 'undefined') { }
+else if (typeof module !== 'undefined') { module.exports.hexColors = hexColors; }
