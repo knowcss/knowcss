@@ -1,5 +1,13 @@
 'use strict';
 
+/*
+KnowCSS Version 2.0.1 by Jay Doublay
+https://www.knowcss.com/
+
+NPM: https://www.npmjs.com/package/knowcss
+Repo: https://github.com/knowcss/knowcss
+*/
+
 var knowStartup = null;
 var knowCSS = {
     settings: function (vals) {
@@ -179,7 +187,7 @@ function getModifier(classList, classSecondary) {
             containers = {};
             screens = {};
             [screen, modifier, action] = key.split('_', 3);
-            classList[key] = classList[key].replace(aM[0], '');
+            classList[key] = classList[key].replace(aM[0], '').trim();
             container = aM[1];
             multiScreen = false;
             dynamic = getDynamic(container);
@@ -204,7 +212,7 @@ function getModifier(classList, classSecondary) {
                                     }
                                     else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) {
                                     	keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
-                                    }                                    
+                                    }
                                     if (keyNew.length > 0) {
                                     	if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
                                     	else { classList[keyNew] = aM[2]; }
@@ -570,12 +578,12 @@ function getScreenPrefixes(classString) {
             if (key.indexOf('-') > -1) {
                 parts = key.split('-');
                 prefix = parts.shift();
-                if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '{' + parts.join('-') + '}'; }
+                if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
             }
             ret.push(key);
         };
     }
-    else { ret = [classString]; }    
+    else { ret = [classString]; }
     return ret.join(' ');
 }
 function getContainers(classString) {
@@ -631,23 +639,17 @@ function knowCSSRender(uI, uC, uO) {
     getLocalMixins();
     var attr = "";
     var sharedClasses = {};
-    var sharedClassKey = "";    
+    var sharedClassKey = "";
     for (var ii = 0; ii < classTags.length; ii++) {
         classesHere = [];
-        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));        
-        classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };        
-        classList = getModifier(getModifier(classList, false), true);		
+        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));
+        classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
+        classList = getModifier(getModifier(classList, false), true);
         classNew = '';
-        classFirst = '';   
-        
-        // TODO - fix this -> another pass to handle any modifier{screen-class} values
-        //for (var key in classList) { classList[key] = getScreenPrefixes(classList[key]); }
-        //classList = getModifier(classList, false);
-        
+        classFirst = '';
         for (var key in classList) {
-            [screen, modifier, action] = key.split('_', 3);            
+            [screen, modifier, action] = key.split('_', 3);
             classesFound = getClasses(classList[key]);
-            
             if (classesFound.length > 0) {
                 classFirst = '';
                 classNextStart = classNext;
@@ -730,7 +732,7 @@ function knowCSSRender(uI, uC, uO) {
     }
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
-                
+
         styles += '\n' + start;
         for (var action in css[screen]) {
             cssGroup = {};
