@@ -802,4 +802,4 @@ if (typeof window !== 'undefined') {
     if (["interactive", "complete"].includes(document.readyState)) { $know().init(); }
     else { document.addEventListener('DOMContentLoaded', function () { $know().init(); }); }
 }
-else if (typeof module !== '') { module.exports = knowCSS; }
+else if (typeof module !== 'undefined') { module.exports = knowCSS; }
