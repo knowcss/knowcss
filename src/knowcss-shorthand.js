@@ -1,4 +1,16 @@
+window.shorterHand = {
+    /* Minified - Check for Integer value or values and add px */
+    "w": "width",
+    "p": "padding",
+    "px": "font-size",
+};
+
 window.shortHand = {
+    /* Minified */
+    "w": "width",
+    "p": "padding",
+    "px": "font-size",
+
     /* white-space */
     "nowrap": "white-space-nowrap",
     "pre": "white-space-pre",

@@ -64,6 +64,7 @@ var knowCSS = {
 
 var hexColors = (typeof window.hexColors !== 'undefined') ? window.hexColors : (hexColors || {});
 var shortHand = (typeof window.shortHand !== 'undefined') ? window.shortHand : (shortHand || {});
+var shorterHand = (typeof window.shorterHand !== 'undefined') ? window.shorterHand : (shorterHand || {});
 
 var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
@@ -121,6 +122,12 @@ function getGridSystem(classFound, classesFound) {
         var whichPct = (parseInt(whichOffset) / 12) * 100;
         classFound = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
     }
+    return [classFound, classesFound];
+}
+function getEM(classFound, classesFound) {
+    return [classFound, classesFound];
+}
+function getShorterHand(classFound, classesFound) {
     return [classFound, classesFound];
 }
 function getShortHand(classFound, classesFound) {
@@ -613,7 +620,8 @@ function knowCSSRender(uI, uC, uO) {
         'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
-        'share': false
+        'share': false,
+        'em': 12 // TODO - add em alternative for all px values
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
@@ -664,7 +672,7 @@ function knowCSSRender(uI, uC, uO) {
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
+                        [classFound, classesFound, classWebKit] = getShortHand(getEM(getShorterHand(classFound, classesFound)));
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         [classFound, classImportant] = getImportant(classFound);
                         className = '';
