@@ -3,7 +3,7 @@ name: Check For Conflicts on Merge to Master
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   triage:
     runs-on: ubuntu-latest
