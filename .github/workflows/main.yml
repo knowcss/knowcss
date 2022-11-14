@@ -1,3 +1,5 @@
+name: Check For Conflicts on Merge to Master
+
 on:
   push:
     branches:
