@@ -138,8 +138,22 @@ function getGridSystem(classFound, classesFound) {
     }
     return [classFound, classesFound];
 }
-function getEM(classFound, classesFound) {
-    return [classFound, classesFound];
+function shouldREM (className) {
+    var ret = false;
+    if (['font-size','line-height','width','height'].includes(className)) { ret = true; }
+    else if (['margin','paddin','spacin'].includes(className.substr(0, 6))) { ret = true; }
+    else if (['top','bottom','left','right'].includes(className)) { ret = true; }
+    return ret;
+}
+function getREM(className, classValue, classesFound) {
+    if (shouldREM(className) && classValue.indexOf('px') > -1) {
+        var classRoot = classValue.replace('px', '');
+        if (!isNaN(classRoot) && classRoot > 0) {
+            var classRem = parseInt(classRoot) / 16;
+            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem'); }
+        }
+    }
+    return classesFound;
 }
 function getShorterHand(classFound, classesFound) {
     return [classFound, classesFound];
@@ -635,7 +649,7 @@ function knowCSSRender(uI, uC, uO) {
         'classes': 'sequential',
         'normalize': false,
         'share': false,
-        'em': 12 // TODO - add em alternative for all px values
+        'rem': 16
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
@@ -662,7 +676,14 @@ function knowCSSRender(uI, uC, uO) {
     var attr = "";
     var sharedClasses = {};
     var sharedClassKey = "";
+    var isDefine = false;
+    /*
+    var smartClass = {};
+    var smartDetail = {};
+    var smartKnow = {};
+    */
     for (var ii = 0; ii < classTags.length; ii++) {
+        isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
@@ -686,7 +707,7 @@ function knowCSSRender(uI, uC, uO) {
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        //[classFound, classesFound, classWebKit] = getShortHand(getEM(getShorterHand(classFound, classesFound)));
+                        [classFound, classesFound] = getShorterHand(classFound, classesFound);
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         [classFound, classImportant] = getImportant(classFound);
@@ -708,6 +729,9 @@ function knowCSSRender(uI, uC, uO) {
                         if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
+
+                        classesFound = getREM(className, classValue, classesFound);
+
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);
                         if (uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
@@ -717,7 +741,22 @@ function knowCSSRender(uI, uC, uO) {
                         if (screen in css === false) { css[screen] = {}; }
                         if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
                         if (modifier == 'none') { modifier = ''; }
-                        if (classTags[ii].tagName != 'DEFINE') {
+                        if (!isDefine) {
+
+                            /*
+                            if (classKey in smartClass == false) {
+                                classNext = getNextLetter(classNext);
+                                // This builds the stylesheet
+                                smartDetail[classKey] = [classNext, modifier, className, classValue, classImportant, classWebKit];
+
+                                // This applies the classes
+                                smartClass[classKey] = [];
+                            }
+                            if (ii in smartKnow == false) { smartKnow[ii] = []; }
+                            smartClass[classKey].push(ii);
+                            smartKnow[ii].push(classKey);
+                            */
+
                             if (uX.share) {
                                 sharedClassKey = classKey + '__' + modifier;
                                 if (sharedClassKey in sharedClasses == false) {
@@ -742,17 +781,14 @@ function knowCSSRender(uI, uC, uO) {
                 if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
             }
         }
-        if (uC) {
-            div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"');
-        }
-        else if (classTags[ii].tagName == 'DEFINE') {
-            classTags[ii].parentNode.removeChild(classTags[ii]);
-        }
+        if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
+        else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
         else {
             classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
             classTags[ii].removeAttribute("know");
         }
     }
+
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
 
