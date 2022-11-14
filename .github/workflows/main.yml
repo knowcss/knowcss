@@ -1,0 +1,2 @@
+- name: Auto-label merge conflicts
+  uses: mschilde/auto-label-merge-conflicts@v2.0
