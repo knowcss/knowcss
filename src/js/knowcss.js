@@ -70,6 +70,8 @@ var knowCSS = {
 
     startup: function () { return knowStartup; },
 
+    now: knowCSSNow,
+
     init: function () {
         this.document();
         this.render();
@@ -103,6 +105,8 @@ function getOS () { // know="mac{} win{} linux{} unix{} etc" }
 function getPlatform () { // know="ios{} android{}" }
 function getView () { // know="mobile{} tablet{} desktop{}" }
 */
+
+function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
 
 function knowLayer(name) {
     return document.getElementById(name);
