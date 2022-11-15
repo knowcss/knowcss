@@ -2,32 +2,32 @@
 
 function update(text, ref_document) {
     let result_element = ref_document.querySelector("#highlighting-content");
-    if(text[text.length-1] == "\n") {
-      text += " ";
+    if (text[text.length - 1] == "\n") {
+        text += " ";
     }
     result_element.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
     Prism.highlightElement(result_element);
-  }
+}
 
-  function sync_scroll(element, ref_document) {
+function sync_scroll(element, ref_document) {
     let result_element = ref_document.querySelector("#highlighting");
     result_element.scrollTop = element.scrollTop;
     result_element.scrollLeft = element.scrollLeft;
-  }
+}
 
-  function check_tab(element, event) {
-    if(event.key == "Tab") {
-      let code = element.value;
-      event.preventDefault();
-      let before_tab = code.slice(0, element.selectionStart);
-      let after_tab = code.slice(element.selectionEnd, element.value.length);
-      let cursor_pos = element.selectionStart + 1;
-      element.value = before_tab + "\t" + after_tab;
-      element.selectionStart = cursor_pos;
-      element.selectionEnd = cursor_pos;
-      update(element.value);
+function check_tab(element, event) {
+    if (event.key == "Tab") {
+        let code = element.value;
+        event.preventDefault();
+        let before_tab = code.slice(0, element.selectionStart);
+        let after_tab = code.slice(element.selectionEnd, element.value.length);
+        let cursor_pos = element.selectionStart + 1;
+        element.value = before_tab + "\t" + after_tab;
+        element.selectionStart = cursor_pos;
+        element.selectionEnd = cursor_pos;
+        update(element.value);
     }
-  }
+}
 
 var KwOg = {};
 function KwLy(eA) {
@@ -36,7 +36,7 @@ function KwLy(eA) {
 function KwEn(eA) {
     return eA.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').toString();
 }
-function KwIt (hL) {
+function KwIt(hL) {
     var hE = (hL in KwOg) ? KwOg[hL] : $know().startup();
     hE = KwEn(hE.replace(/\n\t/gi, '\n'));
     return hE;

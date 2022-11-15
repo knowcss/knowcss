@@ -9,10 +9,10 @@ Repo: https://github.com/knowcss/knowcss
 */
 
 var knowCSSOptions = {
-	hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
-	shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
-	cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
-	localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
+    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
+    shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
+    cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
+    localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
 };
 
 var knowCSS = {
@@ -30,16 +30,16 @@ var knowCSS = {
     },
 
     options: function (options) {
-	    if (options) {
-    		for (var key in options) {
-    			if (key in knowCSSOptions) { knowCSSOptions[key] = options[key]; }
-    		}
-    	}
-    	return this;
+        if (options) {
+            for (var key in options) {
+                if (key in knowCSSOptions) { knowCSSOptions[key] = options[key]; }
+            }
+        }
+        return this;
     },
 
     compile: function (val, options) {
-    	this.options(options);
+        this.options(options);
         var startTime = new Date().getTime();
         var ret = knowCSSRender(val, true);
         return ret;
@@ -47,7 +47,7 @@ var knowCSS = {
 
     render: function (val, refresh, options) {
         if (refresh) { cssIncrement = 0; }
-    	this.options(options);
+        this.options(options);
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key);
         if (this.z === 'undefined' || this.z == null) { this.z = []; }
@@ -142,11 +142,11 @@ function getGridSystem(classFound, classesFound) {
     }
     return [classFound, classesFound];
 }
-function shouldREM (className) {
+function shouldREM(className) {
     var ret = false;
-    if (['font-size','line-height','width','height'].includes(className)) { ret = true; }
-    else if (['margin','paddin','spacin'].includes(className.substr(0, 6))) { ret = true; }
-    else if (['top','bottom','left','right'].includes(className)) { ret = true; }
+    if (['font-size', 'line-height', 'width', 'height'].includes(className)) { ret = true; }
+    else if (['margin', 'paddin', 'spacin'].includes(className.substr(0, 6))) { ret = true; }
+    else if (['top', 'bottom', 'left', 'right'].includes(className)) { ret = true; }
     return ret;
 }
 function getREM(className, classValue, classesFound) {
@@ -247,14 +247,14 @@ function getModifier(classList, classSecondary) {
                                     if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('-'); }
                                     keyNew = '';
                                     if (containerPrefix.length > 0) {
-                                    	keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
+                                        keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
                                     }
                                     else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) {
-                                    	keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
+                                        keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
                                     }
                                     if (keyNew.length > 0) {
-                                    	if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
-                                    	else { classList[keyNew] = aM[2]; }
+                                        if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
+                                        else { classList[keyNew] = aM[2]; }
                                     }
                                 }
                             }
