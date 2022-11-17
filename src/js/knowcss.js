@@ -655,7 +655,7 @@ function knowCSSRender(uI, uC, uO) {
         'classes': 'sequential',
         'normalize': false,
         'share': false,
-        'smart': false,
+        'smart': true,
         'rem': 16
     };
     if (typeof uX !== 'undefined') {
@@ -739,6 +739,7 @@ function knowCSSRender(uI, uC, uO) {
                         classesFound = getREM(className, classValue, classesFound);
 
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+
                         /*
                         if (if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
@@ -758,9 +759,11 @@ function knowCSSRender(uI, uC, uO) {
                                     smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit]];
 
                                     // This applies the classes to group later
-                                    smartClass[sharedClassKey] = [];
+                                    smartClass[sharedClassKey] = ii.toString();
                                 }
-                                smartClass[sharedClassKey].push(ii);
+                                else {
+                                    smartClass[sharedClassKey] += "__" + ii.toString();
+                                }
                             }
                             else {
                                 if (uX.share) {
@@ -794,42 +797,37 @@ function knowCSSRender(uI, uC, uO) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
             else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
             else {
-                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
+                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });                
                 classTags[ii].removeAttribute("know");
             }   
         }
     }
 
     if (uX.smart) {
-        function uniqueVals (a) {
-            return a.filter((i,p)=>a.indexOf(i)===p);
-        }
         var smartClassGroup = {};
         var smartClassNext = "";
-        var i = 0;
+        var smartClassHere = "";
         for (var smartKey in smartClass) {
-            var smartKeys = smartClass[smartKey].join('__');
-            if (smartKeys in smartClassGroup == false) {  
-                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";          
-                smartClassGroup[smartKeys] = [
-                    smartClassNext,
-                    [],
-                    []
-                ];
+            var smartKeys = smartClass[smartKey];
+            if (smartKeys in smartClassGroup) { 
+                smartClassHere = smartClassGroup[smartKeys];
             }
-
-            smartClassGroup[smartKeys][2] = uniqueVals(smartClassGroup[smartKeys][2].concat(smartClass[smartKey]));
+            else { 
+                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";          
+                smartClassHere = smartClassNext;
+                smartClassGroup[smartKeys] = smartClassHere;
+            }
             
-            smartDetail[smartKey][2] = smartClassNext;
-            smartClassGroup[smartKeys][1].push(smartKey);
+            smartDetail[smartKey][2] = smartClassHere;
 
-            smartClass[smartKey].forEach(function(ii) {
-                if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassNext + '"'); }
-                else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
-                else {
-                    classTags[ii].classList.add(smartClassNext);
-                    classTags[ii].removeAttribute("know");
-                }
+            smartKeys.split('__').forEach(function (ii) {
+                //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassHere + '"'); }
+                //else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
+                //else {
+                    classTags[ii].classList.add(smartClassHere);
+                    //classTags[ii].setAttribute("ii", ii.toString());
+                    //classTags[ii].removeAttribute("know");
+                //}
             });
         }
         for (var classKey in smartDetail) {
