@@ -102,8 +102,10 @@ var defined = function (val) { return typeof val !== 'undefined' && val != null;
 /*
 function getBrowser () { // know="safari{} chrome{} firefox{} edge{} opera{} etc" }
 function getOS () { // know="mac{} win{} linux{} unix{} etc" }
-function getPlatform () { // know="ios{} android{}" }
+function getPlatform () { // know="ios{} android{} windows{}" }
 function getView () { // know="mobile{} tablet{} desktop{}" }
+function getOrientation { // know="landscape{} portrait{}" }
+function getSession { know="new{} return{}" }
 */
 
 function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
@@ -653,6 +655,7 @@ function knowCSSRender(uI, uC, uO) {
         'classes': 'sequential',
         'normalize': false,
         'share': false,
+        'smart': false,
         'rem': 16
     };
     if (typeof uX !== 'undefined') {
@@ -660,7 +663,7 @@ function knowCSSRender(uI, uC, uO) {
             if (uA in uX) { uX[uA] = uO[uA]; }
         }
     }
-    var div = null, css = {}, classNext = '', classNextStart = '', screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classLink = '', classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = '', tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
+    var div = null, css = {}, classNext = '', classNextStart = '', screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = '', tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles += '::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'; }
     if (['sequential', 'random'].includes(uX.classes) == false) { uX.classes = 'detail'; }
     var classTags = [];
@@ -681,11 +684,8 @@ function knowCSSRender(uI, uC, uO) {
     var sharedClasses = {};
     var sharedClassKey = "";
     var isDefine = false;
-    /*
     var smartClass = {};
     var smartDetail = {};
-    var smartKnow = {};
-    */
     for (var ii = 0; ii < classTags.length; ii++) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
@@ -711,7 +711,9 @@ function knowCSSRender(uI, uC, uO) {
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        [classFound, classesFound] = getShorterHand(classFound, classesFound);
+                        var debugIt = false;
+                        if (classFound.indexOf('normal') > -1) { debugIt = true; }
+                        //[classFound, classesFound] = getShorterHand(classFound, classesFound);
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         [classFound, classImportant] = getImportant(classFound);
@@ -730,66 +732,122 @@ function knowCSSRender(uI, uC, uO) {
                             classValue = classParts.pop();
                             className = classParts.join('-');
                         }
+                        else { className = classFound; }
                         if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
-
                         classesFound = getREM(className, classValue, classesFound);
 
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);
-                        if (uX.classes == 'detail') {
+                        /*
+                        if (if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
                             classesHere.push(classNew);
                         }
-                        classLink = screen + '_' + action;
+                        */                       
                         if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
+                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
                         if (modifier == 'none') { modifier = ''; }
                         if (!isDefine) {
-
-                            /*
-                            if (classKey in smartClass == false) {
-                                classNext = getNextLetter(classNext);
-                                // This builds the stylesheet
-                                smartDetail[classKey] = [classNext, modifier, className, classValue, classImportant, classWebKit];
-
-                                // This applies the classes
-                                smartClass[classKey] = [];
-                            }
-                            if (ii in smartKnow == false) { smartKnow[ii] = []; }
-                            smartClass[classKey].push(ii);
-                            smartKnow[ii].push(classKey);
-                            */
-
-                            if (uX.share) {
+                            if (uX.smart) {
                                 sharedClassKey = classKey + '__' + modifier;
-                                if (sharedClassKey in sharedClasses == false) {
-                                    classNext = getNextLetter(classNext);
-                                    sharedClasses[sharedClassKey] = classNext.toLowerCase();
-                                }
-                                classNew = sharedClasses[sharedClassKey];
-                                if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
-                            }
+                                if (sharedClassKey in smartClass == false) {
+                                    //classNext = getNextLetter(classNext);
 
-                            // JAA TODO - build array of unique values instead of appending strings
-                            if (classKey in css[screen][action][0]) {
-                                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                    // This builds the stylesheet
+                                    smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit]];
+
+                                    // This applies the classes to group later
+                                    smartClass[sharedClassKey] = [];
                                 }
+                                smartClass[sharedClassKey].push(ii);
                             }
-                            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
-                            css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                            else {
+                                if (uX.share) {
+                                    sharedClassKey = classKey + '__' + modifier;
+                                    if (sharedClassKey in sharedClasses == false) {
+                                        classNext = getNextLetter(classNext);
+                                        sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                    }
+                                    classNew = sharedClasses[sharedClassKey];
+                                    if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
+                                }
+
+                                // JAA TODO - build array of unique values instead of appending strings
+                                if (classKey in css[screen][action][0]) {
+                                    if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                                        css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                    }
+                                }
+                                else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+                                css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                            }
                         }
                     }
                 }
-                if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+                if (!uX.smart) {
+                    if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+                }
             }
         }
-        if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
-        else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
-        else {
-            classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
-            classTags[ii].removeAttribute("know");
+        if (!uX.smart) {
+            if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
+            else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
+            else {
+                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
+                classTags[ii].removeAttribute("know");
+            }   
+        }
+    }
+
+    if (uX.smart) {
+        function uniqueVals (a) {
+            return a.filter((i,p)=>a.indexOf(i)===p);
+        }
+        var smartClassGroup = {};
+        var smartClassNext = "";
+        var i = 0;
+        for (var smartKey in smartClass) {
+            var smartKeys = smartClass[smartKey].join('__');
+            if (smartKeys in smartClassGroup == false) {  
+                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";          
+                smartClassGroup[smartKeys] = [
+                    smartClassNext,
+                    [],
+                    []
+                ];
+            }
+
+            smartClassGroup[smartKeys][2] = uniqueVals(smartClassGroup[smartKeys][2].concat(smartClass[smartKey]));
+            
+            smartDetail[smartKey][2] = smartClassNext;
+            smartClassGroup[smartKeys][1].push(smartKey);
+
+            smartClass[smartKey].forEach(function(ii) {
+                if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassNext + '"'); }
+                else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
+                else {
+                    classTags[ii].classList.add(smartClassNext);
+                    classTags[ii].removeAttribute("know");
+                }
+            });
+        }
+        for (var classKey in smartDetail) {
+            var screen = smartDetail[classKey][0];
+            var action = smartDetail[classKey][1];
+            var modifier = smartDetail[classKey][3][0];
+            var classNew = smartDetail[classKey][2];
+
+            if (screen in css === false) { css[screen] = {}; }
+            if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
+
+            if (classKey in css[screen][action][0]) {
+                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                }
+            }
+            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+            css[screen][action][1][classKey] = smartDetail[classKey][3];
         }
     }
 
