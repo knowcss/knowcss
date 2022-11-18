@@ -1,20 +1,42 @@
 'use strict'
 
 var KwOg = {};
+function KwUp(text) {
+    let elem = KwLy("highlighting-content");
+    if (text[text.length - 1] == "\n") {
+        text += " ";
+    }
+    elem.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
+    Prism.highlightElement(elem);
+}
+function KwSs(element) {
+    let elem = KwLy("highlighting");
+    elem.scrollTop = element.scrollTop;
+    elem.scrollLeft = element.scrollLeft;
+}
+function KwCt(element, event) {
+    if (event.key == "Tab") {
+        let code = element.value;
+        event.preventDefault();
+        let before_tab = code.slice(0, element.selectionStart);
+        let after_tab = code.slice(element.selectionEnd, element.value.length);
+        let cursor_pos = element.selectionStart + 1;
+        element.value = before_tab + "\t" + after_tab;
+        element.selectionStart = cursor_pos;
+        element.selectionEnd = cursor_pos;
+        KwUp(element.value);
+    }
+}
 function KwLy(eA) {
     return document.getElementById(eA);
 }
 function KwEn(eA) {
     return eA.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').toString();
 }
-function KwEd(hL) {
-    var hA = KwLy(hL);
-    if (hA) {
-        var hW = window.open("", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600));
-        var hE = (hL in KwOg) ? KwOg[hL] : $know().startup();
-        hE = KwEn(hE.replace(/\n\t/gi, '\n'));
-        hW.document.body.innerHTML = '<style>body{padding:0px;margin:0px;height:100%;width:100%;}textarea{box-sizing:border-box;font-family:verdana;font-size:12px;border:0px;padding:12px}</style><textarea style="width:100%; height:100%;" onKeyUp="window.opener.$knowGo(this, \'' + hL + '\'); return true;" onkeydown="e=event; if ((e.keyCode==9) || (e.which==9)) { e.preventDefault(); var s = this.selectionStart; this.value = this.value.substring(0,this.selectionStart) + \'\\t\' + this.value.substring(this.selectionEnd); this.selectionEnd = s+1; }">' + hE + '</textarea>';
-    }
+function KwIt(hL) {
+    var hE = (hL in KwOg) ? KwOg[hL] : $know().startup();
+    hE = KwEn(hE.replace(/\n\t/gi, '\n'));
+    return hE;
 }
 function KwNd(nE, nN) {
     return nE.nodeName && nE.nodeName.toUpperCase() === nN.toUpperCase();
@@ -50,9 +72,3 @@ function KwAp(hA, hB) {
         }
     }
 }
-
-if (typeof window !== 'undefined') {
-    window.$knowNow = KwEd;
-    window.$knowGo = KwAp;
-}
-else if (typeof module !== '') { module.exports = KwEd; }

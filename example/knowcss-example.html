@@ -46,7 +46,7 @@
             "mm": "padding-left-40px",
             "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
             "ct": "table center aligncenter margin-top-10px max-width-96%",
-            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px  white-space-nowrap",
+            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
             "blue": "{{$blue}}",
             "orange": "{{$orange}}",
             "pink": "{{$pink}}",
@@ -121,6 +121,21 @@
         }
     </style>
     <div id="root" role="main">
+
+        <!--<div>
+            <div know="parent{padding-10}">Parent Has Padding</div>
+        </div>
+        <div>
+            <div know="parent{margin-10}">Parent Has Margin</div>
+        </div>
+        <div>
+            <div know="
+                    parent{font-size-16}
+                    md-parent{font-size-14}
+                    lg-parent{font-size-12}
+                ">Parent Has Media Queries</div>
+        </div>-->
+
         <div know="center all{font-weight-300 {{$box}} {{$family}}}" class="noshift3">
             <div
                 know="height-36px max-height-36px overflow-hidden background-color-f6f6f6 border-bottom-4px/solid/#cfcfcf padding-3px/10px/3px/10px all{color-633 font-size-14px {{$family}}}">
@@ -245,7 +260,7 @@
                     at your fingertips.
                     <br>
                     <br><span know="color-fff bg-color-933 border-radius-4px padding-1px/4px/1px/4px font-size-24px-!"
-                        onClick="this.blur(); $knowNow('root'); return false;">Try It Now</span>
+                        onClick="this.blur(); $know().now('root'); return false;">Try It Now</span>
                 </div>
             </div>
             <div know="[bx] [hr]">

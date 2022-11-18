@@ -9,10 +9,10 @@ Repo: https://github.com/knowcss/knowcss
 */
 
 var knowCSSOptions = {
-	hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
-	shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
-	cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
-	localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
+    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
+    shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
+    cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
+    localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
 };
 
 var knowCSS = {
@@ -30,16 +30,16 @@ var knowCSS = {
     },
 
     options: function (options) {
-	    if (options) {
-    		for (var key in options) {
-    			if (key in knowCSSOptions) { knowCSSOptions[key] = options[key]; }
-    		}
-    	}
-    	return this;
+        if (options) {
+            for (var key in options) {
+                if (key in knowCSSOptions) { knowCSSOptions[key] = options[key]; }
+            }
+        }
+        return this;
     },
 
     compile: function (val, options) {
-    	this.options(options);
+        this.options(options);
         var startTime = new Date().getTime();
         var ret = knowCSSRender(val, true);
         return ret;
@@ -47,7 +47,7 @@ var knowCSS = {
 
     render: function (val, refresh, options) {
         if (refresh) { cssIncrement = 0; }
-    	this.options(options);
+        this.options(options);
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key);
         if (this.z === 'undefined' || this.z == null) { this.z = []; }
@@ -70,14 +70,16 @@ var knowCSS = {
 
     startup: function () { return knowStartup; },
 
+    now: knowCSSNow,
+
     init: function () {
-        this.document();
-        this.render();
-        return this;
+        return this.document().render();
     },
 
     constructor: knowCSSProto
 };
+
+const knowID = 'know';
 
 var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0, knowStartup = null;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
@@ -100,9 +102,13 @@ var defined = function (val) { return typeof val !== 'undefined' && val != null;
 /*
 function getBrowser () { // know="safari{} chrome{} firefox{} edge{} opera{} etc" }
 function getOS () { // know="mac{} win{} linux{} unix{} etc" }
-function getPlatform () { // know="ios{} android{}" }
+function getPlatform () { // know="ios{} android{} windows{}" }
 function getView () { // know="mobile{} tablet{} desktop{}" }
+function getOrientation { // know="landscape{} portrait{}" }
+function getSession { know="new{} return{} return-X{}" }
 */
+
+function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
 
 function knowLayer(name) {
     return document.getElementById(name);
@@ -138,8 +144,32 @@ function getGridSystem(classFound, classesFound) {
     }
     return [classFound, classesFound];
 }
-function getEM(classFound, classesFound) {
-    return [classFound, classesFound];
+function shouldREM(className) {
+    var ret = false;
+    if (['font-size', 'line-height', 'width', 'height'].includes(className)) { ret = true; }
+    else if (['margin', 'paddin', 'spacin'].includes(className.substr(0, 6))) { ret = true; }
+    else if (['top', 'bottom', 'left', 'right'].includes(className)) { ret = true; }
+    return ret;
+}
+function getREM(className, classValue, classesFound) {
+    if (shouldREM(className) && classValue.indexOf('px') > -1) {
+        var classRoot = classValue.replace('px', '');
+        if (!isNaN(classRoot) && classRoot > 0) {
+            var classRem = parseInt(classRoot) / 16;
+            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem'); }
+        }
+    }
+    return classesFound;
+}
+function getParentSelector (screen) {
+    var classParent = screen.indexOf('parent') > -1;
+    if (classParent && screen.indexOf('-') > -1) {
+        var modifierParts = screen.split('-', 2);
+        if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
+        else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
+        else { screen = 'none'; }
+    }
+    return [classParent, screen];
 }
 function getShorterHand(classFound, classesFound) {
     return [classFound, classesFound];
@@ -229,14 +259,14 @@ function getModifier(classList, classSecondary) {
                                     if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('-'); }
                                     keyNew = '';
                                     if (containerPrefix.length > 0) {
-                                    	keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
+                                        keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
                                     }
                                     else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) {
-                                    	keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
+                                        keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
                                     }
                                     if (keyNew.length > 0) {
-                                    	if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
-                                    	else { classList[keyNew] = aM[2]; }
+                                        if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
+                                        else { classList[keyNew] = aM[2]; }
                                     }
                                 }
                             }
@@ -487,7 +517,7 @@ function getMixins(mA) {
 }
 function getDocument() {
     if (defined(knowCSSOptions.cssVars)) {
-        var root = document.querySelector('#root');
+        var root = knowLayer('root');
         if (root && root.innerHTML.indexOf('$') > -1) { root.innerHTML = getVariables(root.innerHTML); }
     }
 }
@@ -596,7 +626,7 @@ function getScreenPrefixes(classString) {
         var classesFound = classString.split(' ');
         for (var i = 0; i < classesFound.length; i++) {
             key = classesFound[i];
-            if (key.indexOf('-') > -1) {
+            if (key.indexOf('-') > -1 && key.indexOf('{') == -1) {
                 parts = key.split('-');
                 prefix = parts.shift();
                 if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
@@ -631,23 +661,25 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
-        'minifycss': false,
+        'minifycss': true,
         'classes': 'sequential',
         'normalize': false,
         'share': false,
-        'em': 12 // TODO - add em alternative for all px values
+        'smart': true,
+        'rem': 16,
+        'autoprefix': true
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
             if (uA in uX) { uX[uA] = uO[uA]; }
         }
     }
-    var div = null, css = {}, classNext = '', classNextStart = '', screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classLink = '', classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = '', tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
+    var div = null, css = {}, classNext = '', classNextStart = '', screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = '', tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles += '::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'; }
     if (['sequential', 'random'].includes(uX.classes) == false) { uX.classes = 'detail'; }
     var classTags = [];
     if (uC) {
-        var zC = new RegExp('know=["|\'](.*?)["|\']', 'gis');
+        var zC = new RegExp(knowID + '=["|\'](.*?)["|\']', 'gis');
         var zY = null;
         div = uI;
         while ((zY = zC.exec(uI)) !== null) { classTags.push(zY); }
@@ -656,15 +688,20 @@ function knowCSSRender(uI, uC, uO) {
         if (typeof uI === 'string') { div = knowLayer(uI); }
         else if ('innerHTML' in uI) { div = uI; }
         if (knowStartup == null) { knowStartup = div.innerHTML; }
-        classTags = document.querySelectorAll("[know]");
+        classTags = document.querySelectorAll("[" + knowID + "]");
     }
     getLocalMixins();
     var attr = "";
     var sharedClasses = {};
     var sharedClassKey = "";
+    var isDefine = false;
+    var smartClass = {};
+    var smartDetail = {};
+    var classParent = false;
     for (var ii = 0; ii < classTags.length; ii++) {
+        isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
-        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));
+        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
@@ -681,12 +718,12 @@ function knowCSSRender(uI, uC, uO) {
                     else if (uX.classes == 'random') { classNext = getRandomClass(); }
                     classNew = classNext.toLowerCase();
                     // JAA TODO - build array of unique values instead of appending strings
-                    classFirst += (classesHere.length > 0 ? ' ' : '') + classNew;
+                    if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
                 }
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        //[classFound, classesFound, classWebKit] = getShortHand(getEM(getShorterHand(classFound, classesFound)));
+                        //[classFound, classesFound] = getShorterHand(classFound, classesFound);
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         [classFound, classImportant] = getImportant(classFound);
@@ -705,54 +742,122 @@ function knowCSSRender(uI, uC, uO) {
                             classValue = classParts.pop();
                             className = classParts.join('-');
                         }
+                        else { className = classFound; }
                         if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
+                        classesFound = getREM(className, classValue, classesFound);
+
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);
-                        if (uX.classes == 'detail') {
+                        [classParent, screen] = getParentSelector(screen);
+
+                        /*
+                        if (if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
                             classesHere.push(classNew);
                         }
-                        classLink = screen + '_' + action;
+                        */                       
                         if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
+                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
                         if (modifier == 'none') { modifier = ''; }
-                        if (classTags[ii].tagName != 'DEFINE') {
-                            if (uX.share) {
+                        if (!isDefine) {
+                            if (uX.smart) {
                                 sharedClassKey = classKey + '__' + modifier;
-                                if (sharedClassKey in sharedClasses == false) {
-                                    classNext = getNextLetter(classNext);
-                                    sharedClasses[sharedClassKey] = classNext.toLowerCase();
-                                }
-                                classNew = sharedClasses[sharedClassKey];
-                                if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
-                            }
+                                if (sharedClassKey in smartClass == false) {
+                                    //classNext = getNextLetter(classNext);
 
-                            // JAA TODO - build array of unique values instead of appending strings
-                            if (classKey in css[screen][action][0]) {
-                                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                    // This builds the stylesheet
+                                    smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent];
+
+                                    // This applies the classes to group later
+                                    smartClass[sharedClassKey] = ii.toString();
+                                }
+                                else {
+                                    smartClass[sharedClassKey] += "__" + ii.toString();
                                 }
                             }
-                            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
-                            css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                            else {
+                                if (uX.share) {
+                                    sharedClassKey = classKey + '__' + modifier;
+                                    if (sharedClassKey in sharedClasses == false) {
+                                        classNext = getNextLetter(classNext);
+                                        sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                    }
+                                    classNew = sharedClasses[sharedClassKey];
+                                    if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
+                                }
+
+                                // JAA TODO - build array of unique values instead of appending strings
+                                if (classKey in css[screen][action][0]) {
+                                    if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                                        css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                    }
+                                }
+                                else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+                                css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                            }
                         }
                     }
                 }
-                if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+                if (!uX.smart) {
+                    if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+                }
             }
         }
-        if (uC) {
-            div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"');
-        }
-        else if (classTags[ii].tagName == 'DEFINE') {
-            classTags[ii].parentNode.removeChild(classTags[ii]);
-        }
-        else {
-            classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
-            classTags[ii].removeAttribute("know");
+        if (!uX.smart) {
+            if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
+            else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
+            else {
+                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });                
+                classTags[ii].removeAttribute(knowID);
+            }   
         }
     }
+
+    if (uX.smart) {
+        var smartClassGroup = {};
+        var smartClassNext = "";
+        var smartClassHere = "";
+        var addParent = false;
+        for (var smartKey in smartClass) {
+            var smartKeys = smartClass[smartKey];
+            if (smartKeys in smartClassGroup) { 
+                smartClassHere = smartClassGroup[smartKeys];
+            }
+            else { 
+                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";          
+                smartClassHere = smartClassNext;
+                smartClassGroup[smartKeys] = smartClassHere;
+            }
+            smartDetail[smartKey][2] = smartClassHere;
+            addParent = smartDetail[smartKey][4];
+            smartKeys.split('__').forEach(function (ii) {
+                if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
+                else { classTags[ii].classList.add(smartClassHere); }
+                classTags[ii].removeAttribute(knowID);
+            });
+        }
+        // JAA TODO:
+        // smartClassesHere = [];
+        //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
+        
+        for (var classKey in smartDetail) {
+            var screen = smartDetail[classKey][0];
+            var action = smartDetail[classKey][1];
+            var modifier = smartDetail[classKey][3][0];
+            var classNew = smartDetail[classKey][2];
+            if (screen in css === false) { css[screen] = {}; }
+            if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
+            if (classKey in css[screen][action][0]) {
+                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                }
+            }
+            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+            css[screen][action][1][classKey] = smartDetail[classKey][3];
+        }
+    }
+
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
 
@@ -766,18 +871,12 @@ function knowCSSRender(uI, uC, uO) {
                     if (classValue.length == 0) { classValue = "''"; }
                     classHere = css[screen][action][0][classKey];
                     if (classImportant == '!') { classImportant = '!important'; }
-                    if ('' + parseInt(classValue) === classValue) {
-                        if (
-                            className.indexOf('height') > -1 ||
-                            className.indexOf('width') > -1 ||
-                            className.indexOf('margin') > -1 ||
-                            className.indexOf('border') > -1 ||
-                            className.indexOf('spacing') > -1 ||
-                            className.indexOf('padding') > -1
-                        ) { classValue += 'px'; }
+                    if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
+                        var classFirstSix = className.substring(0, 5);
+                        if (['heigh', 'width', 'margin', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
                     }
                     stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
-                    if (classWebKit || getWebKit(className)) {
+                    if (classWebKit || (uX.autoprefix && getWebKit(className))) {
                         stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
                         stylesHere += stylesWebKit.join('');
                     }
@@ -810,7 +909,7 @@ if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
     var knowCSSProto = function (key) {
         this.x = { "attr": "know" };
-        this.key = key || "[know]";
+        this.key = key || "[" + knowID + "]";
         this.debugging = false;
     };
     knowCSSProto.prototype = knowCSS;
