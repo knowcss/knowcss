@@ -171,6 +171,81 @@ function getParentSelector (screen) {
     }
     return [classParent, screen];
 }
+var knowEnvironment = [
+    /*
+    "new", "return",
+    */
+];
+var userEnvironment = [];
+function getUserEnvironment () {
+    var userAgent = navigator.userAgent;
+    var vendor = navigator.vendor;
+    var platform = navigator.platform;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var pixelRatio = window.devicePixelRatio;
+
+    var possibleEnvironments = {
+        chrome: /Google Inc/.test(vendor) || /CriOS/.test(userAgent),
+        safari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
+        firefox: /Firefox|FxiOS/.test(userAgent),
+        edge: /Edge|Edg|EdgiOS/.test(userAgent),        
+        opera: /OPR|Opera/.test(userAgent),
+        cordova: !!window.cordova,
+        ie: /MSIE|Trident/.test(userAgent),
+        chromium: !!window.chrome && !/Edge/.test(userAgent),
+        vivaldi: /Vivaldi/.test(userAgent),
+        yandex: /YaBrowser/.test(userAgent),
+
+        mac: /Macintosh|MacIntel|MacPPC|Mac68K/.test(platform),
+        win: /Win32|Win64|Windows|WinCE/.test(platform),
+        linux: /Linux/.test(platform),
+        unix: /X11/.test(platform),
+
+        lowres: pixelRatio < 2,
+        hires: pixelRatio >= 2,
+
+        ios: /(iPhone|iPad|iPod)/.test(userAgent),
+        android: /Android/.test(userAgent),
+        windows: /IEMobile/.test(userAgent) || (/Windows/.test(userAgent) && /Phone/.test(userAgent)),
+        blackberry: /BlackBerry/.test(userAgent),
+
+        portrait: h > w,
+        landscape: w > h,
+        square: w == h,
+
+        mobile: userAgent.mobile || false,
+        touch: ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch) || false
+    };
+    possibleEnvironments.desktop = !possibleEnvironments.mobile;
+    knowEnvironment = Object.keys(possibleEnvironments);
+    for (var key in possibleEnvironments) {
+        if (possibleEnvironments[key]) { userEnvironment.push(key); }
+    }
+}
+function getEnvironmentSelector (screen) {
+    var classEnvironment = "";
+    var allowEnvironment = true;
+    var reverseEnvironment = false;
+    if (screen.indexOf('-') > -1) {
+        var modifierParts = screen.split('-', 2);
+        if (modifierParts[0] in screenSizes) { [screen, classEnvironment] = modifierParts; }
+        else if (modifierParts[1] in screenSizes) { [classEnvironment, screen] = modifierParts; }
+        else { screen = 'none'; }
+    }
+    else { classEnvironment = screen; }
+    if (classEnvironment.indexOf('!') > -1) {
+        reverseEnvironment = true;
+        classEnvironment = classEnvironment.replace('!', '');
+    }
+    if (knowEnvironment.indexOf(classEnvironment) == -1) { classEnvironment = ""; }
+    else {        
+        if (userEnvironment.indexOf(classEnvironment) == -1) { allowEnvironment = false; }
+        else if (classEnvironment == screen) { screen = 'none'; }
+        if (reverseEnvironment) { allowEnvironment = !allowEnvironment; }
+    }
+    return [classEnvironment, screen, allowEnvironment];
+}
 function getShorterHand(classFound, classesFound) {
     return [classFound, classesFound];
 }
@@ -665,7 +740,7 @@ function knowCSSRender(uI, uC, uO) {
         'classes': 'sequential',
         'normalize': false,
         'share': false,
-        'smart': true,
+        'smart': !uC,
         'rem': 16,
         'autoprefix': true
     };
@@ -691,6 +766,7 @@ function knowCSSRender(uI, uC, uO) {
         classTags = document.querySelectorAll("[" + knowID + "]");
     }
     getLocalMixins();
+    getUserEnvironment();
     var attr = "";
     var sharedClasses = {};
     var sharedClassKey = "";
@@ -698,7 +774,12 @@ function knowCSSRender(uI, uC, uO) {
     var smartClass = {};
     var smartDetail = {};
     var classParent = false;
-    for (var ii = 0; ii < classTags.length; ii++) {
+    var classEnvironment = "";
+    var allowEnvironment = false;
+    var ii = 0;
+    var tL = classTags.length;
+    //for (var ii = 0; ii < classTags.length; ii++) {
+    while (ii < tL) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
@@ -720,81 +801,79 @@ function knowCSSRender(uI, uC, uO) {
                     // JAA TODO - build array of unique values instead of appending strings
                     if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
                 }
-                for (var i = 0; i < classesFound.length; i++) {
-                    classFound = classesFound[i].trim();
+                while (classesFound.length > 0) {
+                    classFound = classesFound.shift().trim();
+//                for (var i = 0; i < classesFound.length; i++) {
+//                    classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
                         //[classFound, classesFound] = getShorterHand(classFound, classesFound);
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
-                        [classFound, classImportant] = getImportant(classFound);
-                        className = '';
-                        classValue = '';
-                        if (classFound.indexOf('gradient') == 0) {
-                            classParts = classFound.split('-');
-                            classParts.shift();
-                            className = 'background-image';
-                            classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
-                            classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
-                        }
-                        else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
-                        else if (classFound.indexOf('-') > -1) {
-                            classParts = classFound.split('-');
-                            classValue = classParts.pop();
-                            className = classParts.join('-');
-                        }
-                        else { className = classFound; }
-                        if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
-                        classValue = getColor(getValue(classValue), className);
-                        [className, classValue] = getFamily(className, classValue);
-                        classesFound = getREM(className, classValue, classesFound);
-
-                        classKey = getKey(screen, modifier, className, action, classValue, classImportant);
                         [classParent, screen] = getParentSelector(screen);
-
-                        /*
-                        if (if (!uX.smart && uX.classes == 'detail') {
-                            classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
-                            classesHere.push(classNew);
-                        }
-                        */                       
-                        if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
-                        if (modifier == 'none') { modifier = ''; }
-                        if (!isDefine) {
-                            if (uX.smart) {
-                                sharedClassKey = classKey + '__' + modifier;
-                                if (sharedClassKey in smartClass == false) {
-                                    //classNext = getNextLetter(classNext);
-
-                                    // This builds the stylesheet
-                                    smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent];
-
-                                    // This applies the classes to group later
-                                    smartClass[sharedClassKey] = ii.toString();
+                        [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
+                        if (allowEnvironment) {
+                            [classFound, classImportant] = getImportant(classFound);
+                            className = '';
+                            classValue = '';
+                            if (classFound.indexOf('gradient') == 0) {
+                                classParts = classFound.split('-');
+                                classParts.shift();
+                                className = 'background-image';
+                                classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
+                                classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
+                            }
+                            else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
+                            else if (classFound.indexOf('-') > -1) {
+                                classParts = classFound.split('-');
+                                classValue = classParts.pop();
+                                className = classParts.join('-');
+                            }
+                            else { className = classFound; }
+                            if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
+                            classValue = getColor(getValue(classValue), className);
+                            [className, classValue] = getFamily(className, classValue);
+                            classesFound = getREM(className, classValue, classesFound);
+                            classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+                            /*
+                            if (if (!uX.smart && uX.classes == 'detail') {
+                                classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
+                                classesHere.push(classNew);
+                            }
+                            */                       
+                            if (screen in css === false) { css[screen] = {}; }
+                            if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
+                            if (modifier == 'none') { modifier = ''; }
+                            if (!isDefine) {
+                                if (uX.smart) {
+                                    sharedClassKey = classKey + '__' + modifier;
+                                    if (sharedClassKey in smartClass == false) {
+                                        smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment];
+                                        smartClass[sharedClassKey] = ii.toString();
+                                    }
+                                    else {
+                                        smartClass[sharedClassKey] += "__" + ii.toString();
+                                    }
                                 }
                                 else {
-                                    smartClass[sharedClassKey] += "__" + ii.toString();
-                                }
-                            }
-                            else {
-                                if (uX.share) {
-                                    sharedClassKey = classKey + '__' + modifier;
-                                    if (sharedClassKey in sharedClasses == false) {
-                                        classNext = getNextLetter(classNext);
-                                        sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                    if (uX.share) {
+                                        sharedClassKey = classKey + '__' + modifier;
+                                        if (sharedClassKey in sharedClasses == false) {
+                                            classNext = getNextLetter(classNext);
+                                            sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                        }
+                                        classNew = sharedClasses[sharedClassKey];
+                                        if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
                                     }
-                                    classNew = sharedClasses[sharedClassKey];
-                                    if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
-                                }
 
-                                // JAA TODO - build array of unique values instead of appending strings
-                                if (classKey in css[screen][action][0]) {
-                                    if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                                        css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                    // JAA TODO - build array of unique values instead of appending strings
+                                    if (classKey in css[screen][action][0]) {
+                                        if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                                            css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                        }
                                     }
+                                    else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+                                    css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
                                 }
-                                else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
-                                css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
                             }
                         }
                     }
@@ -812,6 +891,7 @@ function knowCSSRender(uI, uC, uO) {
                 classTags[ii].removeAttribute(knowID);
             }   
         }
+        ii++;
     }
 
     if (uX.smart) {
@@ -838,7 +918,7 @@ function knowCSSRender(uI, uC, uO) {
             });
         }
         // JAA TODO:
-        // smartClassesHere = [];
+        // for compile(), smartClassesHere = [];
         //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
         
         for (var classKey in smartDetail) {
