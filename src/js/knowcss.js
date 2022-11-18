@@ -73,9 +73,7 @@ var knowCSS = {
     now: knowCSSNow,
 
     init: function () {
-        this.document();
-        this.render();
-        return this;
+        return this.document().render();
     },
 
     constructor: knowCSSProto
@@ -105,7 +103,7 @@ function getOS () { // know="mac{} win{} linux{} unix{} etc" }
 function getPlatform () { // know="ios{} android{} windows{}" }
 function getView () { // know="mobile{} tablet{} desktop{}" }
 function getOrientation { // know="landscape{} portrait{}" }
-function getSession { know="new{} return{}" }
+function getSession { know="new{} return{} return-X{}" }
 */
 
 function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
@@ -160,6 +158,16 @@ function getREM(className, classValue, classesFound) {
         }
     }
     return classesFound;
+}
+function getParentSelector (screen) {
+    var classParent = screen.indexOf('parent') > -1;
+    if (classParent && screen.indexOf('-') > -1) {
+        var modifierParts = screen.split('-', 2);
+        if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
+        else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
+        else { screen = 'none'; }
+    }
+    return [classParent, screen];
 }
 function getShorterHand(classFound, classesFound) {
     return [classFound, classesFound];
@@ -616,7 +624,7 @@ function getScreenPrefixes(classString) {
         var classesFound = classString.split(' ');
         for (var i = 0; i < classesFound.length; i++) {
             key = classesFound[i];
-            if (key.indexOf('-') > -1) {
+            if (key.indexOf('-') > -1 && key.indexOf('{') == -1) {
                 parts = key.split('-');
                 prefix = parts.shift();
                 if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
@@ -651,12 +659,13 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
-        'minifycss': false,
+        'minifycss': true,
         'classes': 'sequential',
         'normalize': false,
         'share': false,
         'smart': true,
-        'rem': 16
+        'rem': 16,
+        'autoprefix': true
     };
     if (typeof uX !== 'undefined') {
         for (var uA in uO) {
@@ -686,6 +695,7 @@ function knowCSSRender(uI, uC, uO) {
     var isDefine = false;
     var smartClass = {};
     var smartDetail = {};
+    var classParent = false;
     for (var ii = 0; ii < classTags.length; ii++) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
@@ -739,6 +749,7 @@ function knowCSSRender(uI, uC, uO) {
                         classesFound = getREM(className, classValue, classesFound);
 
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+                        [classParent, screen] = getParentSelector(screen);
 
                         /*
                         if (if (!uX.smart && uX.classes == 'detail') {
@@ -756,7 +767,7 @@ function knowCSSRender(uI, uC, uO) {
                                     //classNext = getNextLetter(classNext);
 
                                     // This builds the stylesheet
-                                    smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit]];
+                                    smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent];
 
                                     // This applies the classes to group later
                                     smartClass[sharedClassKey] = ii.toString();
@@ -807,6 +818,7 @@ function knowCSSRender(uI, uC, uO) {
         var smartClassGroup = {};
         var smartClassNext = "";
         var smartClassHere = "";
+        var addParent = false;
         for (var smartKey in smartClass) {
             var smartKeys = smartClass[smartKey];
             if (smartKeys in smartClassGroup) { 
@@ -817,28 +829,25 @@ function knowCSSRender(uI, uC, uO) {
                 smartClassHere = smartClassNext;
                 smartClassGroup[smartKeys] = smartClassHere;
             }
-            
             smartDetail[smartKey][2] = smartClassHere;
-
+            addParent = smartDetail[smartKey][4];
             smartKeys.split('__').forEach(function (ii) {
-                //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassHere + '"'); }
-                //else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
-                //else {
-                    classTags[ii].classList.add(smartClassHere);
-                    //classTags[ii].setAttribute("ii", ii.toString());
-                    //classTags[ii].removeAttribute("know");
-                //}
+                if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
+                else { classTags[ii].classList.add(smartClassHere); }
+                classTags[ii].removeAttribute("know");
             });
         }
+        // JAA TODO:
+        // smartClassesHere = [];
+        //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
+        
         for (var classKey in smartDetail) {
             var screen = smartDetail[classKey][0];
             var action = smartDetail[classKey][1];
             var modifier = smartDetail[classKey][3][0];
             var classNew = smartDetail[classKey][2];
-
             if (screen in css === false) { css[screen] = {}; }
             if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
-
             if (classKey in css[screen][action][0]) {
                 if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
                     css[screen][action][0][classKey] += ', .' + classNew + modifier;
@@ -862,18 +871,12 @@ function knowCSSRender(uI, uC, uO) {
                     if (classValue.length == 0) { classValue = "''"; }
                     classHere = css[screen][action][0][classKey];
                     if (classImportant == '!') { classImportant = '!important'; }
-                    if ('' + parseInt(classValue) === classValue) {
-                        if (
-                            className.indexOf('height') > -1 ||
-                            className.indexOf('width') > -1 ||
-                            className.indexOf('margin') > -1 ||
-                            className.indexOf('border') > -1 ||
-                            className.indexOf('spacing') > -1 ||
-                            className.indexOf('padding') > -1
-                        ) { classValue += 'px'; }
+                    if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
+                        var classFirstSix = className.substring(0, 5);
+                        if (['heigh', 'width', 'margin', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
                     }
                     stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
-                    if (classWebKit || getWebKit(className)) {
+                    if (classWebKit || (uX.autoprefix && getWebKit(className))) {
                         stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
                         stylesHere += stylesWebKit.join('');
                     }
