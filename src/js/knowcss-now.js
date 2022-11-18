@@ -1,21 +1,20 @@
 'use strict'
 
-function update(text, ref_document) {
-    let result_element = ref_document.querySelector("#highlighting-content");
+var KwOg = {};
+function KwUp(text) {
+    let elem = KwLy("highlighting-content");
     if (text[text.length - 1] == "\n") {
         text += " ";
     }
-    result_element.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
-    Prism.highlightElement(result_element);
+    elem.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
+    Prism.highlightElement(elem);
 }
-
-function sync_scroll(element, ref_document) {
-    let result_element = ref_document.querySelector("#highlighting");
-    result_element.scrollTop = element.scrollTop;
-    result_element.scrollLeft = element.scrollLeft;
+function KwSs(element) {
+    let elem = KwLy("highlighting");
+    elem.scrollTop = element.scrollTop;
+    elem.scrollLeft = element.scrollLeft;
 }
-
-function check_tab(element, event) {
+function KwCt(element, event) {
     if (event.key == "Tab") {
         let code = element.value;
         event.preventDefault();
@@ -25,11 +24,9 @@ function check_tab(element, event) {
         element.value = before_tab + "\t" + after_tab;
         element.selectionStart = cursor_pos;
         element.selectionEnd = cursor_pos;
-        update(element.value);
+        KwUp(element.value);
     }
 }
-
-var KwOg = {};
 function KwLy(eA) {
     return document.getElementById(eA);
 }
@@ -66,23 +63,12 @@ function KwAe(dO, dT) {
     }
 }
 function KwAp(hA, hB) {
-    console.log('kWap - ' + hB);
     var hC = KwLy(hB);
     if (hC) {
-        console.log('kWap2');
         if (KwOg[hB] !== hA.value) {
-            console.log('kWap3');
             KwOg[hB] = hA.value;
             KwAe(hC, hA.value);
             $know().render("[know]", true);
         }
     }
 }
-
-/*
-if (typeof window !== 'undefined') {
-    window.$knowGo = KwAp;
-    window.$knowWhere = KwIt;
-}
-else if (typeof module !== 'undefined') { module.exports = KwEd; }
-*/

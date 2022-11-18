@@ -79,6 +79,8 @@ var knowCSS = {
     constructor: knowCSSProto
 };
 
+const knowID = 'know';
+
 var runningValue = '', allMixins = {}, classNext = "", cssIncrement = 0, knowStartup = null;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
@@ -515,7 +517,7 @@ function getMixins(mA) {
 }
 function getDocument() {
     if (defined(knowCSSOptions.cssVars)) {
-        var root = document.querySelector('#root');
+        var root = knowLayer('root');
         if (root && root.innerHTML.indexOf('$') > -1) { root.innerHTML = getVariables(root.innerHTML); }
     }
 }
@@ -677,7 +679,7 @@ function knowCSSRender(uI, uC, uO) {
     if (['sequential', 'random'].includes(uX.classes) == false) { uX.classes = 'detail'; }
     var classTags = [];
     if (uC) {
-        var zC = new RegExp('know=["|\'](.*?)["|\']', 'gis');
+        var zC = new RegExp(knowID + '=["|\'](.*?)["|\']', 'gis');
         var zY = null;
         div = uI;
         while ((zY = zC.exec(uI)) !== null) { classTags.push(zY); }
@@ -686,7 +688,7 @@ function knowCSSRender(uI, uC, uO) {
         if (typeof uI === 'string') { div = knowLayer(uI); }
         else if ('innerHTML' in uI) { div = uI; }
         if (knowStartup == null) { knowStartup = div.innerHTML; }
-        classTags = document.querySelectorAll("[know]");
+        classTags = document.querySelectorAll("[" + knowID + "]");
     }
     getLocalMixins();
     var attr = "";
@@ -699,7 +701,7 @@ function knowCSSRender(uI, uC, uO) {
     for (var ii = 0; ii < classTags.length; ii++) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
-        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute("know"));
+        attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
@@ -716,7 +718,7 @@ function knowCSSRender(uI, uC, uO) {
                     else if (uX.classes == 'random') { classNext = getRandomClass(); }
                     classNew = classNext.toLowerCase();
                     // JAA TODO - build array of unique values instead of appending strings
-                    classFirst += (classesHere.length > 0 ? ' ' : '') + classNew;
+                    if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
                 }
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
@@ -809,7 +811,7 @@ function knowCSSRender(uI, uC, uO) {
             else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
             else {
                 classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });                
-                classTags[ii].removeAttribute("know");
+                classTags[ii].removeAttribute(knowID);
             }   
         }
     }
@@ -834,7 +836,7 @@ function knowCSSRender(uI, uC, uO) {
             smartKeys.split('__').forEach(function (ii) {
                 if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
                 else { classTags[ii].classList.add(smartClassHere); }
-                classTags[ii].removeAttribute("know");
+                classTags[ii].removeAttribute(knowID);
             });
         }
         // JAA TODO:
@@ -909,7 +911,7 @@ if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
     var knowCSSProto = function (key) {
         this.x = { "attr": "know" };
-        this.key = key || "[know]";
+        this.key = key || "[" + knowID + "]";
         this.debugging = false;
     };
     knowCSSProto.prototype = knowCSS;
