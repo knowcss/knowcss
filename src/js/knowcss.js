@@ -723,8 +723,6 @@ function knowCSSRender(uI, uC, uO) {
                 for (var i = 0; i < classesFound.length; i++) {
                     classFound = classesFound[i].trim();
                     if (classFound.length > 0) {
-                        var debugIt = false;
-                        if (classFound.indexOf('normal') > -1) { debugIt = true; }
                         //[classFound, classesFound] = getShorterHand(classFound, classesFound);
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
