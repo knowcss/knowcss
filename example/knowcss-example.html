@@ -25,7 +25,7 @@
             "html": '<span know="[go]">HTML</span>',
             "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
         };
-        const localMixins = {
+        const mixins = {
             "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
             "no": "color-2D862D font-weight-400",
             "nt": "color-2D862D font-weight-400",
@@ -121,6 +121,18 @@
         }
     </style>
     <div id="root" role="main">
+
+        <!--
+        <script>const conditionals  = {"true": true};</script>    
+            <div know="
+            !true{display-none}
+            true{padding-20 font-size-12 color-339}
+        ">Conditionals True</div>
+
+        <div know="
+            true{display-none}
+            !true{padding-20 font-size-12 color-339}
+        ">Conditionals False</div>-->
 
         <!--<div know="
             !chrome{display-none}

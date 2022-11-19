@@ -12,7 +12,8 @@ var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
     cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
-    localMixins: typeof localMixins !== 'undefined' && localMixins != null ? localMixins : {}
+    mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
+    conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
 
 var knowCSS = {
@@ -40,7 +41,6 @@ var knowCSS = {
 
     compile: function (val, options) {
         this.options(options);
-        var startTime = new Date().getTime();
         var ret = knowCSSRender(val, true);
         return ret;
     },
@@ -147,7 +147,7 @@ function getGridSystem(classFound, classesFound) {
 function shouldREM(className) {
     var ret = false;
     if (['font-size', 'line-height', 'width', 'height'].includes(className)) { ret = true; }
-    else if (['margin', 'paddin', 'spacin'].includes(className.substr(0, 6))) { ret = true; }
+    else if (['margin', 'paddin', 'spacin'].includes(className.substring(0, 6))) { ret = true; }
     else if (['top', 'bottom', 'left', 'right'].includes(className)) { ret = true; }
     return ret;
 }
@@ -171,13 +171,9 @@ function getParentSelector (screen) {
     }
     return [classParent, screen];
 }
-var knowEnvironment = [
-    /*
-    "new", "return",
-    */
-];
-var userEnvironment = [];
-function getUserEnvironment () {
+var knowEnvironment = [];
+var userConditionals = [];
+function getuserConditionals () {
     var userAgent = navigator.userAgent;
     var vendor = navigator.vendor;
     var platform = navigator.platform;
@@ -185,7 +181,7 @@ function getUserEnvironment () {
     var h = window.innerHeight;
     var pixelRatio = window.devicePixelRatio;
 
-    var possibleEnvironments = {
+    var fixedConditionals = {
         chrome: /Google Inc/.test(vendor) || /CriOS/.test(userAgent),
         safari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
         firefox: /Firefox|FxiOS/.test(userAgent),
@@ -217,11 +213,17 @@ function getUserEnvironment () {
         mobile: userAgent.mobile || false,
         touch: ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch) || false
     };
-    possibleEnvironments.desktop = !possibleEnvironments.mobile;
-    knowEnvironment = Object.keys(possibleEnvironments);
-    for (var key in possibleEnvironments) {
-        if (possibleEnvironments[key]) { userEnvironment.push(key); }
+    knowEnvironment.desktop = !knowEnvironment.mobile;
+    for (var key in knowEnvironment) {
+        if (knowEnvironment[key]) { userConditionals.push(key); }
     }
+    if (typeof knowCSSOptions.conditionals !== 'undefined') {
+        for (var key in knowCSSOptions.conditionals) {
+            fixedConditionals[key] = knowCSSOptions.conditionals[key];
+            if (knowCSSOptions.conditionals[key]) { userConditionals.push(key); }
+        }
+    }
+    knowEnvironment = Object.keys(fixedConditionals);
 }
 function getEnvironmentSelector (screen) {
     var classEnvironment = "";
@@ -240,7 +242,7 @@ function getEnvironmentSelector (screen) {
     }
     if (knowEnvironment.indexOf(classEnvironment) == -1) { classEnvironment = ""; }
     else {        
-        if (userEnvironment.indexOf(classEnvironment) == -1) { allowEnvironment = false; }
+        if (userConditionals.indexOf(classEnvironment) == -1) { allowEnvironment = false; }
         else if (classEnvironment == screen) { screen = 'none'; }
         if (reverseEnvironment) { allowEnvironment = !allowEnvironment; }
     }
@@ -562,9 +564,9 @@ function getScreens(mS, mD) {
 function getCleanStyles(style) {
     return style.replace(/(;){2,}/g, ';');
 }
-function getLocalMixins() {
-    if (defined(knowCSSOptions.localMixins)) {
-        for (var key in knowCSSOptions.localMixins) { allMixins[key] = getVariables(knowCSSOptions.localMixins[key]); }
+function getmixins() {
+    if (defined(knowCSSOptions.mixins)) {
+        for (var key in knowCSSOptions.mixins) { allMixins[key] = getVariables(knowCSSOptions.mixins[key]); }
     }
 }
 function getMixins(mA) {
@@ -651,10 +653,10 @@ function getRandomClass() {
         }
     }
     while (!ret) {
-        if (g < k) { nA = shuffled.substr(j, 1); }
+        if (g < k) { nA = shuffled.substring(j, 1); }
         else {
             prefixID = letters[Math.floor(Math.random() * k)];
-            nA = prefixID + Math.random().toString(26).substr(2, i);
+            nA = prefixID + Math.random().toString(26).substring(2, i);
         }
         if (nA in usedClass == false) {
             ret = true;
@@ -667,7 +669,7 @@ function getRandomClass() {
 function getSafeClass(screen, modifier, name, action, val, important) {
     var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
     key = key.replace(/none_/g, '').replace(/[\#\,\(\)\_]/g, '-').replace(/[^[a-z0-9\-]/g, '').replace(/(\-){2,10}/g, '-').replace(/^\-/g, '').replace(/\-$/g, '');
-    if (('0123456789').includes(key.substr(0, 1))) { key = 'sz-' + key; }
+    if (('0123456789').includes(key.substring(0, 1))) { key = 'sz-' + key; }
     return key;
 }
 
@@ -765,8 +767,8 @@ function knowCSSRender(uI, uC, uO) {
         if (knowStartup == null) { knowStartup = div.innerHTML; }
         classTags = document.querySelectorAll("[" + knowID + "]");
     }
-    getLocalMixins();
-    getUserEnvironment();
+    getmixins();
+    getuserConditionals();
     var attr = "";
     var sharedClasses = {};
     var sharedClassKey = "";
