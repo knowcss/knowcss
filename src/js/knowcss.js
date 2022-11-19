@@ -1018,9 +1018,9 @@ function knowCSSRender(uI, uC, uO) {
     if (uC) { return [div, stylesFinal]; }
     else if (stylesFinal.length > 0) {
         var cssID = 'css_' + div.id + '_' + cssIncrement;
-        var heAD = document.getElementsByTagName('head')[0];
         var cssTag = knowLayer(cssID);
         if (!cssTag) {
+            var heAD = document.getElementsByTagName('head')[0];
             cssTag = document.createElement('style');
             cssTag.id = cssID;
             heAD.appendChild(cssTag);
