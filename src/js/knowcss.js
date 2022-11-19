@@ -173,10 +173,19 @@ function getParentSelector (screen) {
 }
 var knowEnvironment = [];
 var userConditionals = [];
+function getNavigator () {
+    return {
+        agent: navigator.userAgent,
+        vendor: navigator.vendor,
+        platform: navigator.platform
+    };
+}
 function getuserConditionals () {
-    var userAgent = navigator.userAgent;
-    var vendor = navigator.vendor;
-    var platform = navigator.platform;
+    var navigatorInfo = getNavigator();
+    var userAgent = navigatorInfo.agent;
+    var vendor = navigatorInfo.vendor;
+    var platform = navigatorInfo.platform;
+
     var w = window.innerWidth;
     var h = window.innerHeight;
     var pixelRatio = window.devicePixelRatio;
@@ -249,6 +258,16 @@ function getEnvironmentSelector (screen) {
     return [classEnvironment, screen, allowEnvironment];
 }
 function getShorterHand(classFound, classesFound) {
+    if (classFound in globalMixins) {
+        classFound = globalMixins[classFound].trim();
+        if (classFound.indexOf(' ') > -1) {
+            var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
+            classFound = classMore.shift();
+            if (classMore.length > 0) {
+                for (var j = 0; j < classMore.length; j++) { classesFound.push(classMore[j]); }
+            }
+        }
+    }
     return [classFound, classesFound];
 }
 function getShortHand(classFound, classesFound) {
@@ -485,35 +504,43 @@ function getWrapper(xZ) {
     return [start + line, end, tab];
 }
 var mediaGrep = '';
-function getMediaQuery(mS) {
-    if (mediaGrep.length == 0) {
-        var mQ = ['any-hover', 'any-pointer', 'aspect-ratio', 'color', 'color-gamut', 'color-index', 'grid', 'height', 'hover', 'inverted-colors', 'light-level', 'max-aspect-ratio', 'max-color', 'max-color-index', 'max-height', 'max-monochrome', 'max-resolution', 'max-width', 'min-aspect-ratio', 'min-color', 'min-color-index', 'min-height', 'min-monochrome', 'min-resolution', 'min-width', 'monochrome', 'orientation', 'overflow-block', 'overflow-inline', 'pointer', 'resolution', 'scan', 'scripting', 'update', 'width'];
-        mediaGrep = "^(" + mQ.join("|").replace('/-/gi', '\\-') + ")(.*)$";
+var webkitGrep = '';
+var actionGrep = [];
+var screenGrep = '';
+function getGreps () {
+    var mQ = ['any-hover', 'any-pointer', 'aspect-ratio', 'color', 'color-gamut', 'color-index', 'grid', 'height', 'hover', 'inverted-colors', 'light-level', 'max-aspect-ratio', 'max-color', 'max-color-index', 'max-height', 'max-monochrome', 'max-resolution', 'max-width', 'min-aspect-ratio', 'min-color', 'min-color-index', 'min-height', 'min-monochrome', 'min-resolution', 'min-width', 'monochrome', 'orientation', 'overflow-block', 'overflow-inline', 'pointer', 'resolution', 'scan', 'scripting', 'update', 'width'];
+    mediaGrep = "^(" + mQ.join("|").replace('/-/gi', '\\-') + ")(.*)$";
+    
+    var wK = ['align-content', 'align-items', 'align-self', 'alt', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-template', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after', 'margin-after-collapse', 'margin-before', 'margin-before-collapse', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'mask', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position', 'mask-position-x', 'mask-position-y', 'mask-repeat', 'mask-repeat-x', 'mask-repeat-y', 'mask-size', 'mask-source-type', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke', 'text-stroke-color', 'text-stroke-width', 'text-underline-position', 'text-zoom', 'transform', 'transform-2d', 'transform-3d', 'transform-origin', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'];
+    webkitGrep = "^" + wK.join("|").replace('/-/gi', '\\-');
+
+    var aG = [
+        ['after', 'backdrop', 'before', 'cue', 'cue-region', 'file-selector-button', 'first-letter', 'first-line', 'grammar-error', 'marker', 'placeholder', 'placeholder-shown', 'selection', 'spelling-error', 'target-text'],
+        ['last-child', 'first-child', 'only-child', 'first-of-type', 'last-of-type', 'only-of-type', 'nth-last-child', 'nth-last-of-type'],
+        ['current', 'past', 'future', 'playing', 'paused', 'active', 'checked', 'disabled', 'empty', 'enabled', 'focus', 'focus-visible', 'focus-within', 'hover', 'in-range', 'invalid', 'link', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited']
+    ];
+    actionGrep = [
+        [" *::", "(" + aG[0].join("|").replace('/-/gi', '\\-') + ")"],
+        [" *:", "(" + aG[1].join("|").replace('/-/gi', '\\-') + ")"],
+        [":", "(" + aG[2].join("|").replace('/-/gi', '\\-') + ")"]
+    ];
+
+    var sT = screenTypes;
+    for (var i = 0; i < screenSizeKeys.length; i++) {
+        sT.push("\\!" + screenSizeKeys[i]);
+        sT.push(screenSizeKeys[i] + "down");
+        sT.push(screenSizeKeys[i] + "up");
+        sT.push(screenSizeKeys[i]);
     }
+    screenGrep = "(" + sT.join("|").replace('/-/gi', '\\-') + ")";
+}
+function getMediaQuery(mS) {
     return new RegExp(mediaGrep).exec(mS);
 }
-var webkitGrep = '';
 function getWebKit(wS) {
-    if (webkitGrep.length == 0) {
-        var wK = ['align-content', 'align-items', 'align-self', 'alt', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-template', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after', 'margin-after-collapse', 'margin-before', 'margin-before-collapse', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'mask', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position', 'mask-position-x', 'mask-position-y', 'mask-repeat', 'mask-repeat-x', 'mask-repeat-y', 'mask-size', 'mask-source-type', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke', 'text-stroke-color', 'text-stroke-width', 'text-underline-position', 'text-zoom', 'transform', 'transform-2d', 'transform-3d', 'transform-origin', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'];
-        webkitGrep = "^" + wK.join("|").replace('/-/gi', '\\-');
-    }
     return new RegExp(webkitGrep).test(wS);
 }
-var actionGrep = [];
 function getActions(mS, mD) {
-    if (actionGrep.length == 0) {
-        var mQ = [
-            ['after', 'backdrop', 'before', 'cue', 'cue-region', 'file-selector-button', 'first-letter', 'first-line', 'grammar-error', 'marker', 'placeholder', 'placeholder-shown', 'selection', 'spelling-error', 'target-text'],
-            ['last-child', 'first-child', 'only-child', 'first-of-type', 'last-of-type', 'only-of-type', 'nth-last-child', 'nth-last-of-type'],
-            ['current', 'past', 'future', 'playing', 'paused', 'active', 'checked', 'disabled', 'empty', 'enabled', 'focus', 'focus-visible', 'focus-within', 'hover', 'in-range', 'invalid', 'link', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited']
-        ];
-        actionGrep = [
-            [" *::", "(" + mQ[0].join("|").replace('/-/gi', '\\-') + ")"],
-            [" *:", "(" + mQ[1].join("|").replace('/-/gi', '\\-') + ")"],
-            [":", "(" + mQ[2].join("|").replace('/-/gi', '\\-') + ")"]
-        ];
-    }
     var ret = [{}, {}, {}], zA = '', zM = null, zS = '', zY = false;
     for (var i = 0; i < actionGrep.length; i++) {
         zM = new RegExp(actionGrep[i][1], 'gi');
@@ -526,18 +553,7 @@ function getActions(mS, mD) {
     if (!zY) { ret = [{}]; ret[0][mD] = ""; }
     return ret;
 }
-var screenGrep = '';
 function getScreens(mS, mD) {
-    if (screenGrep.length == 0) {
-        var mQ = screenTypes;
-        for (var i = 0; i < screenSizeKeys.length; i++) {
-            mQ.push("\\!" + screenSizeKeys[i]);
-            mQ.push(screenSizeKeys[i] + "down");
-            mQ.push(screenSizeKeys[i] + "up");
-            mQ.push(screenSizeKeys[i]);
-        }
-        screenGrep = "(" + mQ.join("|").replace('/-/gi', '\\-') + ")";
-    }
     var ret = {}, all = [], zA = '', zB = '', notScreens = false;
     var zM = new RegExp(screenGrep, 'gi');
     while ((zA = zM.exec(mS)) !== null) {
@@ -567,7 +583,7 @@ function getCleanStyles(style) {
 function getmixins() {
     if (defined(knowCSSOptions.mixins)) {
         for (var key in knowCSSOptions.mixins) { allMixins[key] = getVariables(knowCSSOptions.mixins[key]); }
-    }
+    }    
 }
 function getMixins(mA) {
     var mixin = '', newMixin = {}, anyNewMixin = false;
@@ -769,6 +785,7 @@ function knowCSSRender(uI, uC, uO) {
     }
     getmixins();
     getuserConditionals();
+    getGreps();
     var attr = "";
     var sharedClasses = {};
     var sharedClassKey = "";
@@ -778,9 +795,9 @@ function knowCSSRender(uI, uC, uO) {
     var classParent = false;
     var classEnvironment = "";
     var allowEnvironment = false;
+    var checkShorterHand = (typeof globalMixins !== 'undefined');
     var ii = 0;
     var tL = classTags.length;
-    //for (var ii = 0; ii < classTags.length; ii++) {
     while (ii < tL) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
@@ -791,8 +808,8 @@ function knowCSSRender(uI, uC, uO) {
         classFirst = '';
         for (var key in classList) {
             [screen, modifier, action] = key.split('_', 3);
-            classesFound = getClasses(classList[key]);
-            if (classesFound.length > 0) {
+            classesFound = getClasses(classList[key]);            
+            //if (classesFound.length > 0) {
                 classFirst = '';
                 classNextStart = classNext;
                 if (uX.classes !== 'detail' && classNew === '') {
@@ -805,47 +822,45 @@ function knowCSSRender(uI, uC, uO) {
                 }
                 while (classesFound.length > 0) {
                     classFound = classesFound.shift().trim();
-//                for (var i = 0; i < classesFound.length; i++) {
-//                    classFound = classesFound[i].trim();
-                    if (classFound.length > 0) {
-                        //[classFound, classesFound] = getShorterHand(classFound, classesFound);
+                    //if (classFound.length > 0) {
+                        if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
-                        [classParent, screen] = getParentSelector(screen);
-                        [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
-                        if (allowEnvironment) {
-                            [classFound, classImportant] = getImportant(classFound);
-                            className = '';
-                            classValue = '';
-                            if (classFound.indexOf('gradient') == 0) {
-                                classParts = classFound.split('-');
-                                classParts.shift();
-                                className = 'background-image';
-                                classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
-                                classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
-                            }
-                            else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
-                            else if (classFound.indexOf('-') > -1) {
-                                classParts = classFound.split('-');
-                                classValue = classParts.pop();
-                                className = classParts.join('-');
-                            }
-                            else { className = classFound; }
-                            if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
-                            classValue = getColor(getValue(classValue), className);
-                            [className, classValue] = getFamily(className, classValue);
-                            classesFound = getREM(className, classValue, classesFound);
-                            classKey = getKey(screen, modifier, className, action, classValue, classImportant);
-                            /*
-                            if (if (!uX.smart && uX.classes == 'detail') {
-                                classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
-                                classesHere.push(classNew);
-                            }
-                            */                       
-                            if (screen in css === false) { css[screen] = {}; }
-                            if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
-                            if (modifier == 'none') { modifier = ''; }
-                            if (!isDefine) {
+                        if (!isDefine) {
+                            [classParent, screen] = getParentSelector(screen);
+                            [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
+                            if (allowEnvironment) {
+                                [classFound, classImportant] = getImportant(classFound);
+                                className = '';
+                                classValue = '';
+                                if (classFound.indexOf('gradient') == 0) {
+                                    classParts = classFound.split('-');
+                                    classParts.shift();
+                                    className = 'background-image';
+                                    classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
+                                    classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
+                                }
+                                else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
+                                else if (classFound.indexOf('-') > -1) {
+                                    classParts = classFound.split('-');
+                                    classValue = classParts.pop();
+                                    className = classParts.join('-');
+                                }
+                                else { className = classFound; }
+                                if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
+                                classValue = getColor(getValue(classValue), className);
+                                [className, classValue] = getFamily(className, classValue);
+                                classesFound = getREM(className, classValue, classesFound);
+                                classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+                                /*
+                                if (if (!uX.smart && uX.classes == 'detail') {
+                                    classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
+                                    classesHere.push(classNew);
+                                }
+                                */
+                                if (screen in css === false) { css[screen] = {}; }
+                                if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
+                                if (modifier == 'none') { modifier = ''; }    
                                 if (uX.smart) {
                                     sharedClassKey = classKey + '__' + modifier;
                                     if (sharedClassKey in smartClass == false) {
@@ -878,16 +893,16 @@ function knowCSSRender(uI, uC, uO) {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
                 if (!uX.smart) {
                     if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
                 }
-            }
+            //}
         }
         if (!uX.smart) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
-            else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
+            //else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
             else {
                 classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });                
                 classTags[ii].removeAttribute(knowID);
@@ -928,14 +943,15 @@ function knowCSSRender(uI, uC, uO) {
             var action = smartDetail[classKey][1];
             var modifier = smartDetail[classKey][3][0];
             var classNew = smartDetail[classKey][2];
+            var classModifier = '.' + classNew + modifier;
             if (screen in css === false) { css[screen] = {}; }
-            if (action in css[screen] === false) { css[screen][action] = [{}, {}, {}] }
+            if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
             if (classKey in css[screen][action][0]) {
-                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                if (css[screen][action][0][classKey].indexOf(classModifier) == -1) {
+                    css[screen][action][0][classKey] += ', ' + classModifier;
                 }
             }
-            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+            else { css[screen][action][0][classKey] = classModifier; }
             css[screen][action][1][classKey] = smartDetail[classKey][3];
         }
     }

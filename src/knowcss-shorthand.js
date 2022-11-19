@@ -1,12 +1,25 @@
 const shorterHand = {
     /* Minified - Check for Integer value or values and add px */
     "w": "width",
+    "h": "height",
     "p": "padding",
     "px": "font-size"
 };
 
+const globalMixins = {
+    "h16": "margin-top-0 margin-bottom-0.5rem font-weight-500 line-height-1.2"
+};
+
 const shortHand = {
+    "h1": "h16 font-size-calc(1.375rem/+/1.5vw)",
+    "h2": "h16 font-size-calc(1.325rem/+/0.9vw)",
+    "h3": "h16 font-size-calc(1.3rem/+/0.6vw)",
+    "h4": "h16 font-size-calc(1.275rem/+/0.3vw)",
+    "h5": "h16 font-size-1.25rem",
+    "h6": "h16 font-size-1rem",
+    
     "w": "width",
+    "h": "height",
     "p": "padding",
     "px": "font-size",
 
