@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KnowCSS, The Revolutionary NoCSS Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <meta name="description" content="KnowCSS, The Revolutionary NoCSS Engine">
+    <meta property="og:title" content="KnowCSS, The Revolutionary NoCSS Engine" />
+    <meta property="og:image" content="https://www.knowcss.com/i/og.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
+    <meta property="og:url" content="https://www.knowcss.com/" />
+    <script>
+        const cssVars = {
+            "box": "box-sizing=border-box",
+            "red": "color-933",
+            "orange": "color-B65B0C",
+            "pink": "color-C83B82",
+            "blue": "color-384EF4",
+            "black": "color-000",
+            "family": "font-family-Helvetica", //font-display-auto font-display-swap
+            "css": '<span know="[go]">CSS</span>',
+            "html": '<span know="[go]">HTML</span>',
+            "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
+        };
+        const mixins = {
+            "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+            "no": "color-2D862D font-weight-400",
+            "nt": "color-000 font-weight-400 line-height-20px",
+            "go": "color-339 font-weight-400",
+            "hd": "font-size-32px aligncenter normal-important",
+            "mt": "margin-10px/20px/10px/20px margin-top-10px-!",
+            "mx": "center",
+            "ft": "font-size-16px aligncenter",
+            "hr": "border-top-3px/solid/#f3f3f3 center",
+            "bx": "padding-15px/5px {{$box}}",
+            "hx": "margin-20px/auto/10px/auto padding-0",
+            "ic": "padding-5px/5px all{color-666}",
+            "na": "hover>a{color-933}",
+            "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
+            "nv": "color-666 font-size-18px nounderline",
+            "ys": "aligncenter center",
+            "ml": "padding-left-20px",
+            "mm": "padding-left-40px",
+            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+            "ct": "table center aligncenter margin-top-10px max-width-96%",
+            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
+            "blue": "{{$blue}}",
+            "orange": "{{$orange}}",
+            "pink": "{{$pink}}",
+            "red": "{{$red}}",
+            "black": "{{$black}}",
+            "bc": "width-18px height-16px max-width-18px max-height-16px border-1px/solid/black",
+            "bd": "color-666 padding-left-4px",
+            "code": "inline-block border-1px/solid/#eee background-color-fefefe font-size-14px margin-2px/0px padding-0px/4px"
+        };
+    </script>
+    <script src="../src/knowcss-colors.js"></script>
+    <script src="../src/knowcss-shorthand.js"></script>
+    <script src="../src/js/knowcss.js"></script>
+</head>
+
+<body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" know="margin-0 padding-0">
+    <div id="root" role="main">
+
+        <div know="center all{font-weight-300 {{$box}} {{$family}}} padding-5px">
+            <div know="[mt] center aligncenter"><a href="/"><img src="../example/logo-700.png" alt="KnowCSS, The NoCSS Engine" width="350" height="63" know="margin-top-0px width-100% max-width-350px height-auto"></a></div>
+            <h1 know="[hx] [bx] font-size-40px aligncenter color-333 nounderline">Welcome to <span know="[red]">KnowHOW,</span> The {{$knowcss}} Documentation</h1>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">Standard Property and Value</div>
+                <div know="[mt] [ft]">
+                    <div>You may use familiar utility classes for standard values that include any characters except for space or hyphen.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-000 font-size-18px light&quot;</span>&gt;</span><span know="color-000 font-size-18px light">black 18px light</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00 font-size-24px bold&quot;</span>&gt;</span><span know="color-f00 font-size-24px bold">red 24px bold</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-00f font-size-18px semibold&quot;</span>&gt;</span><span know="color-00f font-size-18px semibold">blue 14px semibold</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">Complex Property and Value</div>
+                <div know="[mt] [ft]">
+                    <div>Values with a space or hyphen should use an equal sign between the property and value to indicate which is which, with spaces converted to forward slash to keep the multi-value together in one property.
+                    <br>
+                    <br>Note: <span know="code">box-sizing-border-box</span> would be interpeted as <span know="code">box-sizing-border: box;</span> instead of the intended <span know="code">box-sizing: border-box;</span>, so an = helps in this instance.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;box-sizing=border-box border=1px/solid/red padding=5px/10px&quot;</span>&gt;</span><span know="box-sizing=border-box border=1px/solid/red padding=5px/10px">red border with padding</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;box-sizing=border-box border=2px/solid/blue margin=5px/10px&quot;</span>&gt;</span><span know="box-sizing=border-box border=2px/solid/blue margin=5px/10px">blue border with margin</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">!Important Modifier</div>
+                <div know="[mt] [ft]">
+                    <div>The !important modifier will apply if ! appears anywhere in the value or if -important appears at the end of a value.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;font-size-24px!&quot;</span>&gt;</span><span know="font-size-24px!">force 24px font-size</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;font-size-12px-important!&quot;</span>&gt;</span><span know="font-size-12px-important!">force 10px font-size</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div know="[mt]">Multiple values may be grouped to apply !important to each with the !{} or important{} selector.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;!{color-c33 padding-2px}&quot;</span>&gt;</span><span know="!{color-c33 padding-2px}">force red with padding</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;important{color-3c3 font-size-12px}&quot;</span>&gt;</span><span know="important{color-c33 padding-2px}">force blue 12px font-size</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">Colors and Shading</div>
+                <div know="[mt] [ft]">
+                    <div>3 or 6 digit hex colors or explicit common color names may be used with or without the leading # character.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-c00 border=1px/solid/#c00&quot;</span>&gt;</span><span know="color-c00 border=1px/solid/#c00">red</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-00cc00 border=1px/solid/#00cc00&quot;</span>&gt;</span><span know="color-00cc00 border=1px/solid/#00cc00">green</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-#00c border=1px/solid/#00c&quot;</span>&gt;</span><span know="color-#00c border=1px/solid/#00c">blue</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-#cccc00 border=1px/solid/#cccc00&quot;</span>&gt;</span><span know="color-#cccc00 border=1px/solid/#cccc00">yellow</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-orange border=1px/solid/orange&quot;</span>&gt;</span><span know="color-orange border=1px/solid/orange">orange</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div know="[mt]">Any hex color may be shaded at 0-100 percent with @ giving you full access to all 16,777,216 possible colors.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@100&quot;</span>&gt;</span><span know="color-f00@100">#ff0000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@95&quot;</span>&gt;</span><span know="color-f00@95">#f30000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@90&quot;</span>&gt;</span><span know="color-f00@90">#e60000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@85&quot;</span>&gt;</span><span know="color-f00@85">#d90000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@80&quot;</span>&gt;</span><span know="color-f00@80">#cc0000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@70&quot;</span>&gt;</span><span know="color-f00@70">#800000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@60&quot;</span>&gt;</span><span know="color-f00@60">#990000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@50&quot;</span>&gt;</span><span know="color-f00@50">#800000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@40&quot;</span>&gt;</span><span know="color-f00@40">#660000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@30&quot;</span>&gt;</span><span know="color-f00@30">#4d0000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@0&quot;</span>&gt;</span><span know="color-f00@0">#000000</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div know="[mt]">Any hex color may be converted to rgba() with ~ giving you access to opaque elements.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~100&quot;</span>&gt;</span><span know="background-color-f00~100">#ff0000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~90&quot;</span>&gt;</span><span know="background-color-f00~90">rgba(255,0,0,0.9);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~80&quot;</span>&gt;</span><span know="background-color-f00~80">rgba(255,0,0,0.8);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~70&quot;</span>&gt;</span><span know="background-color-f00~70">rgba(255,0,0,0.7);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~60&quot;</span>&gt;</span><span know="background-color-f00~60">rgba(255,0,0,0.6);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~50&quot;</span>&gt;</span><span know="background-color-f00~50">rgba(255,0,0,0.5);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~40&quot;</span>&gt;</span><span know="background-color-f00~40">rgba(255,0,0,0.4);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~30&quot;</span>&gt;</span><span know="background-color-f00~30">rgba(255,0,0,0.3);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~20&quot;</span>&gt;</span><span know="background-color-f00~20">rgba(255,0,0,0.2);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~10&quot;</span>&gt;</span><span know="background-color-f00~10">rgba(255,0,0,0.1);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;background-color-f00~0&quot;</span>&gt;</span><span know="background-color-f00~0">rgba(255,0,0,0);</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div know="[mt]">Both can be combined to create complex rgba() values with shades and opaque elements.</div>    
+                    <div know="[mt] [ct]">
+                        <div know="[cd]">
+                            <div know="[nt]">
+                                <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@0~100&quot;</span>&gt;</span><span know="color-f00@0~100">#000</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@10~90&quot;</span>&gt;</span><span know="color-f00@10~90">rgba(26,0,0,0.9);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@20~80&quot;</span>&gt;</span><span know="color-f00@20~80">rgba(51,0,0,0.8);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@30~70&quot;</span>&gt;</span><span know="color-f00@30~70">rgba(77,0,0,0.7);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@40~60&quot;</span>&gt;</span><span know="color-f00@40~60">rgba(102,0,0,0.6);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@50~50&quot;</span>&gt;</span><span know="color-f00@50~50">rgba(128,0,0,0.5);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@60~40&quot;</span>&gt;</span><span know="color-f00@60~40">rgba(153,0,0,0.4);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@70~30&quot;</span>&gt;</span><span know="color-f00@70~30">rgba(179,0,0,0.3);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@80~20&quot;</span>&gt;</span><span know="color-f00@80~20">rgba(204,0,0,0.2);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@90~10&quot;</span>&gt;</span><span know="color-f00@90~10">rgba(230,0,0,0.1);</span><span know="[blue]">&lt;/div&gt;</span>
+                                <br><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-f00@100~0&quot;</span>&gt;</span><span know="color-f00@100~0">rgba(255,0,0,0);</span><span know="[blue]">&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">Available Common Colors</div>
+                <div know="[ys] [mt]">Any color value may be referenced by the explicit hex color or by the corresponding common color name for that hex color. Scroll through the list of standard colors below.</div>
+                <div know="[mt] height-200px max-width-300px overflow-auto border=1px/solid/#ccc margin-0/auto">
+                    <div id="colors" name="colors" know="table border-spacing-5px margin-0/auto"></div>
+                </div>
+                <script>
+                    var colorsLoaded = false;
+                    window.addEventListener('load', function() {
+                        if (!colorsLoaded) {
+                            colorsLoaded = true;
+                            var aH = [];
+                            for (var aX in hexColors) { aH.push('<div know="table-row padding-left-10px all>span{table-cell text-align-left padding-right-1px}"><span know="[bc] background-color-' + aX + '"></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bn]">' + aX + '</span></div>'); }
+                            document.getElementById('colors').innerHTML = aH.join('');
+                            aH = [];
+                            $know().render();
+                        }
+                    });
+                </script>
+            </div>
+
+            <div know="[bx] [hr] padding-top-10px margin-bottom-10px">
+                <div know="aligncenter"><a href="http://www.jaydoublay.com/" rel="noreferrer" target="_blank" know="font-size-12px color-707070 nounderline">&copy; 2021 Jay Doublay</a></div>
+                <div know="aligncenter"><span know="color-333 font-size-14px normal">{ knowcss }</span> <span know="color-933 font-size-12px normal">&lt;The-NoCSS-Engine/&gt;</span></div>
+                <div know="aligncenter"><span know="color-707070 font-size-12px normal" id="render"></span></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
