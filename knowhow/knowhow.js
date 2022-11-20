@@ -13,9 +13,9 @@ const cssVars = {
 const mixins = {
     "hamburger": [
     	"centered",
-    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px transform-origin-4px/0px}",
-    	"first-child>span{transform-origin-0%/0%}",
-    	"last-child>span{transform-origin-0%/100%}"
+    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px origin-4px/0px}",
+    	"first-child>span{origin-0%/0%}",
+    	"last-child>span{origin-0%/100%}"
     ],
 
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
