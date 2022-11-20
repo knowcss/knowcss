@@ -11,6 +11,7 @@ Repo: https://github.com/knowcss/knowcss
 var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
+    shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
     cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
     mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
     conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
@@ -309,13 +310,18 @@ function getKey(screen, modifier, name, action, val, important) {
 }
 function getDynamic(container) {
     var dynamic = '';
-    if (container == 'all') { dynamic = ' *'; }
-    else if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
-    else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
-    else if (container.indexOf('nth-child') > -1) { dynamic = ':nth-child(' + container.replace('nth-child-', '') + ')'; }
-    else if (container.indexOf('nth-last-child') > -1) { dynamic = ':nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-    else if (container.indexOf('nth-of-type') > -1) { dynamic = ':nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-    else if (container.indexOf('nth-last-of-type') > -1) { dynamic = ':nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+    if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace('>', '> '); }
+    else if (container.indexOf('all') == 0) {
+        if (container == 'all') { dynamic = ' *'; }
+        else if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
+        else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
+    }
+    else if (container.indexOf('nth') > -1) {
+        if (container.indexOf('nth-child') > -1) { dynamic = ':nth-child(' + container.replace('nth-child-', '') + ')'; }
+        else if (container.indexOf('nth-last-child') > -1) { dynamic = ':nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+        else if (container.indexOf('nth-of-type') > -1) { dynamic = ':nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+        else if (container.indexOf('nth-last-of-type') > -1) { dynamic = ':nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+    }
     return dynamic;
 }
 function getModifier(classList, classSecondary) {
@@ -548,9 +554,14 @@ function getActions(mS, mD) {
     var ret = [{}, {}, {}], zA = '', zM = null, zS = '', zY = false;
     var x = actionGrep.length;
     var i = 0;
+    var mP = '*';
+    if (mS.indexOf('>') > -1) {
+        mP = mS.split('>', 2).pop();
+        if (!mP) { mP = "*"; }
+    }
     while (i < x) {
         zM = new RegExp(actionGrep[i][1], 'gi');
-        zS = actionGrep[i][0];
+        zS = actionGrep[i][0].replace("*", mP);
         while ((zA = zM.exec(mS)) !== null) {
             ret[i][zA[1]] = zS;
             zY = true;
@@ -869,8 +880,15 @@ function knowCSSRender(uI, uC, uO) {
                                 else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
                                 else if (classFound.indexOf('-') > -1) {
                                     classParts = classFound.split('-');
-                                    classValue = classParts.pop();
-                                    className = classParts.join('-');
+                                    if (classParts[0] in knowCSSOptions.shorterHand) {
+                                        className = knowCSSOptions.shorterHand[classParts[0]];
+                                        classParts.shift();
+                                        classValue = classParts.join('-');
+                                    }
+                                    else {
+                                        classValue = classParts.pop();
+                                        className = classParts.join('-');
+                                    }
                                 }
                                 else { className = classFound; }
                                 if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }

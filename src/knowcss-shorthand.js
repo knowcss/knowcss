@@ -1,9 +1,11 @@
 const shorterHand = {
-    /* Minified - Check for Integer value or values and add px */
     "w": "width",
     "h": "height",
     "p": "padding",
-    "px": "font-size"
+    "px": "font-size",
+    "d": "display",
+    "v": "visibility",
+    "pos": "position"
 };
 
 const globalMixins = {
@@ -57,6 +59,9 @@ const shortHand = {
     "nowrap": "white-space-nowrap",
     "pre": "white-space-pre",
 
+    /* transform */
+    "origin": "transform-origin",
+
     /* text style */
     "italic": "font-style-italic",
     "underline": "text-decoration-underline",
@@ -87,6 +92,7 @@ const shortHand = {
     "sticky": "position-sticky",
 
     /* alignment */
+    "centered": "display-table margin-0/auto text-align-center",
     "center": "margin-0/auto",
     "aligncenter": "text-align-center",
     "alignleft": "text-align-left",
@@ -94,6 +100,12 @@ const shortHand = {
     "aligntop": "vertical-align-top",
     "alignmiddle": "vertical-align-middle",
     "alignbottom": "vertical-align-bottom",
+
+    /* table */
+    /*
+    "table-auto": "table-layout-auto",
+    "table-fixed": "table-layout-fixed",
+    */
 
     /* width % */
     "full": "width-100%",
@@ -115,12 +127,12 @@ const shortHand = {
     "run-in": "display=run-in",
     "initial": "display=initial",
     "revert": "display=revert",
-    "unsert": "display=unset",
+    "unset": "display=unset",
 
     /* tables, flex, grid */
     "table": "display=table",
-    "collapse": "border-collapse=collapse",
-    "separate": "border-collapse=separate",
+    "collapse": "border-collapse-collapse",
+    "separate": "border-collapse-separate",
     "table-row": "display=table-row",
     "table-cell": "display=table-cell",
     "cell": "display=table-cell",
@@ -131,10 +143,10 @@ const shortHand = {
     "tfoot": "display=table-footer-group",
     "tbody": "display=table-row-group",
     "caption": "display=table-caption",
-    "inline-flex": "display-inline-flex",
-    "inline-grid": "display-inline-grid",
-    "inline-table": "display-inline-table",
-    "grid": "display-grid",
+    "inline-flex": "display=inline-flex",
+    "inline-grid": "display=inline-grid",
+    "inline-table": "display=inline-table",
+    "grid": "display=grid",
 
     /* cursors */
     "alias": "cursor-alias",
@@ -182,4 +194,5 @@ if (typeof window !== 'undefined') { }
 else if (typeof module !== 'undefined') {
 	module.exports.shortHand = shortHand;
 	module.exports.shorterHand = shorterHand;
+    module.exports.globalMixins = globalMixins;
 }
