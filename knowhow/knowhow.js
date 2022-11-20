@@ -11,8 +11,12 @@ const cssVars = {
     "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
 };
 const mixins = {
-    // JAA TODO - allow for hamburger-color to override #cdcdcd with color
-    "hamburger": "centered >span{bg-#cdcdcd block w-33px h-4px mb-5px relative br-3px origin-4px/0px} first-child>span{origin-0%/0%} last-child>span{origin-0%/100%}",
+    "hamburger": [
+    	"centered",
+    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px transform-origin-4px/0px}",
+    	"first-child>span{transform-origin-0%/0%}",
+    	"last-child>span{transform-origin-0%/100%}"
+    ],
 
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "no": "color-2D862D font-weight-400",

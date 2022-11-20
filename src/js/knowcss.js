@@ -604,22 +604,49 @@ function getCleanStyles(style) {
 function getmixins() {
     if (defined(knowCSSOptions.mixins)) {
         for (var key in knowCSSOptions.mixins) { allMixins[key] = getVariables(knowCSSOptions.mixins[key]); }
-    }    
+    }
+    for (var key in allMixins) {
+        if (typeof allMixins[key] !== 'string') { allMixins[key] = allMixins[key].join(' '); }
+    }
+}
+function variableMixin (mZ) {
+    var mP = "";
+    var mR = "";
+    var mC = "";
+    var mF = false;
+    if (mZ.indexOf('-') > 1) {
+        [mP, mR] = mZ.split('-', 2);
+        if (mP in allMixins) {
+            mZ = mP;
+            mC = "-";
+            mF = true;
+        }
+        else { mR = ""; }
+    }
+    if (!mF && mZ in allMixins) { mF = true; }
+    return [mF, mP, mR, mC];
 }
 function getMixins(mA) {
     var mixin = '', newMixin = {}, anyNewMixin = false;
     var zM = new RegExp('\\[(.*?)\\]', 'i');
     var mX = [];
     var mS = "";
+    var mP = "";
+    var mZ = "";
+    var mR = "";
+    var mC = "";
+    var mF = false;
     while ((mixin = zM.exec(mA)) !== null) {
-        if (mixin[1] in allMixins) {
-            mX.push(mS + allMixins[mixin[1]] + ' ');
+        [mF, mZ, mR, mC] = variableMixin(mixin[1]);
+        if (mF) {
+            mX.push(mS + allMixins[mZ].replace('$1', mR) + ' ');
             mS = " ";
         }
         else {
-            newMixin[mixin[1]] = true;
+            newMixin[mZ] = true;
             anyNewMixin = true;
         }
+        console.log(['mixin', mA, mX, mS, mP, mZ, mR]);
         mA = mA.replace(mixin[0], '');
     }
     mA = mX.join('') + mA;
@@ -726,12 +753,15 @@ function getClasses(classString) {
 function crossMixins(classString) {
     var rW = [];
     var zB = '';
+    var zC = '';
+    var zD = '';
+    var zF = false;
     var zA = classString.split(' ');
     var x = zA.length;
     var i = 0;
     while (i < x) {
-        zB = zA[i];
-        rW.push(zB in allMixins ? "[" + zB + "]" : zB);
+        [zF, zB, zD, zC] = variableMixin(zA[i]);
+        rW.push(zF ? "[" + zB + zC + zD + "]" : zB);
         i++;
     };
     return rW.join(' ');
