@@ -614,17 +614,19 @@ function variableMixin (mZ) {
     var mR = "";
     var mC = "";
     var mF = false;
-    if (mZ.indexOf('-') > 1) {
-        [mP, mR] = mZ.split('-', 2);
-        if (mP in allMixins) {
-            mZ = mP;
-            mC = "-";
-            mF = true;
+    if (mZ.indexOf('[') == -1) {
+        if (mZ.indexOf('-') > 1) {
+            [mP, mR] = mZ.split('-', 2);
+            if (mP in allMixins) {
+                mZ = mP;
+                mC = "-";
+                mF = true;
+            }
+            else { mR = ""; }
         }
-        else { mR = ""; }
+        if (!mF && mZ in allMixins) { mF = true; }
     }
-    if (!mF && mZ in allMixins) { mF = true; }
-    return [mF, mP, mR, mC];
+    return [mF, mZ, mR, mC];
 }
 function getMixins(mA) {
     var mixin = '', newMixin = {}, anyNewMixin = false;
@@ -646,7 +648,6 @@ function getMixins(mA) {
             newMixin[mZ] = true;
             anyNewMixin = true;
         }
-        console.log(['mixin', mA, mX, mS, mP, mZ, mR]);
         mA = mA.replace(mixin[0], '');
     }
     mA = mX.join('') + mA;
@@ -868,6 +869,7 @@ function knowCSSRender(uI, uC, uO) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
+
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
