@@ -20,7 +20,37 @@ const shortHand = {
     
     "w": "width",
     "h": "height",
+
+    "mw": "min-width",
+    "mh": "min-height",
+    "xw": "max-width",
+    "xh": "max-height",
+
+    "m": "margin",
+    "mt": "margin-top",
+    "mb": "margin-bottom",
+    "ml": "margin-left",
+    "mr": "margin-right",
+        
+    "b": "border",
+    "bt": "border-top",
+    "bb": "border-bottom",
+    "bl": "border-left",
+    "br": "border-right",
+    "rad": "border-radius",
+    "bs": "border-spacing",
+
+    "c": "color",
+
+    "tr": "display=table-row",
+    "td": "display=table-cell",
+
     "p": "padding",
+    "pt": "padding-top",
+    "pb": "padding-bottom",
+    "pl": "padding-left",
+    "pr": "padding-right",
+
     "px": "font-size",
 
     /* white-space */
