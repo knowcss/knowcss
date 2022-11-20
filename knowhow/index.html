@@ -52,7 +52,8 @@
             "pink": "{{$pink}}",
             "red": "{{$red}}",
             "black": "{{$black}}",
-            "bc": "width-18px height-16px max-width-18px max-height-16px border-1px/solid/black",
+            "bt": "table-row padding-left-10px all>span{table-cell vertical-align-middle text-align-left padding-right-1px}",
+            "bc": "width-16px height-16px max-width-16px max-height-16px border-1px/solid/black",
             "bd": "color-666 padding-left-4px",
             "code": "inline-block border-1px/solid/#eee background-color-fefefe font-size-14px margin-2px/0px padding-0px/4px"
         };
@@ -204,8 +205,8 @@
             <div know="[bx] [hr]">
                 <div know="[hd]">Available Common Colors</div>
                 <div know="[ys] [mt]">Any color value may be referenced by the explicit hex color or by the corresponding common color name for that hex color. Scroll through the list of standard colors below.</div>
-                <div know="[mt] height-200px max-width-300px overflow-auto border=1px/solid/#ccc margin-0/auto">
-                    <div id="colors" name="colors" know="table border-spacing-5px margin-0/auto"></div>
+                <div know="[mt] height-300px max-width-300px overflow-auto border=1px/solid/#ccc margin-0/auto">
+                    <div id="colors" name="colors" know="table border-spacing-3px margin-0/auto"></div>
                 </div>
                 <script>
                     var colorsLoaded = false;
@@ -213,7 +214,7 @@
                         if (!colorsLoaded) {
                             colorsLoaded = true;
                             var aH = [];
-                            for (var aX in hexColors) { aH.push('<div know="table-row padding-left-10px all>span{table-cell text-align-left padding-right-1px}"><span know="[bc] background-color-' + aX + '"></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bn]">' + aX + '</span></div>'); }
+                            for (var aX in hexColors) { aH.push('<div know="[bt]"><span><div know="[bc] background-color-' + aX + '"></div></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bd]">' + aX + '</span></div>'); }
                             document.getElementById('colors').innerHTML = aH.join('');
                             aH = [];
                             $know().render();
