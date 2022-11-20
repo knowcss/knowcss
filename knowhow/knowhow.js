@@ -17,6 +17,13 @@ const mixins = {
     	"first-child>span{origin-0%/0%}",
     	"last-child>span{origin-0%/100%}"
     ],
+    /*
+    <div know="hamburger-anycolor">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    */
 
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "no": "color-2D862D font-weight-400",

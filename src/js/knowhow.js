@@ -42,5 +42,9 @@ const knowHowInit = () => {
         $know().render();
     }
 };
-if (['interactive','complete'].includes(document.readyState)) { knowHowInit(); }
-else { document.addEventListener('DOMContentLoaded', knowHowInit); }
+
+if (typeof window !== 'undefined') {
+    if (['interactive','complete'].includes(document.readyState)) { knowHowInit(); }
+    else { document.addEventListener('DOMContentLoaded', knowHowInit); }
+}
+else if (typeof module !== 'undefined') { module.exports = knowHowInit; }
