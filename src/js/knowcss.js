@@ -159,7 +159,7 @@ function getREM(className, classValue, classesFound, remMultiplier) {
         var classRoot = classValue.replace('px', '');
         if (!isNaN(classRoot) && classRoot > 0) {
             var classRem = parseInt(classRoot) / (remMultiplier || 16);
-            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem'); }
+            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem!'); }
         }
     }
     return classesFound;
@@ -197,7 +197,7 @@ function getuserConditionals () {
         chrome: /Google Inc/.test(vendor) || /CriOS/.test(userAgent),
         safari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
         firefox: /Firefox|FxiOS/.test(userAgent),
-        edge: /Edge|Edg|EdgiOS/.test(userAgent),        
+        edge: /Edge|Edg|EdgiOS/.test(userAgent),
         opera: /OPR|Opera/.test(userAgent),
         cordova: !!window.cordova,
         ie: /MSIE|Trident/.test(userAgent),
@@ -253,7 +253,7 @@ function getEnvironmentSelector (screen) {
         classEnvironment = classEnvironment.replace('!', '');
     }
     if (knowEnvironment.indexOf(classEnvironment) == -1) { classEnvironment = ""; }
-    else {        
+    else {
         if (userConditionals.indexOf(classEnvironment) == -1) { allowEnvironment = false; }
         else if (classEnvironment == screen) { screen = 'none'; }
         if (reverseEnvironment) { allowEnvironment = !allowEnvironment; }
@@ -520,7 +520,7 @@ var screenGrep = '';
 function getGreps () {
     var mQ = ['any-hover', 'any-pointer', 'aspect-ratio', 'color', 'color-gamut', 'color-index', 'grid', 'height', 'hover', 'inverted-colors', 'light-level', 'max-aspect-ratio', 'max-color', 'max-color-index', 'max-height', 'max-monochrome', 'max-resolution', 'max-width', 'min-aspect-ratio', 'min-color', 'min-color-index', 'min-height', 'min-monochrome', 'min-resolution', 'min-width', 'monochrome', 'orientation', 'overflow-block', 'overflow-inline', 'pointer', 'resolution', 'scan', 'scripting', 'update', 'width'];
     mediaGrep = "^(" + mQ.join("|").replace('/-/gi', '\\-') + ")(.*)$";
-    
+
     var wK = ['align-content', 'align-items', 'align-self', 'alt', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-template', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after', 'margin-after-collapse', 'margin-before', 'margin-before-collapse', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'mask', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position', 'mask-position-x', 'mask-position-y', 'mask-repeat', 'mask-repeat-x', 'mask-repeat-y', 'mask-size', 'mask-source-type', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke', 'text-stroke-color', 'text-stroke-width', 'text-underline-position', 'text-zoom', 'transform', 'transform-2d', 'transform-3d', 'transform-origin', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'];
     webkitGrep = "^" + wK.join("|").replace('/-/gi', '\\-');
 
@@ -833,7 +833,7 @@ function knowCSSRender(uI, uC, uO) {
         for (var uA in uO) {
             if (uA in uX) { uX[uA] = uO[uA]; }
         }
-    }    
+    }
     var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles.push('::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'); }
     if (['sequential', 'random'].includes(uX.classes) == false) { uX.classes = 'detail'; }
@@ -847,7 +847,7 @@ function knowCSSRender(uI, uC, uO) {
     else {
         if (typeof uI === 'string') { div = knowLayer(uI); }
         else if ('innerHTML' in uI) { div = uI; }
-        if (knowStartup == null) { knowStartup = div.innerHTML; }
+        if (knowStartup == null && div && "innerHTML" in div) { knowStartup = div.innerHTML; }
         classTags = document.querySelectorAll("[" + knowID + "]");
     }
     getmixins();
@@ -877,7 +877,7 @@ function knowCSSRender(uI, uC, uO) {
         classFirst = '';
         for (var key in classList) {
             [screen, modifier, action] = key.split('_', 3);
-            classesFound = getClasses(classList[key]);    
+            classesFound = getClasses(classList[key]);
             //if (classesFound.length > 0) {
                 classFirst = '';
                 classNextStart = classNext;
@@ -894,7 +894,7 @@ function knowCSSRender(uI, uC, uO) {
                     //if (classFound.length > 0) {
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
-                        [classFound, classesFound] = getGridSystem(classFound, classesFound);                        
+                        [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         if (!isDefine) {
                             [classParent, screen] = getParentSelector(screen);
                             [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
@@ -936,7 +936,7 @@ function knowCSSRender(uI, uC, uO) {
                                 */
                                 if (screen in css === false) { css[screen] = {}; }
                                 if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
-                                if (modifier == 'none') { modifier = ''; }    
+                                if (modifier == 'none') { modifier = ''; }
                                 if (uX.smart) {
                                     sharedClassKey = classKey + '__' + modifier;
                                     if (sharedClassKey in smartClass == false) {
@@ -980,9 +980,9 @@ function knowCSSRender(uI, uC, uO) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
             //else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
             else {
-                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });                
+                classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
                 classTags[ii].removeAttribute(knowID);
-            }   
+            }
         }
         ii++;
     }
@@ -993,11 +993,11 @@ function knowCSSRender(uI, uC, uO) {
         var addParent = false;
         for (var smartKey in smartClass) {
             var smartKeys = smartClass[smartKey];
-            if (smartKeys in smartClassGroup) { 
+            if (smartKeys in smartClassGroup) {
                 smartClassHere = smartClassGroup[smartKeys];
             }
-            else { 
-                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";          
+            else {
+                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";
                 smartClassHere = smartClassNext;
                 smartClassGroup[smartKeys] = smartClassHere;
             }
@@ -1012,7 +1012,7 @@ function knowCSSRender(uI, uC, uO) {
         // JAA TODO:
         // for compile(), smartClassesHere = [];
         //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
-        
+
         for (var classKey in smartDetail) {
             var screen = smartDetail[classKey][0];
             var action = smartDetail[classKey][1];
@@ -1036,7 +1036,7 @@ function knowCSSRender(uI, uC, uO) {
         masterTab = '';
     }
     for (var screen in css) {
-        [start, end, tab] = getWrapper(screen);        
+        [start, end, tab] = getWrapper(screen);
         styles.push(masterLine + start);
         for (var action in css[screen]) {
             cssGroup = {};

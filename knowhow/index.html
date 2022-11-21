@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <title>KnowHow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
-    <script src="knowhow.js"></script>
+
+    <script src="./mixins.js"></script>
+
     <script src="../src/knowcss-colors.js"></script>
     <script src="../src/knowcss-shorthand.js"></script>
     <script src="../src/js/knowcss.js"></script>
-    <script src="../src/js/knowhow.js"></script>
+
+    <!--
+        <script src="./presentation.js"></script>
+        <script src="../src/js/knowhow.js"></script>
+    -->
 </head>
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" know="margin-0 padding-0">
@@ -164,7 +170,7 @@
                         if (!colorsLoaded) {
                             colorsLoaded = true;
                             var aH = [];
-                            for (var aX in hexColors) { aH.push('<div know="[bt]"><span><div know="[bc] background-color-' + aX + '"></div></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bd]">' + aX + '</span></div>'); }
+                            for (var aX in hexColors) { aH.push('<div know="[bw]"><span><div know="[bc] background-color-' + aX + '"></div></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bd]">' + aX + '</span></div>'); }
                             document.getElementById('colors').innerHTML = aH.join('');
                             aH = [];
                             $know().render();

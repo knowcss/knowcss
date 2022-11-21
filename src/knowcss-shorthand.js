@@ -5,7 +5,10 @@ const shorterHand = {
     "px": "font-size",
     "d": "display",
     "v": "visibility",
-    "pos": "position"
+    "pos": "position",
+    "f": "font-family",
+    "fw": "font-weight",
+    "cr": "cursor"
 };
 
 const globalMixins = {
@@ -19,7 +22,7 @@ const shortHand = {
     "h4": "h16 font-size-calc(1.275rem/+/0.3vw)",
     "h5": "h16 font-size-1.25rem",
     "h6": "h16 font-size-1rem",
-    
+
     "w": "width",
     "h": "height",
 
@@ -33,7 +36,7 @@ const shortHand = {
     "mb": "margin-bottom",
     "ml": "margin-left",
     "mr": "margin-right",
-        
+
     "b": "border",
     "bt": "border-top",
     "bb": "border-bottom",
@@ -73,11 +76,14 @@ const shortHand = {
     "back": "background-color",
 
     /* font-weight */
+    "thin": "font-weight-100",
+    "extralight": "font-weight-200",
     "light": "font-weight-300",
     "normal": "font-weight-400",
     "medium": "font-weight-500",
     "semibold": "font-weight-600",
     "bold": "font-weight-700",
+    "extrabold": "font-weight-800",
 
     /* visibility */
     "collapse": "visibility-collapse",
@@ -149,39 +155,39 @@ const shortHand = {
     "grid": "display=grid",
 
     /* cursors */
-    "alias": "cursor-alias",
-    "all-scroll": "cursor-all-scroll",
-    "auto": "cursor-auto",
-    "context-menu": "cursor-context-menu",
-    "col-resize": "cursor-col-resize",
-    "copy": "cursor-copy",
-    "crosshair": "cursor-crosshair",
-    "default": "cursor-default",
-    "e-resize": "cursor-e-resize",
-    "ew-resize": "cursor-ew-resize",
-    "grab": "cursor-grab",
-    "grabbing": "cursor-grabbing",
-    "help": "cursor-help",
-    "move": "cursor-move",
-    "n-resize": "cursor-n-resize",
-    "ne-resize": "cursor-ne-resize",
-    "nesw-resize": "cursor-nesw-resize",
-    "ns-resize": "cursor-ns-resize",
-    "nw-resize": "cursor-nw-resize",
-    "nwse-resize": "cursor-nwse-resize",
-    "no-drop": "cursor-no-drop",
-    "not-allowed": "cursor-not-allowed",
-    "pointer": "cursor-pointer",
-    "progress": "cursor-progress",
-    "row-resize": "cursor-row-resize",
-    "s-resize": "cursor-s-resize",
-    "se-resize": "cursor-se-resize",
-    "sw-resize": "cursor-sw-resize",
-    "text": "cursor-text",
-    "w-resize": "cursor-w-resize",
-    "wait": "cursor-wait",
-    "zoom-in": "cursor-zoom-in",
-    "zoom-out": "cursor-zoom-out",
+    "alias": "cursor=alias",
+    "all-scroll": "cursor=all-scroll",
+    "auto": "cursor=auto",
+    "context-menu": "cursor=context-menu",
+    "col-resize": "cursor=col-resize",
+    "copy": "cursor=copy",
+    "crosshair": "cursor=crosshair",
+    "default": "cursor=default",
+    "e-resize": "cursor=e-resize",
+    "ew-resize": "cursor=ew-resize",
+    "grab": "cursor=grab",
+    "grabbing": "cursor=grabbing",
+    "help": "cursor=help",
+    "move": "cursor=move",
+    "n-resize": "cursor=n-resize",
+    "ne-resize": "cursor=ne-resize",
+    "nesw-resize": "cursor=nesw-resize",
+    "ns-resize": "cursor=ns-resize",
+    "nw-resize": "cursor=nw-resize",
+    "nwse-resize": "cursor=nwse-resize",
+    "no-drop": "cursor=no-drop",
+    "not-allowed": "cursor=not-allowed",
+    "pointer": "cursor=pointer",
+    "progress": "cursor=progress",
+    "row-resize": "cursor=row-resize",
+    "s-resize": "cursor=s-resize",
+    "se-resize": "cursor=se-resize",
+    "sw-resize": "cursor=sw-resize",
+    "text": "cursor=text",
+    "w-resize": "cursor=w-resize",
+    "wait": "cursor=wait",
+    "zoom-in": "cursor=zoom-in",
+    "zoom-out": "cursor=zoom-out",
 
     /* object-cover */
     "fill": "object-cover-fill",

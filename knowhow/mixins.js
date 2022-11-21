@@ -51,7 +51,8 @@ const mixins = {
     "pink": "{{$pink}}",
     "red": "{{$red}}",
     "black": "{{$black}}",
-    "bt": "table-row padding-left-10px all>span{table-cell vertical-align-middle text-align-left padding-right-1px}",
+    "space": "margin-bottom-2px",
+    "bw": "table-row padding-left-10px padding-bottom all>span{table-cell vertical-align-middle text-align-left padding-right-1px}",
     "bc": "width-16px height-16px max-width-16px max-height-16px border-1px/solid/black",
     "bd": "color-666 padding-left-4px",
     "code": "inline-block border-1px/solid/#eee background-color-fefefe font-size-14px margin-2px/0px padding-0px/4px"
