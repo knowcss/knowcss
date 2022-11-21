@@ -815,7 +815,7 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
-        'minifycss': true,
+        'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
         'share': false,

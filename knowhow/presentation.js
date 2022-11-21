@@ -7,6 +7,7 @@ const knowHowConfig = {
                 ["inline-block", "alias"],
                 ["d-inline-block", "shorthand"]
             ],
+            "reverts": true,
             "reference": {
                 "head": "Variations:",
                 "short": "d",
@@ -53,21 +54,14 @@ const knowHowConfig = {
                 ["visible", "block visibility alias"],
                 ["v-visible", "block visibility shorthand"]
             ],
+            "reverts": true,
             "reference": {
                 "head": "Variations:",
                 "short": "v",
-                "reverts": true,
                 "list": {
                     "collapse": "visibility-collapse",
                     "hidden": "visibility-hidden",
-                    "visible": "visibility-visible",
-                    // Add non-shorthand versions if reverts=true
-                    /*
-                    "inherit": "visibility-inherit",
-                    "initial": "visibility-initial",
-                    "revert": "visibility-revert",
-                    "unset": "visibility-unset"
-                    */
+                    "visible": "visibility-visible"
                 }
             }
         }
@@ -81,6 +75,7 @@ const knowHowConfig = {
                 ["relative", "alias"],
                 ["pos-relative", "shorthand"]
             ],
+            "reverts": true,
             "reference": {
                 "head": "Variations:",
                 "short": "pos",
