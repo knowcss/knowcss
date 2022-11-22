@@ -29,7 +29,7 @@ const mixins = {
     "no": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
     "go": "color-339 font-weight-400",
-    "hd": "font-size-32px aligncenter normal-important",
+    "hd": "font-size-32px aligncenter normal!",
     "mt": "margin-10px/auto margin-top-10px-!",
     "mx": "center",
     "ft": "font-size-16px aligncenter",
