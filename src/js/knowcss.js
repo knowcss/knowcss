@@ -17,6 +17,17 @@ var knowCSSOptions = {
     conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
 
+const knowCSSLists = function () {
+    return {
+        'media': ["any-hover", "hover", "any-pointer", "pointer", "min-width", "max-width", "width", "min-height", "max-height", "height", "orientation", "min-aspect-ratio", "max-aspect-ratio", "aspect-ratio", "color-gamut", "min-color-index", "min-color", "max-color-index", "max-color", "color-index", "forced-colors", "inverted-colors", "color", "max-monochrome", "min-monochrome", "monochrome", "display-mode", "dynamic-range", "scan", "update", "light-level", "video-dynamic-range", "max-resolution", "min-resolution", "resolution", "prefers-color-scheme", "prefers-contrast", "prefers-reduced-motion", "grid", "overflow-block", "overflow-inline", "scripting"],
+        'modifiers': ['after', 'backdrop', 'before', 'cue', 'cue-region', 'file-selector-button', 'first-letter', 'first-line', 'grammar-error', 'marker', 'placeholder', 'placeholder-shown', 'selection', 'spelling-error', 'target-text'],
+        'selectors': ['last-child', 'first-child', 'only-child', 'first-of-type', 'last-of-type', 'only-of-type', 'nth-last-child', 'nth-last-of-type'],
+        'actions': ['current', 'past', 'future', 'playing', 'paused', 'active', 'checked', 'disabled', 'empty', 'enabled', 'focus-visible', 'focus-within', 'focus', 'hover', 'in-range', 'invalid', 'link', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited'],
+        'webkit': ['align-content', 'align-items', 'align-self', 'alt', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'animation', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flex', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-row', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'grid-template', 'grid', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after-collapse', 'margin-after', 'margin-before-collapse', 'margin-before', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'marquee', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position-x', 'mask-position-y', 'mask-position', 'mask-repeat-x', 'mask-repeat-y', 'mask-repeat', 'mask-size', 'mask-source-type', 'mask', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'perspective', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-emphasis', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke-color', 'text-stroke-width', 'text-stroke', 'text-underline-position', 'text-zoom', 'transform-2d', 'transform-3d', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-origin', 'transform-style', 'transform', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'transition', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'media-controls', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'],
+        'screens': ['media', 'print', 'screen', 'speech', '!print', '!screen', '!speech', 'notprint', 'notscreen', 'notspeech', 'onlyprint', 'onlyscreen', 'onlyspeech']
+    };
+};
+
 var knowCSS = {
     settings: function (vals) {
         if (vals) {
@@ -72,6 +83,8 @@ var knowCSS = {
     startup: function () { return knowStartup; },
 
     now: knowCSSNow,
+
+    lists: knowCSSLists,
 
     init: function () {
         return this.document().render();
@@ -245,7 +258,6 @@ function getEnvironmentSelector (screen) {
         var modifierParts = screen.split('-', 2);
         if (modifierParts[0] in screenSizes) { [screen, classEnvironment] = modifierParts; }
         else if (modifierParts[1] in screenSizes) { [classEnvironment, screen] = modifierParts; }
-        else { screen = 'none'; }
     }
     else { classEnvironment = screen; }
     if (classEnvironment.indexOf('!') > -1) {
@@ -328,7 +340,8 @@ function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
     else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,255})\{(.*?)\}', 'gis') }
-    var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = [], multiContainer = [], notContainer = '', manyModifier = [];
+    var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
+    //multiContainer = [], notContainer = '', manyModifier = [];
     var containers = {}, screens = {}, modifiers = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
     for (var key in classList) { classListCheck[key] = true; }
@@ -475,15 +488,28 @@ function getFamily(hA, hB) {
 }
 function getWrapper(xZ) {
     var start = [], end = '}', tab = masterTab, line = masterLine;
+
     if (xZ.indexOf('media-') == 0) {
-        var xU = xZ.replace('media-', '');
-        var xY = getMediaQuery(xU);
-        if (xY) {
-            xU = xY[1];
-            xY[2] = xY[2].replace(/-/g, '').replace(/\//g, ' ');
-            if (xY[2].length > 0) { xU += ':' + xY[2]; }
+        var xC = {
+            'media': 'media',
+            "not": "not all and ",
+            "!": "not all and "
+            //"only": "only"
+        };
+        var xP = "";
+        for (var xK in xC) {
+            if (xZ.indexOf(xK + '-') > -1) {
+                xP += xC[xK] + ' ';
+                xZ = xZ.replace(xK + '-', '');
+            }
         }
-        start.push('@media (' + xU + ') {');
+        var xY = getMediaQuery(xZ);
+        if (xY) {
+            xZ = xY[1];
+            xY[2] = xY[2].replace(/-/g, '').replace(/\//g, ' ');
+            if (xY[2].length > 0) { xZ += ':' + xY[2]; }
+        }
+        start.push('@' + xP + '(' + xZ + ') {');
     }
     else if (xZ in screenSizes) {
         start.push('@media screen and (');
@@ -517,32 +543,28 @@ var mediaGrep = '';
 var webkitGrep = '';
 var actionGrep = [];
 var screenGrep = '';
+var screenTypes = [];
 function getGreps () {
-    var mQ = ['any-hover', 'any-pointer', 'aspect-ratio', 'color', 'color-gamut', 'color-index', 'grid', 'height', 'hover', 'inverted-colors', 'light-level', 'max-aspect-ratio', 'max-color', 'max-color-index', 'max-height', 'max-monochrome', 'max-resolution', 'max-width', 'min-aspect-ratio', 'min-color', 'min-color-index', 'min-height', 'min-monochrome', 'min-resolution', 'min-width', 'monochrome', 'orientation', 'overflow-block', 'overflow-inline', 'pointer', 'resolution', 'scan', 'scripting', 'update', 'width'];
-    mediaGrep = "^(" + mQ.join("|").replace('/-/gi', '\\-') + ")(.*)$";
+    const getLists = knowCSSLists();
 
-    var wK = ['align-content', 'align-items', 'align-self', 'alt', 'animation', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-template', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after', 'margin-after-collapse', 'margin-before', 'margin-before-collapse', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'mask', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position', 'mask-position-x', 'mask-position-y', 'mask-repeat', 'mask-repeat-x', 'mask-repeat-y', 'mask-size', 'mask-source-type', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke', 'text-stroke-color', 'text-stroke-width', 'text-underline-position', 'text-zoom', 'transform', 'transform-2d', 'transform-3d', 'transform-origin', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-style', 'transition', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'];
-    webkitGrep = "^" + wK.join("|").replace('/-/gi', '\\-');
+    mediaGrep = "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$";
 
-    var aG = [
-        ['after', 'backdrop', 'before', 'cue', 'cue-region', 'file-selector-button', 'first-letter', 'first-line', 'grammar-error', 'marker', 'placeholder', 'placeholder-shown', 'selection', 'spelling-error', 'target-text'],
-        ['last-child', 'first-child', 'only-child', 'first-of-type', 'last-of-type', 'only-of-type', 'nth-last-child', 'nth-last-of-type'],
-        ['current', 'past', 'future', 'playing', 'paused', 'active', 'checked', 'disabled', 'empty', 'enabled', 'focus', 'focus-visible', 'focus-within', 'hover', 'in-range', 'invalid', 'link', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited']
-    ];
+    webkitGrep = "^" + getLists.webkit.join("|").replace('/-/gi', '\\-');
+
     actionGrep = [
-        [" *::", "(" + aG[0].join("|").replace('/-/gi', '\\-') + ")"],
-        [" *:", "(" + aG[1].join("|").replace('/-/gi', '\\-') + ")"],
-        [":", "(" + aG[2].join("|").replace('/-/gi', '\\-') + ")"]
+        [" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")"],
+        [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")"],
+        [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")"]
     ];
 
-    var sT = screenTypes;
+    screenTypes = getLists.screens;
     var x = screenSizeKeys.length;
     var i = 0;
     while (i < x) {
-        sT.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
+        screenTypes.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
         i++
     }
-    screenGrep = "(" + sT.join("|").replace('/-/gi', '\\-') + ")";
+    screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
 }
 function getMediaQuery(mS) {
     return new RegExp(mediaGrep).exec(mS);
@@ -869,11 +891,9 @@ function knowCSSRender(uI, uC, uO) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
-
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
-
         classFirst = '';
         for (var key in classList) {
             [screen, modifier, action] = key.split('_', 3);
