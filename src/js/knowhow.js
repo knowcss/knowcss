@@ -27,6 +27,8 @@ var knowHow = {
         var tagCheck = "";
         var tagActual = "";
         var tagHyphen = "";
+        var tagSplits = [];
+        var tagSplit = "";
         for (var key in keys) {
             keys[key].forEach(function (val) {
                 html.push('<div know="[bx] [hr]">');
@@ -35,7 +37,8 @@ var knowHow = {
                 if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); }
                 if ("more" in val && val.more) { html.push('<div know="[mt]">' + val.more + '</div>'); }
                 if ("list" in val && val.list) {
-                    tagLoops = "possible" in val ? $know().lists()[val.possible] : ["main"];
+                    tagLoops = "possible" in val ? (typeof val.possible === 'string' ? $know().lists()[val.possible] : val.possible) : ["main"];
+                    tagSplits = "split" in val ? val.split : [""];
                     html.push('<div know="[mt] [ct]"><div know="[cd]"><div know="[nt]">');
                     val.list.forEach(function (vals) {
                         tag = vals.length > 2 ? vals[2] : 'div';
@@ -51,8 +54,11 @@ var knowHow = {
                             if (tagSuffixes.length == 0) { tagSuffixes.push(''); }
                             tagSuffixes.forEach(function(tagSuffix) {
                                 tagHyphen = tagSuffix.length > 0 ? '-' : '';
-                                tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix);
-                                html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tag + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
+                                tagSplits.forEach(function(tagSplit) {
+                                    tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix);
+                                    tagActual = tagActual.replace('$2', tagSplit);
+                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tag + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
+                                });
                             });
                         });
                     });

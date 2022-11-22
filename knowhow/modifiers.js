@@ -24,10 +24,10 @@ const knowHowValues = {
         "orientation": ["landscape", "portrait"],
         "min-aspect-ratio": "1/1",
         "max-aspect-ratio": "1/1",
-        "aspect-ratio": "3/2",
+        "aspect-ratio": "1/1",
 
         /* colors */
-        "color-gamut": "srgb",
+        "color-gamut": ["srgb", "p3", "rec2020"],
         "min-color-index": "256",
         "min-color": "256",
         "max-color-index": "256",
@@ -103,11 +103,19 @@ const knowHowConfig = {
         {
             "head": "Media Queries",
             "apply": true,
-            "possible": "media",
+            //"possible": "media",
+            "possible": ["max-resolution", "prefers-color-scheme", "orientation-portrait", "orientation-landscape"],
             "list": [
-                ["media-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"'],
-                //["media-not-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"'],
-                //["media-only-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"']
+                ["media-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"']
+            ]
+        },
+        {
+            "head": "Exclude Media Queries",
+            "apply": true,
+            "possible": ["max-resolution", "prefers-color-scheme", "orientation-portrait", "orientation-landscape"],
+            "split": ["not", "!"],
+            "list": [
+                ["$2media-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"']
             ]
         }
     ]

@@ -109,7 +109,7 @@ for (var key in screenSized) {
     screenNum = screenVal + 0.02;
 };
 var screenSizeKeys = Object.keys(screenSizes);
-var screenTypes = ["media", "print", "screen", "speech", "!print", "!screen", "!speech", "notprint", "notscreen", "notspeech", "onlyprint", "onlyscreen", "onlyspeech"];
+var screenTypes = ["media", "print", "screen", "speech", "!media", "!print", "!screen", "!speech", "notmedia", "notprint", "notscreen", "notspeech", "onlymedia", "onlyprint", "onlyscreen", "onlyspeech"];
 
 var masterTab = '\t', masterLine = '\n';
 
@@ -351,6 +351,7 @@ function getModifier(classList, classSecondary) {
             containers = {};
             screens = {};
             [screen, modifier, action] = key.split('_', 3);
+
             classList[key] = classList[key].replace(aM[0], '').trim();
             container = aM[1];
             multiScreen = false;
@@ -489,18 +490,18 @@ function getFamily(hA, hB) {
 function getWrapper(xZ) {
     var start = [], end = '}', tab = masterTab, line = masterLine;
 
-    if (xZ.indexOf('media-') == 0) {
+    if (xZ.indexOf('media-') > -1) {
         var xC = {
             'media': 'media',
-            "not": "not all and ",
-            "!": "not all and "
-            //"only": "only"
+            "not": "not all and",
+            "!": "not all and",
+            "only": "only"
         };
         var xP = "";
         for (var xK in xC) {
-            if (xZ.indexOf(xK + '-') > -1) {
+            if (xZ.indexOf(xK) > -1) {
                 xP += xC[xK] + ' ';
-                xZ = xZ.replace(xK + '-', '');
+                xZ = xZ.replace(xK + '-', '').replace(xK, '');
             }
         }
         var xY = getMediaQuery(xZ);
