@@ -103,8 +103,8 @@ const knowHowConfig = {
         {
             "head": "Media Queries",
             "apply": true,
-            //"possible": "media",
-            "possible": ["max-resolution", "prefers-color-scheme", "orientation-portrait", "orientation-landscape"],
+            "possible": "media",
+            //"possible": ["max-resolution", "prefers-color-scheme", "orientation-portrait", "orientation-landscape"],
             "list": [
                 ["media-$1{color-orange}", "$1", "a", 'a href="http://www.knowcss.com/"']
             ]
