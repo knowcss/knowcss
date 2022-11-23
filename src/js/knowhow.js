@@ -31,7 +31,7 @@ var knowHow = {
             elemVals = knowHowNav[key];
             elem = document.createElement('div');
             elem.id = key;
-            elem.setAttribute('know', 'cursor-pointer');
+            elem.setAttribute('know', 'cursor-pointer' + (elemVals.length > 2 && elemVals[2] ? ' border-top-2px/solid/#f3f3f3' : ''));
             elem.innerHTML = '<span know="notouch">' + elemVals[0] + '</span>' + (elemVals.length > 1 ? ' <span know="[sm] notouch">' + elemVals[1] + '</span>' : '');
             elem.onclick = (event) => {
                 console.log(event);

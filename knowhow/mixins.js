@@ -25,7 +25,7 @@ const mixins = {
     </div>
     */
 
-    "sm": "block font-size-13px color-b65b0c",
+    "sm": "block font-size-13px color-999",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "no": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
