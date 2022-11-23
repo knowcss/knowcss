@@ -1,10 +1,16 @@
-const knowHowConfig = {
+{
     "margin": [
         {
             "head": "Margin",
             "list": [
-                ["margin-8/auto", "explicit value"],
-                ["m-8/auto", "shorthand"]
+                [
+                    "margin-8/auto",
+                    "explicit value"
+                ],
+                [
+                    "m-8/auto",
+                    "shorthand"
+                ]
             ],
             "reference": {
                 "values": "8",
@@ -20,13 +26,18 @@ const knowHowConfig = {
             }
         }
     ],
-
     "border": [
         {
             "head": "Border",
             "list": [
-                ["border-1px/solid/#f00", "explicit value"],
-                ["b-1px/solid/#f00", "shorthand"]
+                [
+                    "border-1px/solid/#f00",
+                    "explicit value"
+                ],
+                [
+                    "b-1px/solid/#f00",
+                    "shorthand"
+                ]
             ],
             "reference": {
                 "values": "1px/solid/#f00",
@@ -42,13 +53,18 @@ const knowHowConfig = {
             }
         }
     ],
-
     "padding": [
         {
             "head": "Padding",
             "list": [
-                ["padding-8", "explicit value"],
-                ["p-8", "shorthand"]
+                [
+                    "padding-8",
+                    "explicit value"
+                ],
+                [
+                    "p-8",
+                    "shorthand"
+                ]
             ],
             "reference": {
                 "values": "8",
@@ -64,5 +80,4 @@ const knowHowConfig = {
             }
         }
     ]
-
-};
+}

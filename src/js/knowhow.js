@@ -5,15 +5,39 @@ const cssValue = (val) => {
     var cV = cL.pop();
     return cL.join('-') + ': ' + cV.replace(/\//g, " ");
 };
+const knowElem = (key) => { return document.getElementById(key); };
+
+var knowCache = {};
 
 var knowHow = {
-    config: function(key) {
-        return key || (typeof knowHowConfig !== 'undefined' ? knowHowConfig : {});
+    init: function(key) { return this.hamburger().switch(); },
+    nav: async function (key) {
+        if (key in knowCache == false && key in knowHowNav) {
+            const data = await fetch('./' + key + '.json');
+            knowCache[key] = await data.json();
+        }
+        return this.render(knowCache[key], this.key).reveal();
     },
-    init: function(key) {
-        if (typeof knowHowConfig !== 'undefined') {
-            this.render(this.config(key), this.key);
-            if (typeof $know !== 'undefined') { $know().render(); }
+    switch: function(key) { return this.nav(key || "index"); },
+    reveal: function(key) {
+        knowElem('root').style.visibility = 'visible';
+        return this;
+    },
+    hamburger: function() {
+        var nav = knowElem('nav');
+        var elem = null;
+        var elemVals = [];
+        for (var key in knowHowNav) {
+            elemVals = knowHowNav[key];
+            elem = document.createElement('div');
+            elem.id = key;
+            elem.setAttribute('know', 'cursor-pointer');
+            elem.innerHTML = '<span know="notouch">' + elemVals[0] + '</span>' + (elemVals.length > 1 ? ' <span know="[sm] notouch">' + elemVals[1] + '</span>' : '');
+            elem.onclick = (event) => {
+                console.log(event);
+                this.switch(event.target.id);
+            };
+            nav.appendChild(elem);
         }
         return this;
     },
@@ -29,9 +53,10 @@ var knowHow = {
         var tagHyphen = "";
         var tagSplits = [];
         var tagSplit = "";
+        var useVales = typeof knowHowValues !== 'undefined';
         for (var key in keys) {
             keys[key].forEach(function (val) {
-                html.push('<div know="[bx] [hr]">');
+                html.push('<div know="[bx]">');
                 if ("head" in val && val.head) { html.push('<div know="[hd]">' + val.head + '</div>'); }
                 html.push('<div know="[mt] [ft]">');
                 if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); }
@@ -45,7 +70,7 @@ var knowHow = {
                         tagUse = vals.length > 3 ? vals[3] : 'span';
                         tagLoops.forEach(function (tagLoop) {
                             tagSuffixes = [];
-                            if (key in knowHowValues) {
+                            if (useVales && key in knowHowValues) {
                                 if (tagLoop in knowHowValues[key]) {
                                     tagCheck = knowHowValues[key][tagLoop];
                                     tagSuffixes = typeof tagCheck === 'string' ? [tagCheck]: tagCheck;
@@ -55,9 +80,8 @@ var knowHow = {
                             tagSuffixes.forEach(function(tagSuffix) {
                                 tagHyphen = tagSuffix.length > 0 ? '-' : '';
                                 tagSplits.forEach(function(tagSplit) {
-                                    tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix);
-                                    tagActual = tagActual.replace('$2', tagSplit);
-                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tag + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
+                                    tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix).replace('$2', tagSplit);
+                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
                                 });
                             });
                         });
@@ -70,6 +94,7 @@ var knowHow = {
                     html.push('<div know="[mt] [ct]"><div know="[cd]"><div know="[nt]">');
                     for (var vals in val.reference.list) {
                         var sG = val.reference.list[vals];
+                        var sO = sG;
                         var sD = sG.replace('=', '-');
                         var sH = '';
                         var sV = '';
@@ -81,7 +106,7 @@ var knowHow = {
                         }
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
                         var sA = val.reference.apply ? ' know="' + vals + '"' : '';
-                        html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + sD + ' ' + vals + sH + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
+                        html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + sO + ' ' + vals + sH + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     };
                     html.push('</div></div>');
                 }
@@ -95,10 +120,8 @@ var knowHow = {
                 html.push('</div></div>');
             });
         }
-        //html.forEach(function(val) {
-        //    console.log(val);
-        //});
-        document.getElementById(id).innerHTML = html.join('');
+        knowElem(id).innerHTML = html.join('');
+        if (typeof $know !== 'undefined') { $know().render(); }
         return this;
     },
 

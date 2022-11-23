@@ -8,7 +8,8 @@ const shorterHand = {
     "pos": "position",
     "f": "font-family",
     "fw": "font-weight",
-    "cr": "cursor"
+    "cr": "cursor",
+    "wrap": "overflow-wrap"
 };
 
 const globalMixins = {
@@ -25,6 +26,10 @@ const shortHand = {
 
     "w": "width",
     "h": "height",
+
+    "notouch": "pointer-events-none user-select-none",
+    "noselect": "user-select-none",
+    "nopoint": "pointer-events-none",
 
     "mw": "min-width",
     "mh": "min-height",
@@ -194,7 +199,22 @@ const shortHand = {
     "contain": "object-cover--contain",
     "cover": "object-cover-cover",
     "scale-down": "object-cover=scale-down",
-    "scale": "object-cover=scale-down"
+    "scale": "object-cover=scale-down",
+
+    /* font spacing */
+    "indent": "text-indent",
+    "space": "letter-spacing",
+    "line": "line-height",
+    "word": "word-spacing",
+
+    /* white-space */
+    "nowrap": "white-space-nowrap",
+    "pre": "white-space-pre",
+    "pre-line": "white-space=pre-line",
+    "pre-wrap": "white-space=pre-wrap",
+
+    "break-word": "overflow-wrap=break-word",
+    "anywhere": "overflow-wrap-anywhere"
 };
 if (typeof window !== 'undefined') { }
 else if (typeof module !== 'undefined') {

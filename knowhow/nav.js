@@ -1,0 +1,28 @@
+const knowHowNav = {
+    "index": ["Getting Started", "The Basics of KnowCSS"],
+
+    "screen": ["Screens", "Screen Size, Breakpoints, Media Queries"],
+    "template": ["Templates", "Variables, Shorthand, Runtime"],
+    "nested": ["Nested", "Grouping, Modifiers, Selectors, Actions"],
+    "webkit": ["Cross-Browser", "Webkit, Auto-Prefix"],
+    "icon": ["Icons", "Bootstrap, Font Awesome, SVG"],
+    "function": ["Functions", "Var, Enc, Calc, Not, Lang, Min, Max"],
+    "normalize": ["Compatibility", "Accessibility, Normalization, Auditing"],
+    "events": ["Environment", "Browser, OS, Screen, Mobile, Orientation"],
+    "feature": ["Features", "Media, Screen, Print, Speech"],
+    "global": ["Global", "Initial, Inherit, Revert, Unset"],
+    "box": ["Box Model", "Margin, Border, Padding, Overflow"],
+    "cursor": ["Pointer", "Cursors, Events, Selection"],
+    "font": ["Typography", "Family, Size, Weight, Space, Wrap, Style, Variant"],
+    "modifier": ["Psuedo Elements", "Modifiers, Selectors, Actions"],
+    "presentation": ["Presentation", "Display, Visibility, Position, Align, Clear, Float, Stacking"],
+    "dimension": ["Dimensions", "Height, Width"],
+    "target": ["Targeting", "All, Children, Adjacents, Siblings, Parents"],
+    "color": ["Style", "Color, Hue, Shading, Saturation"],
+    "background": ["Background", "Color, Image, Poster, Picture"],
+    "layout": ["Layout", "Table, Grid, Flex"],
+    "outline": ["Highlight", "Outline, Shadow, Blur, Gradient"],
+    "animation": ["Animation", "Transition, Transform, Translate, Keyframe, Scale"],
+    "link": ["Link", "Decoration, URL, Alt, Title"],
+    "list": ["Block Model", "Heading, List, Set, Description, Blockquote, Paragraph"]
+};

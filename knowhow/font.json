@@ -1,4 +1,4 @@
-const knowHowConfig = {
+{
     "font-family": [
         {
             "head": "Font Family",
@@ -47,5 +47,53 @@ const knowHowConfig = {
                 }
             }
         }
+    ],
+
+    "spacing": [
+        {
+            "head": "Font Spacing",
+            "desc": "",
+            "list": [
+                ["text-indent-2px indent-2px", "text indentation"],
+                ["letter-spacing-2px space-2px", "letter spacing"],
+                ["line-height-2px line-2px", "line height"],
+                ["word-spacing-2px word-2px", "word spacing"]
+            ]
+        }
+    ],
+
+    "white-space": [
+        {
+            "head": "White Space",
+            "desc": "",
+            "list": [
+                ["white-space-nowrap", "explicit value"],
+                ["nowrap", "alias"],
+                ["pre", "alias"],
+                ["pre-line", "alias"],
+                ["pre-wrap", "alias"]
+            ]
+        }
+    ],
+
+
+    "overflow-wrap": [
+        {
+            "head": "Overflow Wrap",
+            "desc": "",
+            "list": [
+                ["overflow-wrap=break-word", "explicit value"],
+                ["break-word", "alias"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "wrap",
+                "apply": true,
+                "list": {
+                    "break-word": "overflow-wrap=break-word",
+                    "anywhere": "overflow-wrap-anywhere"
+                }
+            }
+        }
     ]
-};
+}

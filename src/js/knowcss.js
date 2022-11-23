@@ -143,21 +143,30 @@ function getImportant(val) {
 // TODO - add support for col-SCREEN and offset-SCREEN (ex: col-sm-1 offset-xl-3)
 // Already have support for SCREEN-col and SCREEN-offset
 function getGridSystem(classFound, classesFound) {
+    var gridFound = false;
     if (classFound == "row") {
         classFound = "width-100%";
         classesFound.push("display=-webkit-box", "display=-ms-flexbox", "display-flex", "-ms-flex-wrap-wrap", "flex-wrap-wrap");
+        gridFound = true;
     }
     else if (classFound.indexOf('col-') == 0) {
         var whichCol = classFound.replace(/^col-/, '');
         var whichPct = (parseInt(whichCol) / 12) * 100;
         classFound = "width-" + parseFloat(whichPct.toFixed(6)) + "%";
         classesFound.push("flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + classFound, "position-relative", classFound);
+        gridFound = true;
     }
     else if (classFound.indexOf('offset-') == 0) {
         var whichOffset = classFound.replace(/^offset-/, '');
         var whichPct = (parseInt(whichOffset) / 12) * 100;
         classFound = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
+        gridFound = true;
     }
+
+    if (gridFound) {
+        console.log(['getGridSystem', classesFound.join(' ')]);
+    }
+
     return [classFound, classesFound];
 }
 function shouldREM(className) {
@@ -196,7 +205,7 @@ function getNavigator () {
         platform: navigator.platform
     };
 }
-function getuserConditionals () {
+function getUserConditionals () {
     var navigatorInfo = getNavigator();
     var userAgent = navigatorInfo.agent;
     var vendor = navigatorInfo.vendor;
@@ -599,6 +608,7 @@ function getActions(mS, mD) {
 function getScreens(mS, mD) {
     var ret = {}, all = [], zA = '', zB = '', notScreens = false;
     var zM = new RegExp(screenGrep, 'gi');
+
     while ((zA = zM.exec(mS)) !== null) {
         zB = zA[1];
         if (zB.indexOf('!') > -1) {
@@ -626,7 +636,7 @@ function getScreens(mS, mD) {
 function getCleanStyles(style) {
     return style.replace(/(;){2,}/g, ';');
 }
-function getmixins() {
+function getUserMixins() {
     if (defined(knowCSSOptions.mixins)) {
         for (var key in knowCSSOptions.mixins) { allMixins[key] = getVariables(knowCSSOptions.mixins[key]); }
     }
@@ -654,6 +664,7 @@ function variableMixin (mZ) {
     return [mF, mZ, mR, mC];
 }
 function getMixins(mA) {
+    var mO = mA;
     var mixin = '', newMixin = {}, anyNewMixin = false;
     var zM = new RegExp('\\[(.*?)\\]', 'i');
     var mX = [];
@@ -813,6 +824,21 @@ function getScreenPrefixes(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
+function getContainerExtras (classFound, classesFound) {
+    if (classFound == 'container') {
+        classFound = '';
+        classesFound.push(
+            "width-100%",
+            "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto",
+            "max-width-100%", "1230{max-width-1550}", "1200{max-width-1140}", "1024{max-width-940}", "768{max-width-720}"
+        );
+    }
+    else if (key == 'container-fluid') {
+        classFound = '';
+        classesFound.push("width-100%", "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto");
+    }
+    return [classFound, classesFound];
+}
 function getContainers(classString) {
     var ret = [];
     if (classString.indexOf('container') > -1) {
@@ -822,16 +848,8 @@ function getContainers(classString) {
         var i = 0;
         while (i < x) {
             key = classesFound[i];
-            if (key == 'container') {
-                ret.push(
-                    "width-100%",
-                    "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto",
-                    "max-width-100%", "1230{max-width-1550}", "1200{max-width-1140}", "1024{max-width-940}", "768{max-width-720}"
-                );
-            }
-            else if (key == 'container-fluid') {
-                ret.push("width-100%", "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto");
-            }
+            [key, ret] = getContainerExtras(key, ret);
+            if (key.length > 0) { ret.push(key); }
             i++;
         };
     }
@@ -875,8 +893,8 @@ function knowCSSRender(uI, uC, uO) {
         if (knowStartup == null && div && "innerHTML" in div) { knowStartup = div.innerHTML; }
         classTags = document.querySelectorAll("[" + knowID + "]");
     }
-    getmixins();
-    getuserConditionals();
+    getUserMixins();
+    getUserConditionals();
     getGreps();
     var attr = "";
     var sharedClasses = {};
@@ -917,6 +935,7 @@ function knowCSSRender(uI, uC, uO) {
                     //if (classFound.length > 0) {
                         [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
                         if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
+                        [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                         [classFound, classesFound] = getGridSystem(classFound, classesFound);
                         if (!isDefine) {
                             [classParent, screen] = getParentSelector(screen);
@@ -951,6 +970,7 @@ function knowCSSRender(uI, uC, uO) {
                                 [className, classValue] = getFamily(className, classValue);
                                 if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
                                 classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+
                                 /*
                                 if (if (!uX.smart && uX.classes == 'detail') {
                                     classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
@@ -1026,12 +1046,14 @@ function knowCSSRender(uI, uC, uO) {
             }
             smartDetail[smartKey][2] = smartClassHere;
             addParent = smartDetail[smartKey][4];
+
             smartKeys.split('__').forEach(function (ii) {
                 if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
                 else { classTags[ii].classList.add(smartClassHere); }
                 classTags[ii].removeAttribute(knowID);
             });
         }
+
         // JAA TODO:
         // for compile(), smartClassesHere = [];
         //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
