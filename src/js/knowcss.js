@@ -597,6 +597,7 @@ function getActions(mS, mD) {
         zM = new RegExp(actionGrep[i][1], 'gi');
         zS = actionGrep[i][0].replace("*", mP);
         while ((zA = zM.exec(mS)) !== null) {
+            if (zS == ':' && mP != '*') { zA[1] += ' ' + mP; }
             ret[i][zA[1]] = zS;
             zY = true;
         }
@@ -858,7 +859,7 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
-        'minifycss': true,
+        'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
         'share': false,

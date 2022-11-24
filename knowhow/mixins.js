@@ -13,6 +13,8 @@ const cssVars = {
 const mixins = {
     "hamburger": [
     	"centered",
+        "pointer",
+        "hover>span{bg-933}",
     	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px origin-4px/0px}",
     	"first-child>span{origin-0%/0%}",
     	"last-child>span{origin-0%/100%}"
@@ -25,18 +27,18 @@ const mixins = {
     </div>
     */
 
-    "sm": "block font-size-13px color-999",
+    "sm": "block font-size-12px color-999",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "no": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
     "go": "color-339 font-weight-400",
     "hd": "font-size-32px normal!", //aligncenter
-    "mt": "margin-10px/0 margin-top-10px-! full",
+    "xt": "margin-10px/0 margin-top-10px-! full",
     "mx": "center",
     "ft": "font-size-16px",
     "hr": "border-top-3px/solid/#f3f3f3 center",
     "hb": "border-bottom-3px/solid/#f3f3f3 center",
-    "bx": "padding-25px/5px {{$box}}",
+    "bx": "padding-15px/5px {{$box}}",
     "hx": "margin-20px/auto/10px/auto padding-0",
     "ic": "padding-5px/5px all{color-666}",
     "na": "hover>a{color-933}",

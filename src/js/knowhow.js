@@ -33,12 +33,24 @@ var knowHow = {
             elem.id = key;
             elem.setAttribute('know', 'cursor-pointer' + (elemVals.length > 2 && elemVals[2] ? ' border-top-2px/solid/#f3f3f3' : ''));
             elem.innerHTML = '<span know="notouch">' + elemVals[0] + '</span>' + (elemVals.length > 1 ? ' <span know="[sm] notouch">' + elemVals[1] + '</span>' : '');
-            elem.onclick = (event) => {
-                console.log(event);
-                this.switch(event.target.id);
-            };
+            elem.onclick = (event) => { this.switch(event.target.id); };
             nav.appendChild(elem);
         }
+        var hamburger = knowElem('hamburger');
+        hamburger.onclick = (event) => {
+            // JAA TODO - add toggle{} selector
+            const navCol = knowElem('navwrap');
+            const navClass = navCol.classList;
+            var navWidth = 0;
+            if (navClass.contains('closed')) {
+                navClass.remove('closed');
+                navWidth = '300px';
+            }
+            else {
+                navClass.add('closed');
+            }
+            navCol.style.width = navWidth;
+        };
         return this;
     },
     render: function(keys, id) {
@@ -58,13 +70,13 @@ var knowHow = {
             keys[key].forEach(function (val) {
                 html.push('<div know="[bx]">');
                 if ("head" in val && val.head) { html.push('<div know="[hd]">' + val.head + '</div>'); }
-                html.push('<div know="[mt] [ft]">');
+                html.push('<div know="[xt] [ft]">');
                 if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); }
-                if ("more" in val && val.more) { html.push('<div know="[mt]">' + val.more + '</div>'); }
+                if ("more" in val && val.more) { html.push('<div know="[xt]">' + val.more + '</div>'); }
                 if ("list" in val && val.list) {
                     tagLoops = "possible" in val ? (typeof val.possible === 'string' ? $know().lists()[val.possible] : val.possible) : ["main"];
                     tagSplits = "split" in val ? val.split : [""];
-                    html.push('<div know="[mt] [ct]"><div know="[cd]"><div know="[nt]">');
+                    html.push('<div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     val.list.forEach(function (vals) {
                         tag = vals.length > 2 ? vals[2] : 'div';
                         tagUse = vals.length > 3 ? vals[3] : 'span';
@@ -89,9 +101,9 @@ var knowHow = {
                     html.push('</div></div>');
                 }
                 if ("reference" in val && val.reference) {
-                    html.push('</div></div><div know="[mt] [ft]">');
+                    html.push('</div></div><div know="[xt] [ft]">');
                     if ("head" in val.reference && val.reference.head) { html.push('<div>' + val.reference.head + '</div>'); }
-                    html.push('<div know="[mt] [ct]"><div know="[cd]"><div know="[nt]">');
+                    html.push('<div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     for (var vals in val.reference.list) {
                         var sG = val.reference.list[vals];
                         var sO = sG;
@@ -111,7 +123,7 @@ var knowHow = {
                     html.push('</div></div>');
                 }
                 if ("reverts" in val && val.reverts) {
-                    html.push('</div></div><div know="[mt] [ft]"><div>Reversions:</div><div know="[mt] [ct]"><div know="[cd]"><div know="[nt]">');
+                    html.push('</div></div><div know="[xt] [ft]"><div>Reversions:</div><div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     ["unset", "revert", "initial", "inherit"].forEach(function(vals) {
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + key + '-' + vals + '&quot;</span>&gt;</span><span>{' + cssValue(key + '-' + vals) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     });
