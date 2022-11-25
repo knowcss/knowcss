@@ -30,6 +30,7 @@ const shortHand = {
     "notouch": "pointer-events-none user-select-none",
     "noselect": "user-select-none",
     "nopoint": "pointer-events-none",
+    "nohighlight": "user-select-none touch-callout-none tap-highlight-color-transparent",
 
     "mw": "min-width",
     "mh": "min-height",

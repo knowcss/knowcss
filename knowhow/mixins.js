@@ -12,12 +12,18 @@ const cssVars = {
 };
 const mixins = {
     "hamburger": [
-    	"centered",
-        "pointer",
+    	"centered w-32px h-32px overflow-hidden pt-3px",
+        "pointer nohighlight",
         "hover>span{bg-933}",
-    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px origin-4px/0px}",
+        ">input{block w-32px h-32px mw-32px mh-32px absolute top=-5px left=-5px cursor-pointer opacity-0 z-index-2}",
+    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px transition=all/.2s/ease-in}",
     	"first-child>span{origin-0%/0%}",
     	"last-child>span{origin-0%/100%}"
+    ],
+    "toggle-hamburger": [
+        "checked~nth-last-child-3{transform=rotate(45deg) translate=-3px/13px! relative background-933 origin=66.6666%/0%}",
+        "checked~nth-last-child-2{opacity-0}",
+        "checked~nth-last-child-1{transform=rotate(-45deg) translate=-6px/-13px! relative background-933 origin=66.6666%/0}"
     ],
     /*
     <div know="hamburger-anycolor">

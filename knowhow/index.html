@@ -19,26 +19,27 @@
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" know="margin-0 padding-0">
     <div id="root" role="main" know="hidden all{font-weight-300 {{$box}} {{$family}}}">
 
-        <header id="header" know="[xt]">
+        <header id="header" know="[xt] padding-0px/8px">
             <div know="mt-24px center aligncenter"><a href="/"><img src="../example/logo-700.png" alt="KnowCSS, The NoCSS Engine" width="350" height="63" know="margin-top-0px width-100% max-width-350px height-auto"></a></div>
 
-            <div id="hamburger" know="mt-10px hamburger-cfcfcf">
+            <div id="hamburger" know="mt-10px hamburger-cfcfcf position-relative">
+                <input type="checkbox" know="toggle-hamburger" />
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
-            <h1 know="[hx] [bx] font-size-40px aligncenter color-333 nounderline">Welcome to <span know="[red]">KnowHOW,</span><br>The {{$knowcss}} Documentation</h1>
+            <h1 know="[hx] [bx] 28 smup{40} aligncenter color-333 nounderline">Welcome to <span know="[red]">KnowHOW,</span><br>The {{$knowcss}} Documentation</h1>
         </header>
 
         <section know="[hr] full clear-both smup{table}">
-            <div id="navcol" know="smup{table-cell aligntop border-right-2px/solid/#f3f3f3}">
-                <div id="navwrap" know="smup{w-300 mx-300 overflow-hidden transition=width/.3s/ease-out}">
+            <div id="navcol" know="none hidden smup{table-cell visible aligntop border-right-2px/solid/#f3f3f3}">
+                <div id="navwrap" know="smup{w-300 mx-300 overflow-hidden transition=all/.3s/ease-out}">
                     <div id="nav" know="smup{w-300 mx-300 margin-16px/16px/16px/8px} smdown{centered} >div{16 color-b65b0c padding-4px pb-10px}"></div>
                 </div>
             </div>
             <div know="smup{table-cell aligntop}">
-                <div id="knowhow" know="smup{padding-left-16px}"></div>
+                <div id="knowhow" know="padding-8px smup{padding-left-16px}"></div>
             </div>
         </section>
 

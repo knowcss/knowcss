@@ -23,7 +23,7 @@ const knowCSSLists = function () {
         'modifiers': ['after', 'backdrop', 'before', 'cue', 'cue-region', 'file-selector-button', 'first-letter', 'first-line', 'grammar-error', 'marker', 'placeholder', 'placeholder-shown', 'selection', 'spelling-error', 'target-text'],
         'selectors': ['last-child', 'first-child', 'only-child', 'first-of-type', 'last-of-type', 'only-of-type', 'nth-last-child', 'nth-last-of-type'],
         'actions': ['current', 'past', 'future', 'playing', 'paused', 'active', 'checked', 'disabled', 'empty', 'enabled', 'focus-visible', 'focus-within', 'focus', 'hover', 'in-range', 'invalid', 'link', 'optional', 'out-of-range', 'read-only', 'read-write', 'required', 'root', 'target', 'valid', 'visited'],
-        'webkit': ['align-content', 'align-items', 'align-self', 'alt', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'animation', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flex', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-row', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'grid-template', 'grid', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after-collapse', 'margin-after', 'margin-before-collapse', 'margin-before', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'marquee', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position-x', 'mask-position-y', 'mask-position', 'mask-repeat-x', 'mask-repeat-y', 'mask-repeat', 'mask-size', 'mask-source-type', 'mask', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'perspective', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-emphasis', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke-color', 'text-stroke-width', 'text-stroke', 'text-underline-position', 'text-zoom', 'transform-2d', 'transform-3d', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-origin', 'transform-style', 'transform', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'transition', 'user-drag', 'user-modify', 'user-select', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'media-controls', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'],
+        'webkit': ['align-content', 'align-items', 'align-self', 'alt', 'animation-delay', 'animation-direction', 'animation-duration', 'animation-fill-mode', 'animation-iteration-count', 'animation-name', 'animation-play-state', 'animation-timing-function', 'animation-trigger', 'animation', 'app-region', 'appearance', 'aspect-ratio', 'backdrop-filter', 'backface-visibility', 'background-clip', 'background-composite', 'background-origin', 'background-size', 'border-after-color', 'border-after-style', 'border-after-width', 'border-after', 'border-before-color', 'border-before-style', 'border-before-width', 'border-before', 'border-bottom-left-radius', 'border-bottom-right-radius', 'border-end-color', 'border-end-style', 'border-end-width', 'border-end', 'border-fit', 'border-horizontal-spacing', 'border-image', 'border-radius', 'border-start-color', 'border-start-style', 'border-start-width', 'border-start', 'border-top-left-radius', 'border-top-right-radius', 'border-vertical-spacing', 'box-align', 'box-decoration-break', 'box-direction', 'box-flex-group', 'box-flex', 'box-lines', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow', 'box-sizing', 'clip-path', 'color-correction', 'column-axis', 'column-break-after', 'column-break-before', 'column-break-inside', 'column-count', 'column-fill', 'column-gap', 'column-progression', 'column-rule', 'column-rule-color', 'column-rule-style', 'column-rule-width', 'column-span', 'column-width', 'columns', 'cursor-visibility', 'dashboard-region', 'device-pixel-ratio', 'filter', 'flex-basis', 'flex-direction', 'flex-flow', 'flex-grow', 'flex-shrink', 'flex-wrap', 'flex', 'flow-from', 'flow-into', 'font-feature-settings', 'font-kerning', 'font-size-delta', 'font-smoothing', 'font-variant-ligatures', 'grid-area', 'grid-auto-columns', 'grid-auto-flow', 'grid-auto-rows', 'grid-column', 'grid-column-end', 'grid-column-gap', 'grid-column-start', 'grid-gap', 'grid-row-end', 'grid-row-gap', 'grid-row-start', 'grid-row', 'grid-template-areas', 'grid-template-columns', 'grid-template-rows', 'grid-template', 'grid', 'highlight', 'hyphenate-character', 'hyphenate-charset', 'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphenate-limit-lines', 'hyphens', 'initial-letter', 'justify-content', 'justify-items', 'justify-self', 'line-align', 'line-box-contain', 'line-break', 'line-clamp', 'line-grid', 'line-snap', 'locale', 'logical-height', 'logical-width', 'margin-after-collapse', 'margin-after', 'margin-before-collapse', 'margin-before', 'margin-bottom-collapse', 'margin-collapse', 'margin-end', 'margin-start', 'margin-top-collapse', 'marquee-direction', 'marquee-increment', 'marquee-repetition', 'marquee-speed', 'marquee-style', 'marquee', 'mask-attachment', 'mask-box-image', 'mask-box-image-outset', 'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source', 'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image', 'mask-origin', 'mask-position-x', 'mask-position-y', 'mask-position', 'mask-repeat-x', 'mask-repeat-y', 'mask-repeat', 'mask-size', 'mask-source-type', 'mask', 'match-nearest-mail-blockquote-color', 'max-logical-height', 'max-logical-width', 'media-text-track-container', 'min-logical-height', 'min-logical-width', 'nbsp-mode', 'opacity', 'order', 'overflow-scrolling', 'padding-after', 'padding-before', 'padding-end', 'padding-start', 'perspective-origin', 'perspective-origin-x', 'perspective-origin-y', 'perspective', 'print-color-adjust', 'region-break-after', 'region-break-before', 'region-break-inside', 'region-fragment', 'rtl-ordering', 'ruby-position', 'scroll-snap-type', 'shape-image-threshold', 'shape-inside', 'shape-margin', 'shape-outside', 'svg-shadow', 'tap-highlight-color', 'text-color-decoration', 'text-combine', 'text-decoration-line', 'text-decoration-skip', 'text-decoration-style', 'text-decorations-in-effect', 'text-emphasis-color', 'text-emphasis-position', 'text-emphasis-style', 'text-emphasis', 'text-fill-color', 'text-justify', 'text-orientation', 'text-security', 'text-size-adjust', 'text-stroke-color', 'text-stroke-width', 'text-stroke', 'text-underline-position', 'text-zoom', 'transform-2d', 'transform-3d', 'transform-origin-x', 'transform-origin-y', 'transform-origin-z', 'transform-origin', 'transform-style', 'transform', 'transition-delay', 'transition-duration', 'transition-property', 'transition-timing-function', 'transition', 'user-drag', 'user-modify', 'user-select', 'touch-callout', 'animating-full-screen-transition', 'any-link', 'autofill', 'autofill-strong-password', 'drag', 'full-page-media', 'full-screen-ancestor', 'full-screen-controls-hidden', 'full-screen-document', 'full-screen', 'file-upload-button', 'inner-spin-button', 'input-placeholder', 'media-controls-current-time-display', 'media-controls-enclosure', 'media-controls-fullscreen-button', 'media-controls-mute-button', 'media-controls-overlay-enclosure', 'media-controls-panel', 'media-controls-play-button', 'media-controls-time-remaining-display', 'media-controls-timeline', 'media-controls-toggle-closed-captions-button', 'media-controls-volume-control-container', 'media-controls-volume-control-hover-background', 'media-controls-volume-slider', 'media-controls', 'meter-bar', 'meter-even-less-good-value', 'meter-inner-element', 'meter-optimum-value', 'meter-suboptimum-value', 'outer-spin-button', 'progress-bar', 'progress-inner-element', 'progress-value', 'search-cancel-button', 'search-results-button', 'slider-runnable-track', 'slider-thumb'],
         'screens': ['media', 'print', 'screen', 'speech', '!print', '!screen', '!speech', 'notprint', 'notscreen', 'notspeech', 'onlyprint', 'onlyscreen', 'onlyspeech']
     };
 };
@@ -331,8 +331,13 @@ function getKey(screen, modifier, name, action, val, important) {
     var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
     return key;
 }
-function getDynamic(container) {
-    var dynamic = '';
+function getDynamic(container, action) {
+    var dynamic = '', newAction = '';
+    var keepAction = false;
+    if (container.indexOf('~') > -1) {
+        [action, container] = container.split('~', 2);
+        keepAction = true;
+    }
     if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace('>', '> '); }
     else if (container.indexOf('all') == 0) {
         if (container == 'all') { dynamic = ' *'; }
@@ -340,12 +345,13 @@ function getDynamic(container) {
         else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
     }
     else if (container.indexOf('nth') > -1) {
-        if (container.indexOf('nth-child') > -1) { dynamic = ':nth-child(' + container.replace('nth-child-', '') + ')'; }
-        else if (container.indexOf('nth-last-child') > -1) { dynamic = ':nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-        else if (container.indexOf('nth-of-type') > -1) { dynamic = ':nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-        else if (container.indexOf('nth-last-of-type') > -1) { dynamic = ':nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        var colon = ':' + (keepAction ? action + ' ~ span:' : '');
+        if (container.indexOf('nth-child') > -1) { dynamic = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
+        else if (container.indexOf('nth-last-child') > -1) { dynamic = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+        else if (container.indexOf('nth-of-type') > -1) { dynamic = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+        else if (container.indexOf('nth-last-of-type') > -1) { dynamic = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
     }
-    return dynamic;
+    return [dynamic, keepAction ? newAction : action];
 }
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
@@ -366,8 +372,11 @@ function getModifier(classList, classSecondary) {
             classList[key] = classList[key].replace(aM[0], '').trim();
             container = aM[1];
             multiScreen = false;
-            dynamic = getDynamic(container);
-            if (dynamic.length > 0) { classList[screen + '_' + dynamic + '_' + action] = aM[2]; }
+            [dynamic, action] = getDynamic(container, action);
+            if (dynamic.length > 0) {
+                console.log(['use dynamic', dynamic, container, action, screen, modifier]);
+                classList[screen + '_' + dynamic + '_' + action] = aM[2];
+            }
             else {
                 [screen, modifier, action] = key.split('_', 3);
                 containers[container] = true;
@@ -438,8 +447,10 @@ function getColor(hE, hC) {
             if (zH.test(hF)) {
                 hF = getShade(hF, zY[1]);
                 if (zY[2] != 100) { hE = getOpacity(hF, zY[2]); }
+                else if (hF.length > 6) { hE = hF; }
                 else { hE = '#' + getHex(hF); }
             }
+            else if (hF.length > 6) { hE = hF; }
             else { hE = '#' + hF; }
         }
     }
@@ -592,18 +603,30 @@ function getActions(mS, mD) {
     if (mS.indexOf('>') > -1) {
         mP = mS.split('>', 2).pop();
         if (!mP) { mP = "*"; }
+        else {
+            mP = ' ' + mP;
+        }
+    }
+    else if (mS.indexOf('~') > -1) {
+        mP = mS.split('~', 2).pop();
+        if (!mP) { mP = "*"; }
+        else {
+            mP = '~' + mP;
+        }
     }
     while (i < x) {
         zM = new RegExp(actionGrep[i][1], 'gi');
         zS = actionGrep[i][0].replace("*", mP);
         while ((zA = zM.exec(mS)) !== null) {
-            if (zS == ':' && mP != '*') { zA[1] += ' ' + mP; }
+            if (zS == ':' && mP != '*') { zA[1] += mP; }
             ret[i][zA[1]] = zS;
             zY = true;
         }
         i++;
     }
     if (!zY) { ret = [{}]; ret[0][mD] = ""; }
+
+    console.log(['getActions', mS, mD, ret]);
     return ret;
 }
 function getScreens(mS, mD) {

@@ -16,11 +16,11 @@ var knowHow = {
             const data = await fetch('./' + key + '.json');
             knowCache[key] = await data.json();
         }
-        return this.render(knowCache[key], this.key).reveal();
+        return this.render(knowCache[key], this.key).reveal('root');
     },
     switch: function(key) { return this.nav(key || "index"); },
     reveal: function(key) {
-        knowElem('root').style.visibility = 'visible';
+        knowElem(key).style.visibility = 'visible';
         return this;
     },
     hamburger: function() {
@@ -39,17 +39,26 @@ var knowHow = {
         var hamburger = knowElem('hamburger');
         hamburger.onclick = (event) => {
             // JAA TODO - add toggle{} selector
-            const navCol = knowElem('navwrap');
-            const navClass = navCol.classList;
-            var navWidth = 0;
+            const navWrap = knowElem('navwrap');
+            const navCol = knowElem('navcol');
+            const navClass = navWrap.classList;
+            const navMobile = window.innerWidth < 568;
+            var navWidth = navMobile ? "100%" : 0;
+            var navBlock = ['none', 'hidden'];
             if (navClass.contains('closed')) {
                 navClass.remove('closed');
-                navWidth = '300px';
+                if (!navMobile) { navWidth = '300px'; }
             }
             else {
                 navClass.add('closed');
+                if (navMobile) { navBlock = ['block', 'visible']; }
+                else { navBlock = ['table-cell', 'visible']; }
             }
-            navCol.style.width = navWidth;
+            if (navMobile) {
+                navCol.style.display = navBlock[0];
+                navCol.style.visibility = navBlock[1];
+            }
+            navWrap.style.width = navWidth;
         };
         return this;
     },
