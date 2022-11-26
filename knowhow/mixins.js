@@ -10,29 +10,23 @@ const cssVars = {
     "html": '<span know="[go]">HTML</span>',
     "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
 };
-const mixins = {
+const components = {
     "hamburger": [
-    	"centered w-32px h-32px overflow-hidden pt-3px",
+        "centered w-32px h-32px overflow-hidden pt-3px",
         "pointer nohighlight",
         "hover>span{bg-933}",
-        ">input{block w-32px h-32px mw-32px mh-32px absolute top=-5px left=-5px cursor-pointer opacity-0 z-index-2}",
-    	">span{bg-$1 block w-33px h-4px mb-5px relative br-3px transition=all/.2s/ease-in}",
-    	"first-child>span{origin-0%/0%}",
-    	"last-child>span{origin-0%/100%}"
+        ">input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
+        ">span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.2s/ease-in}",
+        "first-child>span{origin-0%/0%}",
+        "last-child>span{origin-0%/100%}"
     ],
     "toggle-hamburger": [
-        "checked~nth-last-child-3{transform=rotate(45deg) translate=-3px/13px! relative background-933 origin=66.6666%/0%}",
-        "checked~nth-last-child-2{opacity-0}",
-        "checked~nth-last-child-1{transform=rotate(-45deg) translate=-6px/-13px! relative background-933 origin=66.6666%/0}"
-    ],
-    /*
-    <div know="hamburger-anycolor">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    */
-
+        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative background-933 origin=66.6666%/0}",
+        "checked~span-nth-last-child-2{opacity-0}",
+        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative background-933 origin=66.6666%/0%}",
+    ]
+}
+const mixins = {
     "sm": "block font-size-12px color-999",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "no": "color-2D862D font-weight-400",

@@ -10,7 +10,7 @@ const knowElem = (key) => { return document.getElementById(key); };
 var knowCache = {};
 
 var knowHow = {
-    init: function(key) { return this.hamburger().switch(); },
+    init: function (key) { return this.hamburger().switch(); },
     nav: async function (key) {
         if (key in knowCache == false && key in knowHowNav) {
             const data = await fetch('./' + key + '.json');
@@ -18,12 +18,12 @@ var knowHow = {
         }
         return this.render(knowCache[key], this.key).reveal('root');
     },
-    switch: function(key) { return this.nav(key || "index"); },
-    reveal: function(key) {
+    switch: function (key) { return this.nav(key || "index"); },
+    reveal: function (key) {
         knowElem(key).style.visibility = 'visible';
         return this;
     },
-    hamburger: function() {
+    hamburger: function () {
         var nav = knowElem('nav');
         var elem = null;
         var elemVals = [];
@@ -39,30 +39,26 @@ var knowHow = {
         var hamburger = knowElem('hamburger');
         hamburger.onclick = (event) => {
             // JAA TODO - add toggle{} selector
-            const navWrap = knowElem('navwrap');
-            const navCol = knowElem('navcol');
-            const navClass = navWrap.classList;
-            const navMobile = window.innerWidth < 568;
+            const navCheck = knowElem('toggle-hamburger').checked;
+            const navMobile = window.innerWidth < 768;
             var navWidth = navMobile ? "100%" : 0;
             var navBlock = ['none', 'hidden'];
-            if (navClass.contains('closed')) {
-                navClass.remove('closed');
+            if (!navCheck) {
                 if (!navMobile) { navWidth = '300px'; }
             }
             else {
-                navClass.add('closed');
                 if (navMobile) { navBlock = ['block', 'visible']; }
                 else { navBlock = ['table-cell', 'visible']; }
             }
             if (navMobile) {
-                navCol.style.display = navBlock[0];
-                navCol.style.visibility = navBlock[1];
+                const navCol = knowElem('navcol');
+                [navCol.style.display, navCol.style.visibility] = navBlock;
             }
-            navWrap.style.width = navWidth;
+            knowElem('navwrap').style.width = navWidth;
         };
         return this;
     },
-    render: function(keys, id) {
+    render: function (keys, id) {
         var html = [];
         var tag = 'div';
         var tagUse = 'span';
@@ -94,13 +90,13 @@ var knowHow = {
                             if (useVales && key in knowHowValues) {
                                 if (tagLoop in knowHowValues[key]) {
                                     tagCheck = knowHowValues[key][tagLoop];
-                                    tagSuffixes = typeof tagCheck === 'string' ? [tagCheck]: tagCheck;
+                                    tagSuffixes = typeof tagCheck === 'string' ? [tagCheck] : tagCheck;
                                 }
                             }
                             if (tagSuffixes.length == 0) { tagSuffixes.push(''); }
-                            tagSuffixes.forEach(function(tagSuffix) {
+                            tagSuffixes.forEach(function (tagSuffix) {
                                 tagHyphen = tagSuffix.length > 0 ? '-' : '';
-                                tagSplits.forEach(function(tagSplit) {
+                                tagSplits.forEach(function (tagSplit) {
                                     tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix).replace('$2', tagSplit);
                                     html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
                                 });
@@ -133,7 +129,7 @@ var knowHow = {
                 }
                 if ("reverts" in val && val.reverts) {
                     html.push('</div></div><div know="[xt] [ft]"><div>Reversions:</div><div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
-                    ["unset", "revert", "initial", "inherit"].forEach(function(vals) {
+                    ["unset", "revert", "initial", "inherit"].forEach(function (vals) {
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + key + '-' + vals + '&quot;</span>&gt;</span><span>{' + cssValue(key + '-' + vals) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     });
                     html.push('</div></div>');
@@ -159,7 +155,7 @@ if (typeof window !== 'undefined') {
     };
     knowHowProto.prototype = knowHow;
 
-    if (['complete','interactive'].includes(document.readyState)) { $knowhow().init(); }
+    if (['complete', 'interactive'].includes(document.readyState)) { $knowhow().init(); }
     else { document.addEventListener('DOMContentLoaded', function () { $knowhow().init(); }); }
 }
 else if (typeof module !== 'undefined') { module.exports = knowHow; }

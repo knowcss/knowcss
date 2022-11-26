@@ -14,6 +14,7 @@ var knowCSSOptions = {
     shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
     cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
     mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
+    components: typeof components !== 'undefined' && components != null ? components : {},
     conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
 
@@ -115,15 +116,6 @@ var masterTab = '\t', masterLine = '\n';
 
 var defined = function (val) { return typeof val !== 'undefined' && val != null; };
 
-/*
-function getBrowser () { // know="safari{} chrome{} firefox{} edge{} opera{} etc" }
-function getOS () { // know="mac{} win{} linux{} unix{} etc" }
-function getPlatform () { // know="ios{} android{} windows{}" }
-function getView () { // know="mobile{} tablet{} desktop{}" }
-function getOrientation { // know="landscape{} portrait{}" }
-function getSession { know="new{} return{} return-X{}" }
-*/
-
 function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
 
 function knowLayer(name) {
@@ -162,11 +154,6 @@ function getGridSystem(classFound, classesFound) {
         classFound = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
         gridFound = true;
     }
-
-    if (gridFound) {
-        console.log(['getGridSystem', classesFound.join(' ')]);
-    }
-
     return [classFound, classesFound];
 }
 function shouldREM(className) {
@@ -181,12 +168,12 @@ function getREM(className, classValue, classesFound, remMultiplier) {
         var classRoot = classValue.replace('px', '');
         if (!isNaN(classRoot) && classRoot > 0) {
             var classRem = parseInt(classRoot) / (remMultiplier || 16);
-            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem!'); }
+            if (!isNaN(classRem) && classRem > 0) { classesFound.push(className + '-' + classRem + 'rem'); }
         }
     }
     return classesFound;
 }
-function getParentSelector (screen) {
+function getParentSelector(screen) {
     var classParent = screen.indexOf('parent') > -1;
     if (classParent && screen.indexOf('-') > -1) {
         var modifierParts = screen.split('-', 2);
@@ -198,14 +185,14 @@ function getParentSelector (screen) {
 }
 var knowEnvironment = [];
 var userConditionals = [];
-function getNavigator () {
+function getNavigator() {
     return {
         agent: navigator.userAgent,
         vendor: navigator.vendor,
         platform: navigator.platform
     };
 }
-function getUserConditionals () {
+function getUserConditionals() {
     var navigatorInfo = getNavigator();
     var userAgent = navigatorInfo.agent;
     var vendor = navigatorInfo.vendor;
@@ -259,7 +246,7 @@ function getUserConditionals () {
     }
     knowEnvironment = Object.keys(fixedConditionals);
 }
-function getEnvironmentSelector (screen) {
+function getEnvironmentSelector(screen) {
     var classEnvironment = "";
     var allowEnvironment = true;
     var reverseEnvironment = false;
@@ -328,14 +315,17 @@ function getValue(val) {
     return val;
 }
 function getKey(screen, modifier, name, action, val, important) {
-    var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
-    return key;
+    return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
 }
 function getDynamic(container, action) {
-    var dynamic = '', newAction = '';
+    var dynamic = '';
     var keepAction = false;
-    if (container.indexOf('~') > -1) {
-        [action, container] = container.split('~', 2);
+    var dynamicSub = '';
+    var dynamicTag = '';
+    if (container.indexOf('~') > -1) { dynamicSub = '~'; }
+    else if (container.indexOf('+') > -1) { dynamicSub = '+'; }
+    if (dynamicSub.length > 0) {
+        [action, container] = container.split(dynamicSub, 2);
         keepAction = true;
     }
     if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace('>', '> '); }
@@ -345,20 +335,38 @@ function getDynamic(container, action) {
         else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
     }
     else if (container.indexOf('nth') > -1) {
-        var colon = ':' + (keepAction ? action + ' ~ span:' : '');
+        if (container.indexOf('-nth') > -1) {
+            [dynamicTag, container] = container.split('-nth', 2);
+            container = 'nth' + container;
+        }
+        var colon = ':' + (keepAction ? action + dynamicSub + dynamicTag + ':' : '');
         if (container.indexOf('nth-child') > -1) { dynamic = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
         else if (container.indexOf('nth-last-child') > -1) { dynamic = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
         else if (container.indexOf('nth-of-type') > -1) { dynamic = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
         else if (container.indexOf('nth-last-of-type') > -1) { dynamic = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
     }
-    return [dynamic, keepAction ? newAction : action];
+    /*
+    else if (container.indexOf('child') > -1) {
+        if (container.indexOf('-first-child') > -1) {
+            [dynamicTag, container] = container.split('-first-child', 2);
+            container = 'first-child' + container;
+        }
+        else if (container.indexOf('-last-child') > -1) {
+            [dynamicTag, container] = container.split('-last-child', 2);
+            container = 'last-child' + container;
+        }
+        var colon = ':' + (keepAction ? action + dynamicSub + dynamicTag + ':' : '');
+        if (container.indexOf('first') > -1) { dynamic = colon + 'first-child'; }
+        else if (container.indexOf('last') > -1) { dynamic = colon + 'last-child'; }
+    }
+    */
+    return [dynamic, keepAction ? '' : action];
 }
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
     else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,255})\{(.*?)\}', 'gis') }
     var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
-    //multiContainer = [], notContainer = '', manyModifier = [];
     var containers = {}, screens = {}, modifiers = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
     for (var key in classList) { classListCheck[key] = true; }
@@ -374,7 +382,6 @@ function getModifier(classList, classSecondary) {
             multiScreen = false;
             [dynamic, action] = getDynamic(container, action);
             if (dynamic.length > 0) {
-                console.log(['use dynamic', dynamic, container, action, screen, modifier]);
                 classList[screen + '_' + dynamic + '_' + action] = aM[2];
             }
             else {
@@ -483,7 +490,7 @@ function getRGB(sC) {
 function getOpacity(sC, sP) {
     var sA = null, sB = getRGB(sC);
     if (sB.length == 0) { return sC; }
-    else { return "rgba(" + sB[0] + "," + sB[1] + "," + sB[2] + "," + (sP/100) + ")"; }
+    else { return "rgba(" + sB[0] + "," + sB[1] + "," + sB[2] + "," + (sP / 100) + ")"; }
 }
 function getShade(sC, sP) {
     var sA = null, sB = getRGB(sC);
@@ -567,7 +574,7 @@ var webkitGrep = '';
 var actionGrep = [];
 var screenGrep = '';
 var screenTypes = [];
-function getGreps () {
+function getGreps() {
     const getLists = knowCSSLists();
 
     mediaGrep = "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$";
@@ -625,8 +632,6 @@ function getActions(mS, mD) {
         i++;
     }
     if (!zY) { ret = [{}]; ret[0][mD] = ""; }
-
-    console.log(['getActions', mS, mD, ret]);
     return ret;
 }
 function getScreens(mS, mD) {
@@ -664,11 +669,14 @@ function getUserMixins() {
     if (defined(knowCSSOptions.mixins)) {
         for (var key in knowCSSOptions.mixins) { allMixins[key] = getVariables(knowCSSOptions.mixins[key]); }
     }
+    if (defined(knowCSSOptions.components)) {
+        for (var key in knowCSSOptions.components) { allMixins[key] = getVariables(knowCSSOptions.components[key]); }
+    }
     for (var key in allMixins) {
         if (typeof allMixins[key] !== 'string') { allMixins[key] = allMixins[key].join(' '); }
     }
 }
-function variableMixin (mZ) {
+function variableMixin(mZ) {
     var mP = "";
     var mR = "";
     var mC = "";
@@ -848,7 +856,7 @@ function getScreenPrefixes(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
-function getContainerExtras (classFound, classesFound) {
+function getContainerExtras(classFound, classesFound) {
     if (classFound == 'container') {
         classFound = '';
         classesFound.push(
@@ -943,105 +951,100 @@ function knowCSSRender(uI, uC, uO) {
         for (var key in classList) {
             [screen, modifier, action] = key.split('_', 3);
             classesFound = getClasses(classList[key]);
-            //if (classesFound.length > 0) {
-                classFirst = '';
-                classNextStart = classNext;
-                if (uX.classes !== 'detail' && classNew === '') {
-                    classTotal++;
-                    if (uX.classes == 'sequential') { classNext = getNextLetter(classNext); }
-                    else if (uX.classes == 'random') { classNext = getRandomClass(); }
-                    classNew = classNext.toLowerCase();
-                    // JAA TODO - build array of unique values instead of appending strings
-                    if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
-                }
-                while (classesFound.length > 0) {
-                    classFound = classesFound.shift().trim();
-                    //if (classFound.length > 0) {
-                        [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
-                        if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
-                        [classFound, classesFound] = getContainerExtras(classFound, classesFound);
-                        [classFound, classesFound] = getGridSystem(classFound, classesFound);
-                        if (!isDefine) {
-                            [classParent, screen] = getParentSelector(screen);
-                            [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
-                            if (allowEnvironment) {
-                                [classFound, classImportant] = getImportant(classFound);
-                                className = '';
-                                classValue = '';
-                                if (classFound.indexOf('gradient') == 0) {
-                                    classParts = classFound.split('-');
-                                    classParts.shift();
-                                    className = 'background-image';
-                                    classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
-                                    classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
-                                }
-                                else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
-                                else if (classFound.indexOf('-') > -1) {
-                                    classParts = classFound.split('-');
-                                    if (classParts[0] in knowCSSOptions.shorterHand) {
-                                        className = knowCSSOptions.shorterHand[classParts[0]];
-                                        classParts.shift();
-                                        classValue = classParts.join('-');
-                                    }
-                                    else {
-                                        classValue = classParts.pop();
-                                        className = classParts.join('-');
-                                    }
-                                }
-                                else { className = classFound; }
-                                if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
-                                classValue = getColor(getValue(classValue), className);
-                                [className, classValue] = getFamily(className, classValue);
-                                if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
-                                classKey = getKey(screen, modifier, className, action, classValue, classImportant);
-
-                                /*
-                                if (if (!uX.smart && uX.classes == 'detail') {
-                                    classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
-                                    classesHere.push(classNew);
-                                }
-                                */
-                                if (screen in css === false) { css[screen] = {}; }
-                                if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
-                                if (modifier == 'none') { modifier = ''; }
-                                if (uX.smart) {
-                                    sharedClassKey = classKey + '__' + modifier;
-                                    if (sharedClassKey in smartClass == false) {
-                                        smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment];
-                                        smartClass[sharedClassKey] = ii.toString();
-                                    }
-                                    else {
-                                        smartClass[sharedClassKey] += "__" + ii.toString();
-                                    }
-                                }
-                                else {
-                                    if (uX.share) {
-                                        sharedClassKey = classKey + '__' + modifier;
-                                        if (sharedClassKey in sharedClasses == false) {
-                                            classNext = getNextLetter(classNext);
-                                            sharedClasses[sharedClassKey] = classNext.toLowerCase();
-                                        }
-                                        classNew = sharedClasses[sharedClassKey];
-                                        if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
-                                    }
-
-                                    // JAA TODO - build array of unique values instead of appending strings
-                                    if (classKey in css[screen][action][0]) {
-                                        if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                                            css[screen][action][0][classKey] += ', .' + classNew + modifier;
-                                        }
-                                    }
-                                    else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
-                                    css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
-                                }
+            classFirst = '';
+            classNextStart = classNext;
+            if (uX.classes !== 'detail' && classNew === '') {
+                classTotal++;
+                if (uX.classes == 'sequential') { classNext = getNextLetter(classNext); }
+                else if (uX.classes == 'random') { classNext = getRandomClass(); }
+                classNew = classNext.toLowerCase();
+                // JAA TODO - build array of unique values instead of appending strings
+                if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
+            }
+            while (classesFound.length > 0) {
+                classFound = classesFound.shift().trim();
+                [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
+                if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
+                [classFound, classesFound] = getContainerExtras(classFound, classesFound);
+                [classFound, classesFound] = getGridSystem(classFound, classesFound);
+                if (!isDefine) {
+                    [classParent, screen] = getParentSelector(screen);
+                    [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
+                    if (allowEnvironment) {
+                        [classFound, classImportant] = getImportant(classFound);
+                        className = '';
+                        classValue = '';
+                        if (classFound.indexOf('gradient') == 0) {
+                            classParts = classFound.split('-');
+                            classParts.shift();
+                            className = 'background-image';
+                            classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
+                            classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
+                        }
+                        else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
+                        else if (classFound.indexOf('-') > -1) {
+                            classParts = classFound.split('-');
+                            if (classParts[0] in knowCSSOptions.shorterHand) {
+                                className = knowCSSOptions.shorterHand[classParts[0]];
+                                classParts.shift();
+                                classValue = classParts.join('-');
+                            }
+                            else {
+                                classValue = classParts.pop();
+                                className = classParts.join('-');
                             }
                         }
-                    //}
+                        else { className = classFound; }
+                        if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
+                        classValue = getColor(getValue(classValue), className);
+                        [className, classValue] = getFamily(className, classValue);
+                        if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
+                        classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+                        /*
+                        if (if (!uX.smart && uX.classes == 'detail') {
+                            classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
+                            classesHere.push(classNew);
+                        }
+                        */
+                        if (screen in css === false) { css[screen] = {}; }
+                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
+                        if (modifier == 'none') { modifier = ''; }
+                        if (uX.smart) {
+                            sharedClassKey = classKey + '__' + modifier;
+                            if (sharedClassKey in smartClass == false) {
+                                smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment];
+                                smartClass[sharedClassKey] = ii.toString();
+                            }
+                            else {
+                                smartClass[sharedClassKey] += "__" + ii.toString();
+                            }
+                        }
+                        else {
+                            if (uX.share) {
+                                sharedClassKey = classKey + '__' + modifier;
+                                if (sharedClassKey in sharedClasses == false) {
+                                    classNext = getNextLetter(classNext);
+                                    sharedClasses[sharedClassKey] = classNext.toLowerCase();
+                                }
+                                classNew = sharedClasses[sharedClassKey];
+                                if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
+                            }
+
+                            // JAA TODO - build array of unique values instead of appending strings
+                            if (classKey in css[screen][action][0]) {
+                                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                                }
+                            }
+                            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+                            css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                        }
+                    }
                 }
-                if (!uX.smart) {
-                    if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
-                }
-            //}
+            }
+            if (!uX.smart) {
+                if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+            }
         }
         if (!uX.smart) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }

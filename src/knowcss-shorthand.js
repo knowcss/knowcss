@@ -219,7 +219,7 @@ const shortHand = {
 };
 if (typeof window !== 'undefined') { }
 else if (typeof module !== 'undefined') {
-	module.exports.shortHand = shortHand;
-	module.exports.shorterHand = shorterHand;
+    module.exports.shortHand = shortHand;
+    module.exports.shorterHand = shorterHand;
     module.exports.globalMixins = globalMixins;
 }
