@@ -22,7 +22,7 @@ const knowHowNav = {
     "font": ["Typography", "Family, Size, Weight, Space, Wrap, Style, Variant"],
     "modifiers": ["Psuedo Elements", "Modifiers, Selectors, Actions"],
     "presentation": ["Presentation", "Display, Visibility, Position, Align, Clear, Float, Stack"],
-    "dimension": ["Dimensions", "TODO -- Height, Width"],
+    //"dimension": ["Dimensions", "TODO -- Height, Width"],
     //"target": ["Targeting", "TODO -- All, Children, Adjacents, Siblings, Parents"],
     //"color": ["Style", "TODO -- Color, Hue, Shading, Saturation"],
     //"background": ["Background", "TODO -- Color, Image, Poster, Picture"],

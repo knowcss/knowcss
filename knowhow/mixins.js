@@ -12,7 +12,8 @@ const cssVars = {
 };
 const components = {
     "hamburger": [
-        "centered w-32px h-32px overflow-hidden pt-3px",
+        "none hidden position-relative xsmdown{visible block}",
+        "center aligncenter w-32px h-32px overflow-hidden pt-3px",
         "pointer nohighlight",
         "hover>span{bg-933}",
         ">input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
