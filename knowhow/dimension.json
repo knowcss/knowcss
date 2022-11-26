@@ -24,6 +24,10 @@
                     "calculated value"
                 ],
                 [
+                    "width=max(100%,200px) height=min(100%,20px)",
+                    "calculated value"
+                ],
+                [
                     "width-auto height-auto",
                     "auto value"
                 ],

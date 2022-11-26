@@ -18,15 +18,20 @@ const knowHowNav = {
     //"feature": ["Features", "TODO -- Media, Screen, Print, Speech"],
     //"global": ["Global", "TODO -- Initial, Inherit, Revert, Unset"],
     "box": ["Box Model", "Margin, Border, Padding, Overflow"],
-    "cursor": ["Pointer", "Cursors, Events, Selection"],
-    "font": ["Typography", "Family, Size, Weight, Space, Wrap, Style, Variant"],
+    "cursor": ["Pointer", "TODO - Cursors, Events, Selection"],
+    "font": ["Typography", "TODO - Family, Size, Weight, Space, Wrap, Style, Variant"],
     "modifier": ["Psuedo Elements", "Modifiers, Selectors, Actions"],
-    "presentation": ["Presentation", "Display, Visibility, Position, Align, Clear, Float, Stack"],
+    "presentation": ["Presentation", "TODO - Display, Visibility, Position, Align, Clear, Float, Stack"],
     "dimension": ["Dimensions", "Height, Width"],
     //"target": ["Targeting", "TODO -- All, Children, Adjacents, Siblings, Parents"],
-    //"color": ["Style", "TODO -- Color, Hue, Shading, Saturation"],
+    "color": ["Style", "TODO -- Color, Hue, Shading, Saturation", false, "know", function() {
+        var aH = [];
+        for (var aX in hexColors) { aH.push('<div know="[bw]"><span><div know="[bc] background-color-' + aX + '"></div></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bd]">' + aX + '</span></div>'); }
+        document.getElementById('colors').innerHTML = aH.join('');
+        $know().render();
+    }],
     //"background": ["Background", "TODO -- Color, Image, Poster, Picture"],
-    //"layout": ["Layout", "TODO -- Table, Grid, Flex"],
+    "layout": ["Layout", "TODO -- Table, Grid, Flex", false, "know"],
     //"outline": ["Highlight", "TODO -- Outline, Shadow, Blur, Gradient"],
     //"animation": ["Animation", "TODO -- Transition, Transform, Translate, Keyframe, Scale"],
     //"link": ["Link", "TODO -- Decoration, URL, Alt, Title"],

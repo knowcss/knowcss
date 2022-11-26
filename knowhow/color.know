@@ -1,9 +1,9 @@
 <div know="[bx] [hr]">
     <div know="[hd]">Colors and Shading</div>
-    <div know="[mt] [ft]">
+    <div know="[xt] [ft]">
         <div>3 or 6 digit hex colors or explicit common color names may be used with or without the leading # character.
         </div>
-        <div know="[mt] [ct]">
+        <div know="[xt] [ct]">
             <div know="[cd]">
                 <div know="[nt]">
                     <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;color-c00
@@ -25,9 +25,9 @@
                 </div>
             </div>
         </div>
-        <div know="[mt]">Any hex color may be shaded at 0-100 percent with @ giving you full access to all 16,777,216
+        <div know="[xt]">Any hex color may be shaded at 0-100 percent with @ giving you full access to all 16,777,216
             possible colors.</div>
-        <div know="[mt] [ct]">
+        <div know="[xt] [ct]">
             <div know="[cd]">
                 <div know="[nt]">
                     <span know="[blue]">&lt;div <span know="[orange]">know=</span><span
@@ -67,8 +67,8 @@
             </div>
         </div>
 
-        <div know="[mt]">Any hex color may be converted to rgba() with ~ giving you access to opaque elements.</div>
-        <div know="[mt] [ct]">
+        <div know="[xt]">Any hex color may be converted to rgba() with ~ giving you access to opaque elements.</div>
+        <div know="[xt] [ct]">
             <div know="[cd]">
                 <div know="[nt]">
                     <span know="[blue]">&lt;div <span know="[orange]">know=</span><span
@@ -108,8 +108,8 @@
             </div>
         </div>
 
-        <div know="[mt]">Both can be combined to create complex rgba() values with shades and opaque elements.</div>
-        <div know="[mt] [ct]">
+        <div know="[xt]">Both can be combined to create complex rgba() values with shades and opaque elements.</div>
+        <div know="[xt] [ct]">
             <div know="[cd]">
                 <div know="[nt]">
                     <span know="[blue]">&lt;div <span know="[orange]">know=</span><span
@@ -153,22 +153,9 @@
 
 <div know="[bx] [hr]">
     <div know="[hd]">Available Common Colors</div>
-    <div know="[ys] [mt]">Any color value may be referenced by the explicit hex color or by the corresponding common
+    <div know="[ys] [xt]">Any color value may be referenced by the explicit hex color or by the corresponding common
         color name for that hex color. Scroll through the list of standard colors below.</div>
-    <div know="[mt] height-300px max-width-300px overflow-auto border=1px/solid/#ccc margin-0/auto">
+    <div know="[xt] height-300px max-width-300px overflow-auto border=1px/solid/#ccc margin-10px/auto/0/auto">
         <div id="colors" name="colors" know="table border-spacing-3px margin-0/auto"></div>
     </div>
-    <script>
-        var colorsLoaded = false;
-        window.addEventListener('load', function () {
-            if (!colorsLoaded) {
-                colorsLoaded = true;
-                var aH = [];
-                for (var aX in hexColors) { aH.push('<div know="[bw]"><span><div know="[bc] background-color-' + aX + '"></div></span><span know="[bd]">#' + hexColors[aX] + '</span><span know="[bd]">' + aX + '</span></div>'); }
-                document.getElementById('colors').innerHTML = aH.join('');
-                aH = [];
-                $know().render();
-            }
-        });
-    </script>
 </div>
