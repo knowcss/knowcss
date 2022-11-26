@@ -1069,7 +1069,7 @@ function knowCSSRender(uI, uC, uO) {
                 smartClassHere = smartClassGroup[smartKeys];
             }
             else {
-                if (smartKey in smartUnique) {
+                if (smartKey + 'xx' in smartUnique) {
                     smartClassHere = smartUnique[smartKey];
                     skipReAdd = true;
                 }
@@ -1145,8 +1145,7 @@ function knowCSSRender(uI, uC, uO) {
             }
             for (var cssgroup in cssGroup) {
                 if (cssgroup in smartAlready == false) {
-                    smartAlready[cssgroup] = true;
-                    console.log(cssgroup);
+                    //smartAlready[cssgroup] = true;
                     styles.push(tab + cssgroup + '{' + cssGroup[cssgroup] + '}' + masterLine);
                 }
             }

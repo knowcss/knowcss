@@ -1,6 +1,6 @@
 const knowHowNav = {
-    "index": ["Getting Started", "TODO -- The Basics of KnowCSS"],
-    //"installation": ["Installation", "TODO -- The Simplicity of KnowCSS"],
+    "index": ["Getting Started", "The Basics of KnowCSS"],
+    "installation": ["Installation", "The Simplicity of KnowCSS", false, "know"],
 
     //"knowmotion": ["KnowMotion&trade;", "The Animation Add-On", true],
     //"knowparent": ["KnowParent&trade;", "The Parent Selector"],

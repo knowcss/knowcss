@@ -7,22 +7,32 @@ const cssValue = (val) => {
 };
 const knowElem = (key) => { return document.getElementById(key); };
 
-const knowHardCache = false;
+const knowHardCache = true;
 
 var knowCache = {};
 
 var knowHow = {
     init: function (key) { return this.hamburger().switch(); },
     nav: async function (key) {
-        if (knowHardCache && key + '__html' in knowCache) { knowElem(this.key).innerHTML = knowCache[key + '__html']; }
-        else {
-            if (key in knowCache == false && key in knowHowNav) {
-                const data = await fetch('./' + key + '.json');
-                knowCache[key] = await data.json();
+        if (key in knowHowNav) {
+            if (knowHardCache && key + '__html' in knowCache) { knowElem(this.key).innerHTML = knowCache[key + '__html']; }
+            else {
+                const dataType = knowHowNav[key].length > 3 ? knowHowNav[key][3] : 'json';
+                if (key in knowCache == false) {
+                    const data = await fetch('./' + key + '.' + dataType);
+                    if (dataType == 'json') { knowCache[key] = await data.json(); }
+                    else { knowCache[key] = await data.text(); }
+                }
+                if (dataType == 'json') {
+                    this.render(knowCache[key], this.key).reveal('root');
+                }
+                else {
+                    knowElem(this.key).innerHTML = knowCache[key];
+                    if (typeof $know !== 'undefined') { $know().render(); }
+                    this.reveal('root');
+                }
+                if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
             }
-            else { knowElem(id).innerHTML = html.join(''); }
-            this.render(knowCache[key], this.key).reveal('root');
-            if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
         }
         return this;
     },
