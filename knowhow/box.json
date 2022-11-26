@@ -79,5 +79,36 @@
                 }
             }
         }
+    ],
+    "overflow": [
+        {
+            "head": "Overflow",
+            "list": [
+                [
+                    "overflow-auto",
+                    "explicit value"
+                ],
+                [
+                    "auto",
+                    "alias"
+                ],
+                [
+                    "of-auto",
+                    "shorthand"
+                ]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "of",
+                "apply": true,
+                "list": {
+                    "overflow-visible": "overflow-visible",
+                    "overflow-hidden": "overflow-hidden",
+                    "clip": "overflow-clip",
+                    "scroll": "overflow-scroll",
+                    "auto": "overflow-auto"
+                }
+            }
+        }
     ]
 }

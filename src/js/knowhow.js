@@ -15,6 +15,7 @@ var knowHow = {
     init: function (key) { return this.hamburger().switch(); },
     nav: async function (key) {
         if (key in knowHowNav) {
+            window.location.hash = '#' + key;
             if (knowHardCache && key + '__html' in knowCache) { knowElem(this.key).innerHTML = knowCache[key + '__html']; }
             else {
                 const dataType = knowHowNav[key].length > 3 ? knowHowNav[key][3] : 'json';
@@ -36,7 +37,13 @@ var knowHow = {
         }
         return this;
     },
-    switch: function (key) { return this.nav(key || "index"); },
+    switch: function (key) {
+        var hash = window.location.hash;
+        if (hash) {
+            hash = hash.replace('#', '');
+            if (hash in knowHowNav == false) { hash = "index"; }
+        }
+        return this.nav(key || hash); },
     reveal: function (key) {
         knowElem(key).style.visibility = 'visible';
         return this;
@@ -45,13 +52,14 @@ var knowHow = {
         var nav = knowElem('nav');
         var elem = null;
         var elemVals = [];
+        var elemPre = 'nav-';
         for (var key in knowHowNav) {
             elemVals = knowHowNav[key];
             elem = document.createElement('div');
-            elem.id = key;
+            elem.id = elemPre + key;
             elem.setAttribute('know', 'cursor-pointer' + (elemVals.length > 2 && elemVals[2] ? ' border-top-2px/solid/#f3f3f3' : ''));
             elem.innerHTML = '<span know="notouch">' + elemVals[0] + '</span>' + (elemVals.length > 1 ? ' <span know="[sm] notouch">' + elemVals[1] + '</span>' : '');
-            elem.onclick = (event) => { this.switch(event.target.id); };
+            elem.onclick = (event) => { this.switch(event.target.id.replace(elemPre, '')); };
             nav.appendChild(elem);
         }
         var hamburger = knowElem('hamburger');
@@ -140,8 +148,9 @@ var knowHow = {
                             sG += '-' + sV;
                         }
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
+                        if (vals == sO) { sO = ''; }
                         var sA = val.reference.apply ? ' know="' + vals + '"' : '';
-                        html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + sO + ' ' + vals + sH + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
+                        html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + (sO + ' ' + vals + sH).trim() + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     };
                     html.push('</div></div>');
                 }
