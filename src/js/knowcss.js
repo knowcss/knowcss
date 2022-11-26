@@ -96,7 +96,7 @@ var knowCSS = {
 
 const knowID = 'know';
 
-var runningValue = '', allMixins = {}, classNext = '', classNextStart = '', smartClassNext = '', cssIncrement = 0, knowStartup = null;
+var smartUnique = {}, smartAlready = {}, runningValue = '', allMixins = {}, classNext = '', classNextStart = '', smartClassNext = '', cssIncrement = 0, knowStartup = null;
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
 for (var key in screenSized) {
@@ -1061,17 +1061,26 @@ function knowCSSRender(uI, uC, uO) {
         var smartClassGroup = {};
         var smartClassHere = "";
         var addParent = false;
+        var skipReAdd = false;
         for (var smartKey in smartClass) {
             var smartKeys = smartClass[smartKey];
+            skipReAdd = false;
             if (smartKeys in smartClassGroup) {
                 smartClassHere = smartClassGroup[smartKeys];
             }
             else {
-                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";
-                smartClassHere = smartClassNext;
+                if (smartKey in smartUnique) {
+                    smartClassHere = smartUnique[smartKey];
+                    skipReAdd = true;
+                }
+                else {
+                    smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";
+                    smartClassHere = smartClassNext;
+                    smartUnique[smartKey] = smartClassHere;
+                }
                 smartClassGroup[smartKeys] = smartClassHere;
             }
-            smartDetail[smartKey][2] = smartClassHere;
+            if (!skipReAdd) { smartDetail[smartKey][2] = smartClassHere; }
             addParent = smartDetail[smartKey][4];
 
             smartKeys.split('__').forEach(function (ii) {
@@ -1086,20 +1095,22 @@ function knowCSSRender(uI, uC, uO) {
         //if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + smartClassesHere.join(' ') + '"'); }
 
         for (var classKey in smartDetail) {
-            var screen = smartDetail[classKey][0];
-            var action = smartDetail[classKey][1];
-            var modifier = smartDetail[classKey][3][0];
             var classNew = smartDetail[classKey][2];
-            var classModifier = '.' + classNew + modifier;
-            if (screen in css === false) { css[screen] = {}; }
-            if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
-            if (classKey in css[screen][action][0]) {
-                if (css[screen][action][0][classKey].indexOf(classModifier) == -1) {
-                    css[screen][action][0][classKey] += ', ' + classModifier;
+            if (classNew.length > 0) {
+                var screen = smartDetail[classKey][0];
+                var action = smartDetail[classKey][1];
+                var modifier = smartDetail[classKey][3][0];
+                var classModifier = '.' + classNew + modifier;
+                if (screen in css === false) { css[screen] = {}; }
+                if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
+                if (classKey in css[screen][action][0]) {
+                    if (css[screen][action][0][classKey].indexOf(classModifier) == -1) {
+                        css[screen][action][0][classKey] += ', ' + classModifier;
+                    }
                 }
+                else { css[screen][action][0][classKey] = classModifier; }
+                css[screen][action][1][classKey] = smartDetail[classKey][3];
             }
-            else { css[screen][action][0][classKey] = classModifier; }
-            css[screen][action][1][classKey] = smartDetail[classKey][3];
         }
     }
 
@@ -1132,7 +1143,13 @@ function knowCSSRender(uI, uC, uO) {
                     else { cssGroup[classHere] += ' ' + stylesHere; }
                 }
             }
-            for (var cssgroup in cssGroup) { styles.push(tab + cssgroup + '{' + cssGroup[cssgroup] + '}' + masterLine); }
+            for (var cssgroup in cssGroup) {
+                if (cssgroup in smartAlready == false) {
+                    smartAlready[cssgroup] = true;
+                    console.log(cssgroup);
+                    styles.push(tab + cssgroup + '{' + cssGroup[cssgroup] + '}' + masterLine);
+                }
+            }
         }
         styles.push(end);
     }

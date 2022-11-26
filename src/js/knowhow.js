@@ -7,16 +7,24 @@ const cssValue = (val) => {
 };
 const knowElem = (key) => { return document.getElementById(key); };
 
+const knowHardCache = false;
+
 var knowCache = {};
 
 var knowHow = {
     init: function (key) { return this.hamburger().switch(); },
     nav: async function (key) {
-        if (key in knowCache == false && key in knowHowNav) {
-            const data = await fetch('./' + key + '.json');
-            knowCache[key] = await data.json();
+        if (knowHardCache && key + '__html' in knowCache) { knowElem(this.key).innerHTML = knowCache[key + '__html']; }
+        else {
+            if (key in knowCache == false && key in knowHowNav) {
+                const data = await fetch('./' + key + '.json');
+                knowCache[key] = await data.json();
+            }
+            else { knowElem(id).innerHTML = html.join(''); }
+            this.render(knowCache[key], this.key).reveal('root');
+            if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
         }
-        return this.render(knowCache[key], this.key).reveal('root');
+        return this;
     },
     switch: function (key) { return this.nav(key || "index"); },
     reveal: function (key) {
