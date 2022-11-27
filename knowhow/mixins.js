@@ -49,7 +49,7 @@ const mixins = {
     "ml": "padding-left-20px",
     "mm": "padding-left-40px",
     "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-    "ct": "table center aligncenter margin-top-10px max-width-96%",
+    "ct": "table center aligncenter margin-top-10px max-width-100%",
     "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
     "blue": "{{$blue}}",
     "orange": "{{$orange}}",

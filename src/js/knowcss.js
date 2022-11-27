@@ -426,7 +426,7 @@ function getModifier(classList, classSecondary) {
                                     if (containerPrefix.length > 0) {
                                         keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
                                     }
-                                    else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ['font-face'].includes(containerKey)) {
+                                    else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ruleTypes.includes(containerKey)) {
                                         keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
                                     }
                                     if (keyNew.length > 0) {
@@ -541,7 +541,8 @@ function getFamily(hA, hB) {
 function getWrapper(xZ) {
     var start = [], end = '}', tab = masterTab, line = masterLine;
 
-    if (xZ.indexOf('media-') > -1) {
+    if (ruleTypes.includes(xZ)) { start.push('@' + xZ + ' {'); }
+    else if (xZ.indexOf('media-') > -1) {
         var xC = {
             'media': 'media',
             "not": "not all and",
@@ -582,7 +583,6 @@ function getWrapper(xZ) {
         else { start.push(xZ); }
         start.push(' {');
     }
-    else if (['font-face'].includes(xZ)) { start.push('@' + xZ + ' {'); }
     else if (!isNaN(xZ)) { start.push('@media screen and (min-width:' + parseFloat(xZ) + 'px) {'); }
     else {
         end = '';
@@ -596,6 +596,7 @@ var webkitGrep = '';
 var actionGrep = [];
 var screenGrep = '';
 var screenTypes = [];
+var ruleTypes = {};
 function getGreps() {
     const getLists = knowCSSLists();
 
@@ -617,6 +618,8 @@ function getGreps() {
         i++
     }
     screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
+
+    ruleTypes = getLists.at;
 }
 function getMediaQuery(mS) {
     return new RegExp(mediaGrep).exec(mS);
@@ -1043,6 +1046,7 @@ function knowCSSRender(uI, uC, uO) {
                             }
                         }
                         else {
+                            /*
                             if (uX.share) {
                                 sharedClassKey = classKey + '__' + modifier;
                                 if (sharedClassKey in sharedClasses == false) {
@@ -1052,6 +1056,7 @@ function knowCSSRender(uI, uC, uO) {
                                 classNew = sharedClasses[sharedClassKey];
                                 if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
                             }
+                            */
 
                             // JAA TODO - build array of unique values instead of appending strings
                             if (classKey in css[screen][action][0]) {

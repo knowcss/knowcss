@@ -1,7 +1,7 @@
-<div know="[bx] [hr]">
+<div know="[bx]">
     <div know="[hd]">What about tables?</div>
-    <div know="[xt] [ft]">
-        <div know="inline-block">
+    <div know="[xt] [ft] full">
+        <div know="full">
             <div know="[xt] [ct]">
                 <div know="[cd]">
                     <div know="[nt] text-align-left"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span
@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div know="[xt] table center collapse all{padding-5px border-1px/solid/#000 alignmiddle}">
+            <div know="table center collapse mt-10px all{padding-5px border-1px/solid/#000 alignmiddle}">
                 <div know="table-row">
                     <div know="cell">Top Left</div>
                     <div know="cell">Top Right</div>
