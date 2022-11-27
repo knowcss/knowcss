@@ -1,11 +1,27 @@
 'use strict'
 
+const storage = function (key, val, json) {
+    json = $wb.possible(json) ? json : true;
+    if ($wb.possible(val)) {
+        if (json) { val = $wb.json(val, false); }
+        window.localStorage.setItem(key, val);
+    }
+    else if ($wb.possible(key)) {
+        val = window.localStorage.getItem(key);
+        if (json) { val = $wb.json(val, true); }
+    }
+    else { val = window.localStorage; }
+    return val;
+};
+
 var KwOg = {};
+
 function KwUp(text) {
     let elem = KwLy("highlighting-content");
     if (text[text.length - 1] == "\n") {
         text += " ";
     }
+    window.localStorage.setItem('knowcssnow', text);
     elem.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
     Prism.highlightElement(elem);
 }
@@ -62,13 +78,13 @@ function KwAe(dO, dT) {
         if (typeof dA === 'string') { KwEs(dS[dA]); }
     }
 }
-function KwAp(hA, hB) {
+function KwAp(hA, hB, hF) {
     var hC = KwLy(hB);
     if (hC) {
-        if (KwOg[hB] !== hA.value) {
+        if (hF || KwOg[hB] !== hA.value) {
             KwOg[hB] = hA.value;
             KwAe(hC, hA.value);
-            $know().render("[know]", true);
+            $know().render("[know]");
         }
     }
 }

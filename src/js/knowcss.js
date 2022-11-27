@@ -27,7 +27,7 @@ const knowCSSLists = function () {
         "at": ["charset", "color-profile", "container", "counter-style", "font-face", "font-feature-values", "import", "keyframes", "layer", "namespace", "page", "property", "supports"],
 
         "media": ["any-hover", "hover", "any-pointer", "pointer", "min-width", "max-width", "width", "min-height", "max-height", "height", "orientation", "min-aspect-ratio", "max-aspect-ratio", "aspect-ratio", "color-gamut", "min-color-index", "min-color", "max-color-index", "max-color", "color-index", "forced-colors", "inverted-colors", "color", "max-monochrome", "min-monochrome", "monochrome", "display-mode", "dynamic-range", "scan", "update", "light-level", "video-dynamic-range", "max-resolution", "min-resolution", "resolution", "prefers-color-scheme", "prefers-contrast", "prefers-reduced-motion", "grid", "overflow-block", "overflow-inline", "scripting"],
-        "modifiers": ["after", "backdrop", "before", "cue", "cue-region", "file-selector-button", "first-letter", "first-line", "grammar-error", "marker", "placeholder", "placeholder-shown", "selection", "spelling-error", "target-text"],
+        "modifiers": ["webkit-scrollbar", "after", "backdrop", "before", "cue", "cue-region", "file-selector-button", "first-letter", "first-line", "grammar-error", "marker", "placeholder", "placeholder-shown", "selection", "spelling-error", "target-text"],
         "selectors": ["last-child", "first-child", "only-child", "first-of-type", "last-of-type", "only-of-type", "nth-last-child", "nth-last-of-type"],
         "actions": ["current", "past", "future", "playing", "paused", "active", "checked", "disabled", "empty", "enabled", "focus-visible", "focus-within", "focus", "hover", "in-range", "invalid", "link", "optional", "out-of-range", "read-only", "read-write", "required", "root", "target", "valid", "visited"],
         "webkit": ["align-content", "align-items", "align-self", "alt", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "animation-trigger", "animation", "app-region", "appearance", "aspect-ratio", "backdrop-filter", "backface-visibility", "background-clip", "background-composite", "background-origin", "background-size", "border-after-color", "border-after-style", "border-after-width", "border-after", "border-before-color", "border-before-style", "border-before-width", "border-before", "border-bottom-left-radius", "border-bottom-right-radius", "border-end-color", "border-end-style", "border-end-width", "border-end", "border-fit", "border-horizontal-spacing", "border-image", "border-radius", "border-start-color", "border-start-style", "border-start-width", "border-start", "border-top-left-radius", "border-top-right-radius", "border-vertical-spacing", "box-align", "box-decoration-break", "box-direction", "box-flex-group", "box-flex", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "clip-path", "color-correction", "column-axis", "column-break-after", "column-break-before", "column-break-inside", "column-count", "column-fill", "column-gap", "column-progression", "column-rule", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "columns", "cursor-visibility", "dashboard-region", "device-pixel-ratio", "filter", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "flex", "flow-from", "flow-into", "font-feature-settings", "font-kerning", "font-size-delta", "font-smoothing", "font-variant-ligatures", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap", "grid-column-start", "grid-gap", "grid-row-end", "grid-row-gap", "grid-row-start", "grid-row", "grid-template-areas", "grid-template-columns", "grid-template-rows", "grid-template", "grid", "highlight", "hyphenate-character", "hyphenate-charset", "hyphenate-limit-after", "hyphenate-limit-before", "hyphenate-limit-lines", "hyphens", "initial-letter", "justify-content", "justify-items", "justify-self", "line-align", "line-box-contain", "line-break", "line-clamp", "line-grid", "line-snap", "locale", "logical-height", "logical-width", "margin-after-collapse", "margin-after", "margin-before-collapse", "margin-before", "margin-bottom-collapse", "margin-collapse", "margin-end", "margin-start", "margin-top-collapse", "marquee-direction", "marquee-increment", "marquee-repetition", "marquee-speed", "marquee-style", "marquee", "mask-attachment", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position-x", "mask-position-y", "mask-position", "mask-repeat-x", "mask-repeat-y", "mask-repeat", "mask-size", "mask-source-type", "mask", "match-nearest-mail-blockquote-color", "max-logical-height", "max-logical-width", "media-text-track-container", "min-logical-height", "min-logical-width", "nbsp-mode", "opacity", "order", "overflow-scrolling", "padding-after", "padding-before", "padding-end", "padding-start", "perspective-origin", "perspective-origin-x", "perspective-origin-y", "perspective", "print-color-adjust", "region-break-after", "region-break-before", "region-break-inside", "region-fragment", "rtl-ordering", "ruby-position", "scroll-snap-type", "shape-image-threshold", "shape-inside", "shape-margin", "shape-outside", "svg-shadow", "tap-highlight-color", "text-color-decoration", "text-combine", "text-decoration-line", "text-decoration-skip", "text-decoration-style", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-emphasis", "text-fill-color", "text-justify", "text-orientation", "text-security", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-stroke", "text-underline-position", "text-zoom", "transform-2d", "transform-3d", "transform-origin-x", "transform-origin-y", "transform-origin-z", "transform-origin", "transform-style", "transform", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "transition", "user-drag", "user-modify", "user-select", "touch-callout", "animating-full-screen-transition", "any-link", "autofill", "autofill-strong-password", "drag", "full-page-media", "full-screen-ancestor", "full-screen-controls-hidden", "full-screen-document", "full-screen", "file-upload-button", "inner-spin-button", "input-placeholder", "media-controls-current-time-display", "media-controls-enclosure", "media-controls-fullscreen-button", "media-controls-mute-button", "media-controls-overlay-enclosure", "media-controls-panel", "media-controls-play-button", "media-controls-time-remaining-display", "media-controls-timeline", "media-controls-toggle-closed-captions-button", "media-controls-volume-control-container", "media-controls-volume-control-hover-background", "media-controls-volume-slider", "media-controls", "meter-bar", "meter-even-less-good-value", "meter-inner-element", "meter-optimum-value", "meter-suboptimum-value", "outer-spin-button", "progress-bar", "progress-inner-element", "progress-value", "search-cancel-button", "search-results-button", "slider-runnable-track", "slider-thumb"],
@@ -119,7 +119,7 @@ var knowCSS = {
 const knowID = 'know';
 
 var masterTab = '\t', masterLine = '\n';
-var smartUnique = {}, allMixins = {}, classNext = '', classNextStart = '', smartClassNext = '', cssIncrement = 0, knowStartup = null;
+var smartUnique = {}, allMixins = {}, classNext = '', classNextStart = '', smartClassNext = '', afterFirstRender = [], cssIncrement = 0, knowStartup = null;
 
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
@@ -195,6 +195,7 @@ function getREM(className, classValue, classesFound, remMultiplier) {
     return classesFound;
 }
 function getParentSelector(screen) {
+    var originalScreen = screen;
     var classParent = screen.indexOf('parent') > -1;
     if (classParent && screen.indexOf('-') > -1) {
         var modifierParts = screen.split('-', 2);
@@ -421,7 +422,7 @@ function getModifier(classList, classSecondary) {
                                 actionSet = actions[i];
                                 for (var actionKey in actionSet) {
                                     containerPrefix = actionSet[actionKey];
-                                    if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('-'); }
+                                    if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('^'); }
                                     keyNew = '';
                                     if (containerPrefix.length > 0) {
                                         keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
@@ -534,13 +535,12 @@ function getShortColor(hA) {
 function getFamily(hA, hB) {
     if (hA.indexOf('family') > -1) {
         hA = 'font-family';
-        hB = '"' + hB + '"';
+        hB = hB.indexOf(' ') > -1 ? '"' + hB + '"' : hB;
     }
     return [hA, hB];
 }
 function getWrapper(xZ) {
     var start = [], end = '}', tab = masterTab, line = masterLine;
-
     if (ruleTypes.includes(xZ)) { start.push('@' + xZ + ' {'); }
     else if (xZ.indexOf('media-') > -1) {
         var xC = {
@@ -571,8 +571,8 @@ function getWrapper(xZ) {
         else { start.push('min-width:' + screenSizes[xZ][0] + 'px) and (max-width:' + screenSizes[xZ][1] + 'px'); }
         start.push(') {');
     }
-    else if (xZ.indexOf('-') > -1) {
-        var kE = xZ.split('-', 2);
+    else if (xZ.indexOf('^') > -1) {
+        var kE = xZ.split('^', 2);
         start.push('@media screen and (min-width:' + kE[0] + 'px) and (max-width:' + kE[1] + 'px) {');
     }
     else if (screenTypes.includes(xZ)) {
@@ -618,7 +618,6 @@ function getGreps() {
         i++
     }
     screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
-
     ruleTypes = getLists.at;
 }
 function getMediaQuery(mS) {
@@ -631,26 +630,21 @@ function getActions(mS, mD) {
     var ret = [{}, {}, {}], zA = '', zM = null, zS = '', zY = false;
     var x = actionGrep.length;
     var i = 0;
-    var mP = '*';
-    if (mS.indexOf('>') > -1) {
-        mP = mS.split('>', 2).pop();
-        if (!mP) { mP = "*"; }
-        else {
-            mP = ' ' + mP;
+    var mA = '*';
+    var mP = mA;
+    ['>', '~', '+'].forEach(function(val) {
+        if (mS.indexOf(val) > -1) {
+            mP = mS.split(val, 2).pop();
+            if (!mP) { mP = mA; }
+            else { mP = val + mP; }
         }
-    }
-    else if (mS.indexOf('~') > -1) {
-        mP = mS.split('~', 2).pop();
-        if (!mP) { mP = "*"; }
-        else {
-            mP = '~' + mP;
-        }
-    }
+    });
+    mP = mP.replace(/>/g, ' ');
     while (i < x) {
         zM = new RegExp(actionGrep[i][1], 'gi');
-        zS = actionGrep[i][0].replace("*", mP);
+        zS = actionGrep[i][0].replace(mA, mP);
         while ((zA = zM.exec(mS)) !== null) {
-            if (zS == ':' && mP != '*') { zA[1] += mP; }
+            if (zS == ':' && mP != mA) { zA[1] += mP; }
             ret[i][zA[1]] = zS;
             zY = true;
         }
@@ -915,6 +909,8 @@ function getContainers(classString) {
 }
 function knowCSSRender(uI, uC, uO) {
     var uX = {
+        'codeKey': '',
+        'refresh': true,
         'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
@@ -1179,7 +1175,18 @@ function knowCSSRender(uI, uC, uO) {
             heAD.appendChild(cssTag);
         }
         cssTag.innerHTML = stylesFinal;
-        cssIncrement++;
+        if (uX.codeKey && uX.codeKey.length > 0) {
+            var codeLayer = knowLayer(uX.codeKey);
+            if (codeLayer) { codeLayer.innerHTML = '&lt;style&gt;\n' + stylesFinal.trim() + '\n&lt;/style&gt;'; }
+        }
+        if (uX.refresh && cssIncrement == 1 && afterFirstRender.length > 0) {
+            smartUnique = {};
+            [classNext, classNextStart, smartClassNext] = afterFirstRender;
+        }
+        else {
+            cssIncrement++;
+            afterFirstRender = [classNext, classNextStart, smartClassNext];
+        }
         return true;
     }
 }

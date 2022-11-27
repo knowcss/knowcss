@@ -1,6 +1,7 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" know="[body]">
 <head>
+    <title>KnowCSS Now</title>
     <script>
         var property = '#384ef4';
         var selector = '#b65b0c';
@@ -9,21 +10,30 @@
         var regex = 'orange';
         var punc = '#384ef4';
 
-        var css = `html,body{padding:0;margin:0;height:100%}
-          #editing,#highlighting,#root{margin:0;padding:10px;border:0;height:50vh;width:100vw;box-sizing:border-box}
-          #editing,#highlighting,#highlighting *{font-size:10pt;font-family:monospace;line-height:11pt;tab-size:2}
-          #editing,#highlighting{position:absolute;top:0;left:0}
-          #editing{z-index:1;border:3px solid #f3f3f3}
-          #highlighting{z-index:0;background:#fff;height:50vh;width:100vw}
-          #root{z-index:2;margin-top:50vh;padding:16px}
-          #editing{color:transparent;background:transparent;caret-color:#000;height:50vh;width:100vw;outline:none!important}
-          #editing:focus{outline:none!important}
-          #editing,#highlighting{overflow:auto;white-space:nowrap}
-          #editing{resize:none}
-          *{font-family:monospace}
+        const monospace = 'font-size-10pt! font-family-monospace! line-height-11pt! tab-size-2!';
+        const mixins = {
+            'body': 'p-0 m-0 h-100% 100vh 100vw overflow-hidden',
+            'panels': 'of-auto m-0 p-10px b-0 100vw border-box b-3px/solid/#f3f3f3 border-top-width-0!',
+            'monospace': monospace + ' all{' + monospace + '}',
+            'floating': 'absolute t-0 l-0',
+            'typing': 'z-1',
+            'match': 'p-0.4em/0.8em m-0/0/0.5em/0',
+
+            'highlighting': 'of-auto nowrap! z-0 bg-fff h-25vh!',
+            'root': 'z-2 mt-50vh h-50vh! p-16px',
+            'code': 'mt-25vh h-25vh! pre',
+            'editing': 'webkit-scrollbar{display-none} focus{outline-none!} of-auto nowrap! resize-none c-transparent bg-transparent caret-color-#000 h-25vh 100vw outline-none!'
+        };
+
+        const knowConfig = {
+            codeKey: 'code',
+            refresh: true
+        };
+
+        // JAA TODO - convert this to KnowCSS mixins
+        var css = `
           p code{border-radius:2px;background-color:#eee;color:#111}
           code[class*="language-"],pre[class*="language-"]{font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
-          pre[class*="language-"]{padding:.4em .8em;margin:.5em 0;overflow:auto}
           code[class*="language-"]{background:#fff;color:#000}
           :not(pre)>code[class*="language-"]{padding:.2em;border-radius:.3em;box-shadow:none;white-space:normal}
           .token.comment,.token.prolog,.token.doctype,.token.cdata{color:#aaa}
@@ -42,31 +52,41 @@
           pre.diff-highlight.diff-highlight>code .token.inserted:not(.prefix),pre>code.diff-highlight.diff-highlight .token.inserted:not(.prefix){background-color:rgba(0,255,128,.3);display:inline}
         `;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function(event) {
             var eP = document.createElement('style');
             eP.innerHTML = css;
             document.body.appendChild(eP);
-
-            var eH = KwLy('root').innerHTML;
+            var eH = '';
+            try { eH = window.localStorage.getItem("knowcssnow"); }
+            catch(e) { eH = ''; }
+            var eH = eH || KwLy('root').innerHTML;
             var eD = KwLy('editing');
             eD.value = eH;
-            eD.focus();
             KwUp(eH);
+            KwCt(eD, event);
+            for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
+            eD.focus();
         });
     </script>
 </head>
 
-<body>
-    <textarea placeholder="Enter HTML Source Code" id="editing" spellcheck="false"
+<body know="[body] >{font-family-monospace}">
+    <textarea know="[panels] [typing] [floating] [monospace] [match] [editing]" placeholder="Enter HTML Source Code" id="editing" spellcheck="false"
         oninput="KwUp(this.value); KwSs(this);" onscroll="KwSs(this);"
-        onkeydown="KwCt(this, event); KwAp(this, 'root');"></textarea>
-    <pre id="highlighting" aria-hidden="true">
+        onkeydown="KwCt(this, event); KwAp(this, 'root');"
+        onkeyup="KwCt(this, event); KwAp(this, 'root');"></textarea>
+    <pre know="[panels] [typing] [floating] [monospace] [match] [highlighting]" id="highlighting" aria-hidden="true">
         <code class="language-html" id="highlighting-content">
         </code>
     </pre>
-    <div id="root"><div know="color-000 font-size-18px light">black 18px light</div>
+    <div know="[panels] [floating] [monospace] [code]" id="code"></div>
+    <div know="[panels] [root]" id="root"><div know="color-000 font-size-18px light">black 18px light</div>
 <div know="color-f00 font-size-24px bold">red 24px bold</div>
-<div know="color-00f font-size-18px semibold">blue 14px semibold</div></div>
+<div know="color-00f font-size-18px semibold">blue 14px test</div>
+
+<div know="color-green font-size-17px light">green 17px light</div>
+<div know="color-purple font-size-24px bold">purple 24px bold</div>
+<div know="color-orange font-size-21px semibold">orange 21px test</div></div>
     <script src="../../src/js/prism.js"></script>
     <script src="../../src/js/knowcss-now.js"></script>
     <script src="../../src/knowcss-colors.js"></script>
