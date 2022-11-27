@@ -8,10 +8,11 @@ const shorterHand = {
     "pos": "position",
     "f": "font-family",
     "fw": "font-weight",
+    "fs": "font-style",
     "cr": "cursor",
     "wrap": "overflow-wrap",
     "of": "overflow",
-    "z": "z-index",
+    "zi": "z-index",
     "t": "top",
     "l": "left"
 };
@@ -35,8 +36,12 @@ const shortHand = {
     "100vw": 'width-100vw',
 
     "notouch": "pointer-events-none user-select-none",
+    "touch": "pointer-events-all user-select-all",
     "noselect": "user-select-none",
+    "select": "user-select-all",
     "nopoint": "pointer-events-none",
+    "point": "pointer-events-all",
+
     "nohighlight": "user-select-none touch-callout-none tap-highlight-color-transparent",
 
     "mw": "min-width",
@@ -78,8 +83,17 @@ const shortHand = {
 
     /* text style */
     "italic": "font-style-italic",
+    "oblique": "font-style-oblique",
     "underline": "text-decoration-underline",
     "nounderline": "text-decoration-none",
+
+    /* text variant */
+    "small-caps": "font-variant-caps=small-caps",
+    "all-small-caps": "font-variant-caps=all-small-caps",
+    "petite-caps": "font-variant-caps=petite-caps",
+    "all-petite-caps": "font-variant-caps=all-petite-caps",
+    "unicase": "font-variant-caps=unicase",
+    "titling-caps": "font-variant-caps=titling-caps",
 
     /* background */
     "bg": "background-color",

@@ -96,7 +96,10 @@ var knowHow = {
         var tagHyphen = "";
         var tagSplits = [];
         var tagSplit = "";
-        var useVales = typeof knowHowValues !== 'undefined';
+        var useValues = typeof knowHowValues !== 'undefined';
+        var useVal = "";
+        var useValOriginal = "";
+        var useParts = [];
         for (var key in keys) {
             keys[key].forEach(function (val) {
                 html.push('<div know="[bx]">');
@@ -113,18 +116,25 @@ var knowHow = {
                         tagUse = vals.length > 3 ? vals[3] : 'span';
                         tagLoops.forEach(function (tagLoop) {
                             tagSuffixes = [];
-                            if (useVales && key in knowHowValues) {
+                            if (useValues && key in knowHowValues) {
                                 if (tagLoop in knowHowValues[key]) {
                                     tagCheck = knowHowValues[key][tagLoop];
                                     tagSuffixes = typeof tagCheck === 'string' ? [tagCheck] : tagCheck;
                                 }
                             }
+                            useValOriginal = vals[1].replace('$1', tagLoop);
                             if (tagSuffixes.length == 0) { tagSuffixes.push(''); }
                             tagSuffixes.forEach(function (tagSuffix) {
                                 tagHyphen = tagSuffix.length > 0 ? '-' : '';
                                 tagSplits.forEach(function (tagSplit) {
                                     tagActual = vals[0].replace('$1', tagLoop + tagHyphen + tagSuffix).replace('$2', tagSplit);
-                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + vals[1].replace('$1', tagLoop) + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
+                                    useVal = useValOriginal;
+                                    if (useVal.length == 0) {
+                                        useParts = tagActual.split('-');
+                                        useVal = useParts.pop();
+                                        useVal = '{' + useParts.join('-') + ': ' + useVal + ';}';
+                                    }
+                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + useVal + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
                                 });
                             });
                         });
@@ -137,6 +147,9 @@ var knowHow = {
                     html.push('<div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     for (var vals in val.reference.list) {
                         var sG = val.reference.list[vals];
+                        if (sG.length == 0) {
+                            sG = key + '=' + vals;
+                        }
                         var sO = sG;
                         var sD = sG.replace('=', '-');
                         var sH = '';

@@ -3,7 +3,7 @@
         {
             "head": "Display",
             "list": [
-                ["display-inline-block", "explicit value"],
+                ["display-inline-block", "explicit"],
                 ["inline-block", "alias"],
                 ["d-inline-block", "shorthand"]
             ],
@@ -50,7 +50,7 @@
         {
             "head": "Visibility",
             "list": [
-                ["visibility-visible", "block visibility explicit value"],
+                ["visibility-visible", "block visibility explicit"],
                 ["visible", "block visibility alias"],
                 ["v-visible", "block visibility shorthand"]
             ],
@@ -71,7 +71,7 @@
         {
             "head": "Position",
             "list": [
-                ["position-relative", "explicit value"],
+                ["position-relative", "explicit"],
                 ["relative", "alias"],
                 ["pos-relative", "shorthand"]
             ],
@@ -94,7 +94,7 @@
         {
             "head": "Alignment",
             "list": [
-                ["text-align-center", "explicit value"],
+                ["text-align-center", "explicit"],
                 ["aligncenter", "alias"]
             ],
             "reference": {

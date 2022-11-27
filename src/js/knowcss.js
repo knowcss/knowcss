@@ -910,7 +910,7 @@ function getContainers(classString) {
 function knowCSSRender(uI, uC, uO) {
     var uX = {
         'codeKey': '',
-        'refresh': true,
+        'refresh': false,
         'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
@@ -1132,6 +1132,7 @@ function knowCSSRender(uI, uC, uO) {
         masterLine = '';
         masterTab = '';
     }
+    var explicitValue = '';
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
         styles.push(masterLine + start);
@@ -1141,20 +1142,22 @@ function knowCSSRender(uI, uC, uO) {
             for (var classKey in css[screen][action][0]) {
                 [modifier, className, classValue, classImportant, classWebKit] = css[screen][action][1][classKey];
                 if (className.length > 0 || classValue.length > 0) {
-                    if (classValue.length == 0) { classValue = "''"; }
-                    classHere = css[screen][action][0][classKey];
-                    if (classImportant == '!') { classImportant = '!important'; }
-                    if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
-                        var classFirstSix = className.substring(0, 5);
-                        if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
+                    if (classValue.length > 0 || classImportant.length > 0) {
+                        if (classValue.length == 0) { classValue = "''"; }
+                        if (classImportant == '!') { classImportant = '!important'; }
+                        if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
+                            var classFirstSix = className.substring(0, 5);
+                            if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
+                        }
+                        stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
+                        if (classWebKit || (uX.autoprefix && getWebKit(className))) {
+                            stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
+                            stylesHere += stylesWebKit.join('');
+                        }
+                        classHere = css[screen][action][0][classKey];
+                        if (classHere in cssGroup == false) { cssGroup[classHere] = stylesHere; }
+                        else { cssGroup[classHere] += ' ' + stylesHere; }
                     }
-                    stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
-                    if (classWebKit || (uX.autoprefix && getWebKit(className))) {
-                        stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
-                        stylesHere += stylesWebKit.join('');
-                    }
-                    if (classHere in cssGroup == false) { cssGroup[classHere] = stylesHere; }
-                    else { cssGroup[classHere] += ' ' + stylesHere; }
                 }
             }
             for (var cssgroup in cssGroup) { styles.push(tab + cssgroup + '{' + cssGroup[cssgroup] + '}' + masterLine); }

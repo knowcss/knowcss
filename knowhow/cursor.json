@@ -1,10 +1,58 @@
 {
+    "pointer-events": [
+        {
+            "head": "Pointer Events",
+            "list": [
+                ["pointer-events-none", "explicit"],
+                ["pointer-events-auto", "explicit"],
+                ["nopoint", "alias"],
+                ["point", "alias"]
+            ]
+        },
+        {
+            "head": "Pointer Events (SVG)",
+            "list": [
+                ["pointer-events-visiblePainted", ""],
+                ["pointer-events-visibleFill", ""],
+                ["pointer-events-visibleStroke", ""],
+                ["pointer-events-visible", ""],
+                ["pointer-events-painted", ""],
+                ["pointer-events-fill", ""],
+                ["pointer-events-stroke", ""],
+                ["pointer-events-all", ""]
+            ]
+        }
+    ],
+
+    "user-select": [
+        {
+            "head": "User Select",
+            "list": [
+                ["user-select-none", "explicit"],
+                ["user-select-auto", "explicit"],
+                ["noselect", "alias"],
+                ["select", "alias"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "user-select-none": "",
+                    "user-select-auto": "",
+                    "user-select-text": "",
+                    "user-select-contain": "",
+                    "user-select-all": ""
+                }
+            }
+        }
+    ],
+
     "cursor": [
         {
             "head": "Cursor",
             "desc": "On a desktop device, hover over the black text within the variations below to view each cursor possibility.",
             "list": [
-                ["cursor-pointer", "explicit value"],
+                ["cursor-pointer", "explicit"],
                 ["pointer", "alias"],
                 ["cr-pointer", "shorthand"]
             ],

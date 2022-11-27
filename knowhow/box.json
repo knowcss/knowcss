@@ -5,7 +5,7 @@
             "list": [
                 [
                     "margin-8/auto",
-                    "explicit value"
+                    "explicit"
                 ],
                 [
                     "m-8/auto",
@@ -32,7 +32,7 @@
             "list": [
                 [
                     "border-1px/solid/#f00",
-                    "explicit value"
+                    "explicit"
                 ],
                 [
                     "b-1px/solid/#f00",
@@ -59,11 +59,19 @@
             "list": [
                 [
                     "padding-8",
-                    "explicit value"
+                    "explicit"
                 ],
                 [
                     "p-8",
                     "shorthand"
+                ],
+                [
+                    "padding-8px/8px/8px/8px",
+                    "explicit multiple"
+                ],
+                [
+                    "p-8px/8px/8px/8px",
+                    "shorthand multiple"
                 ]
             ],
             "reference": {
@@ -86,7 +94,7 @@
             "list": [
                 [
                     "overflow-auto",
-                    "explicit value"
+                    "explicit"
                 ],
                 [
                     "auto",

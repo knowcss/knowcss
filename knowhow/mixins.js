@@ -8,7 +8,7 @@ const cssVars = {
     "family": "font-family-Helvetica",
     "css": '<span know="[go]">CSS</span>',
     "html": '<span know="[go]">HTML</span>',
-    "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[no]">KnowCSS</span></a>'
+    "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nr]">KnowCSS</span></a>'
 };
 const components = {
     "hamburger": [
@@ -30,7 +30,7 @@ const components = {
 const mixins = {
     "sm": "block font-size-12px color-999",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-    "no": "color-2D862D font-weight-400",
+    "nr": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
     "go": "color-339 font-weight-400",
     "hd": "font-size-32px normal!", //aligncenter

@@ -3,7 +3,7 @@
         {
             "head": "Font Family",
             "list": [
-                ["font-family-Geneva", "explicit value"],
+                ["font-family-Geneva", "explicit"],
                 ["family-Verdana", "alias"],
                 ["f-Arial", "shorthand"]
             ]
@@ -16,7 +16,7 @@
             "desc": "For font-size values, you may set a raw integer/number/float value which will automatically be convered to the expected px and rem sizes.",
             "more": "The 3 variations below will generate: {font-size: 16px; font-size: 1rem!important}",
             "list": [
-                ["font-size-16px", "explicit value"],
+                ["font-size-16px", "explicit"],
                 ["px-16px", "alias"],
                 ["16", "shorthand"]
             ]
@@ -27,7 +27,7 @@
         {
             "head": "Font Weight",
             "list": [
-                ["font-weight-300", "explicit value"],
+                ["font-weight-300", "explicit"],
                 ["light", "alias"],
                 ["fw-300", "shorthand"]
             ],
@@ -67,7 +67,7 @@
             "head": "White Space",
             "desc": "",
             "list": [
-                ["white-space-nowrap", "explicit value"],
+                ["white-space-nowrap", "explicit"],
                 ["nowrap", "alias"],
                 ["pre", "alias"],
                 ["pre-line", "alias"],
@@ -76,13 +76,57 @@
         }
     ],
 
+    "font-style": [
+        {
+            "head": "Font Style",
+            "list": [
+                ["font-style-italic", "explicit"],
+                ["italic", "alias"],
+                ["fs-italic", "shorthand"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "fs",
+                "apply": true,
+                "list": {
+                    "thin": "font-style-normal",
+                    "italic": "font-style-italic",
+                    "oblique": "font-style-oblique"
+                }
+            }
+        }
+    ],
+
+    "font-variant-caps": [
+        {
+            "head": "Font Variant Caps",
+            "list": [
+                ["font-variant-caps=small-caps", "explicit"],
+                ["small-caps", "alias"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "small-caps": "",
+                    "all-small-caps": "",
+                    "petite-caps": "",
+                    "all-petite-caps": "",
+                    "unicase": "",
+                    "titling-caps": ""
+                }
+            }
+        }
+    ],
+
+
 
     "overflow-wrap": [
         {
             "head": "Overflow Wrap",
             "desc": "",
             "list": [
-                ["overflow-wrap=break-word", "explicit value"],
+                ["overflow-wrap=break-word", "explicit"],
                 ["break-word", "alias"]
             ],
             "reference": {

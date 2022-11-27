@@ -1,5 +1,5 @@
 <div know="[bx] [hr]">
-    <div know="[hd]">Colors and Shading</div>
+    <div know="[hd]">Colors</div>
     <div know="[xt] [ft]">
         <div>3 or 6 digit hex colors or explicit common color names may be used with or without the leading # character.
         </div>
@@ -25,6 +25,11 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div know="[bx] [hr]">
+    <div know="[hd]">Shading</div>
+     <div know="[xt] [ft]">
         <div know="[xt]">Any hex color may be shaded at 0-100 percent with @ giving you full access to all 16,777,216
             possible colors.</div>
         <div know="[xt] [ct]">
@@ -152,9 +157,9 @@
 </div>
 
 <div know="[bx] [hr]">
-    <div know="[hd]">Available Common Colors</div>
-    <div know="[ys] [xt]">Any color value may be referenced by the explicit hex color or by the corresponding common
-        color name for that hex color. Scroll through the list of standard colors below.</div>
+    <div know="[hd]">141 Available Common Colors</div>
+    <div know="[xt]">Any color value may be referenced by the explicit hex color or by the corresponding common
+        color name for that hex color. Scroll through the list of common colors below.</div>
     <div know="[xt] height-300px max-width-300px overflow-auto border=1px/solid/#ccc margin-10px/auto/0/auto">
         <div id="colors" name="colors" know="table border-spacing-3px margin-0/auto"></div>
     </div>
