@@ -32,25 +32,28 @@
 
         // JAA TODO - convert this to KnowCSS mixins
         var css = `
-          p code{border-radius:2px;background-color:#eee;color:#111}
-          code[class*="language-"],pre[class*="language-"]{font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
-          code[class*="language-"]{background:#fff;color:#000}
-          :not(pre)>code[class*="language-"]{padding:.2em;border-radius:.3em;box-shadow:none;white-space:normal}
-          .token.comment,.token.prolog,.token.doctype,.token.cdata{color:#aaa}
-          .token.punctuation{color:` + punc + `}
-          .token.namespace{opacity:.7}
-          .token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol{color:` + property + `}
-          .token.selector,.token.attr-name,.token.string,.token.char,.token.builtin{color:` + selector + `}
-          .token.operator,.token.entity,.token.url,.language-css .token.string,.token.variable,.token.inserted{color:` + operator + `}
-          .token.atrule,.token.attr-value,.token.keyword{color:` + attr + `}
-          .token.regex,.token.important{color:` + regex + `}
-          .token.important,.token.bold{font-weight:700}
-          .token.italic{font-style:italic}
-          .token.entity{cursor:help}
-          .token.deleted{color:red}
-          pre.diff-highlight.diff-highlight>code .token.deleted:not(.prefix),pre>code.diff-highlight.diff-highlight .token.deleted:not(.prefix){background-color:rgba(255,0,0,.3);display:inline}
-          pre.diff-highlight.diff-highlight>code .token.inserted:not(.prefix),pre>code.diff-highlight.diff-highlight .token.inserted:not(.prefix){background-color:rgba(0,255,128,.3);display:inline}
+          [class*="language-"]{font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
+
+          .comment,.prolog,.doctype,.cdata{color:#aaa}
+          .punctuation{color:` + punc + `}
+          .property,.tag,.boolean,.number,.constant,.symbol{color:` + property + `}
+          .selector,.attr-name,.string,.char,.builtin{color:` + selector + `}
+          .operator,.entity,.url,.language-css .string,.variable,.inserted{color:` + operator + `}
+          .atrule,.attr-value,.keyword{color:` + attr + `}
+          .regex,.important{color:` + regex + `}
+
+          .namespace{opacity:.7}
+          .important,.bold{font-weight:700}
+          .italic{font-style:italic}
+          .entity{cursor:help}
+          .deleted{color:red}
         `;
+        /*
+        :not(pre)>code[class*="language-"]{padding:.2em;border-radius:.3em;box-shadow:none;white-space:normal}
+        p code{border-radius:2px;background-color:#eee;color:#111}
+        pre.diff-highlight.diff-highlight>code .deleted:not(.prefix),pre>code.diff-highlight.diff-highlight .deleted:not(.prefix){background-color:rgba(255,0,0,.3);display:inline}
+        pre.diff-highlight.diff-highlight>code .inserted:not(.prefix),pre>code.diff-highlight.diff-highlight .inserted:not(.prefix){background-color:rgba(0,255,128,.3);display:inline}
+        */
 
         document.addEventListener('DOMContentLoaded', function(event) {
             var eP = document.createElement('style');
@@ -75,7 +78,7 @@
         oninput="KwUp(this.value); KwSs(this);" onscroll="KwSs(this);"
         onkeydown="KwCt(this, event); KwAp(this, 'root');"
         onkeyup="KwCt(this, event); KwAp(this, 'root');"></textarea>
-    <pre know="[panels] [typing] [floating] [monospace] [match] [highlighting]" id="highlighting" aria-hidden="true">
+    <pre know="[panels] [typing] [floating] [monospace] [match] [highlighting] >code{bg-fff c-000}" id="highlighting" aria-hidden="true">
         <code class="language-html" id="highlighting-content">
         </code>
     </pre>
