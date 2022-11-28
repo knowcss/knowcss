@@ -14,7 +14,9 @@ const shorterHand = {
     "of": "overflow",
     "zi": "z-index",
     "t": "top",
-    "l": "left"
+    "l": "left",
+    "fl": "float",
+    "cl": "clear"
 };
 
 const globalMixins = {

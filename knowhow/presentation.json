@@ -110,5 +110,55 @@
                 }
             }
         }
+    ],
+
+    "float": [
+        {
+            "head": "Float",
+            "apply": false,
+            "reference": {
+                "short": "fl",
+                "alias": false,
+                "list": {
+                    "left": "",
+                    "right": "",
+                    "none": ""
+                }
+            }
+        }
+    ],
+
+    "clear": [
+        {
+            "head": "Clear",
+            "apply": false,
+            "reference": {
+                "short": "cl",
+                "alias": false,
+                "list": {
+                    "left": "",
+                    "right": "",
+                    "both": "",
+                    "none": ""
+                }
+            }
+        }
+    ],
+
+    "z-index": [
+        {
+            "head": "Stack",
+            "apply": false,
+            "reference": {
+                "short": "zi",
+                "alias": false,
+                "list": {
+                    "0": "",
+                    "1": "",
+                    "2": "",
+                    "3": ""
+                }
+            }
+        }
     ]
 }

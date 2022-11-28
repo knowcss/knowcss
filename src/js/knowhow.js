@@ -100,16 +100,21 @@ var knowHow = {
         var useVal = "";
         var useValOriginal = "";
         var useParts = [];
+        var useApply = true;
+        var useBreak = false;
         for (var key in keys) {
             keys[key].forEach(function (val) {
+                useBreak = false;
                 html.push('<div know="[bx]">');
                 if ("head" in val && val.head) { html.push('<div know="[hd]">' + val.head + '</div>'); }
                 html.push('<div know="[xt] [ft]">');
-                if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); }
-                if ("more" in val && val.more) { html.push('<div know="[xt]">' + val.more + '</div>'); }
+                if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); useBreak = true; }
+                if ("more" in val && val.more) { html.push('<div know="[xt]">' + val.more + '</div>'); useBreak = true; }
                 if ("list" in val && val.list) {
+                    useBreak = true;
                     tagLoops = "possible" in val ? (typeof val.possible === 'string' ? $know().lists()[val.possible] : val.possible) : ["main"];
                     tagSplits = "split" in val ? val.split : [""];
+                    useApply = "apply" in val ? val.apply : true;
                     html.push('<div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     val.list.forEach(function (vals) {
                         tag = vals.length > 2 ? vals[2] : 'div';
@@ -134,21 +139,21 @@ var knowHow = {
                                         useVal = useParts.pop();
                                         useVal = '{' + useParts.join('-') + ': ' + useVal + ';}';
                                     }
-                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + tagActual + '">' + useVal + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
+                                    html.push('<div><span know="[blue]">&lt;' + tag + ' <span know="[orange]">know=</span><span know="[pink]">&quot;' + tagActual + '&quot;</span>&gt;</span><' + tagUse + ' know="' + (useApply ? tagActual : '') + '">' + useVal + '</' + tagUse + '><span know="[blue]">&lt;/' + tag + '&gt;</span></div>');
                                 });
                             });
                         });
                     });
-                    html.push('</div></div>');
+                    html.push('</div></div></div>');
                 }
                 if ("reference" in val && val.reference) {
-                    html.push('</div></div><div know="[xt] [ft]">');
+                    if (useBreak) { html.push('</div><div know="[xt] [ft]">'); }
                     if ("head" in val.reference && val.reference.head) { html.push('<div>' + val.reference.head + '</div>'); }
                     html.push('<div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     for (var vals in val.reference.list) {
                         var sG = val.reference.list[vals];
                         if (sG.length == 0) {
-                            sG = key + '=' + vals;
+                            sG = key + (vals.indexOf('-') > -1 ? '=' : '-') + vals;
                         }
                         var sO = sG;
                         var sD = sG.replace('=', '-');
@@ -161,18 +166,19 @@ var knowHow = {
                             sG += '-' + sV;
                         }
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
-                        if (vals == sO) { sO = ''; }
+                        if ("alias" in val.reference && !val.reference.alias) { vals = ''; }
+                        else if (vals == sO) { sO = ''; }
                         var sA = val.reference.apply ? ' know="' + vals + '"' : '';
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + (sO + ' ' + vals + sH).trim() + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     };
-                    html.push('</div></div>');
+                    html.push('</div></div></div>');
                 }
                 if ("reverts" in val && val.reverts) {
-                    html.push('</div></div><div know="[xt] [ft]"><div>Reversions:</div><div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
+                    html.push('</div><div know="[xt] [ft]"><div>Reversions:</div><div know="[xt] [ct]"><div know="[cd]"><div know="[nt]">');
                     ["unset", "revert", "initial", "inherit"].forEach(function (vals) {
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + key + '-' + vals + '&quot;</span>&gt;</span><span>{' + cssValue(key + '-' + vals) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     });
-                    html.push('</div></div>');
+                    html.push('</div></div></div>');
                 }
                 html.push('</div></div>');
             });
