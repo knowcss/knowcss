@@ -1,0 +1,122 @@
+{
+    "margin": [
+        {
+            "head": "Margin",
+            "list": [
+                [
+                    "margin-8/auto",
+                    "explicit"
+                ],
+                [
+                    "m-8/auto",
+                    "shorthand"
+                ]
+            ],
+            "reference": {
+                "values": "8",
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "m": "margin",
+                    "mt": "margin-top",
+                    "mb": "margin-bottom",
+                    "ml": "margin-left",
+                    "mr": "margin-right"
+                }
+            }
+        }
+    ],
+    "border": [
+        {
+            "head": "Border",
+            "list": [
+                [
+                    "border-1px/solid/#f00",
+                    "explicit"
+                ],
+                [
+                    "b-1px/solid/#f00",
+                    "shorthand"
+                ]
+            ],
+            "reference": {
+                "values": "1px/solid/#f00",
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "b": "border",
+                    "bt": "border-top",
+                    "bb": "border-bottom",
+                    "bl": "border-left",
+                    "br": "border-right"
+                }
+            }
+        }
+    ],
+    "padding": [
+        {
+            "head": "Padding",
+            "list": [
+                [
+                    "padding-8",
+                    "explicit"
+                ],
+                [
+                    "p-8",
+                    "shorthand"
+                ],
+                [
+                    "padding-8px/8px/8px/8px",
+                    "explicit multiple"
+                ],
+                [
+                    "p-8px/8px/8px/8px",
+                    "shorthand multiple"
+                ]
+            ],
+            "reference": {
+                "values": "8",
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "p": "padding",
+                    "pt": "padding-top",
+                    "pb": "padding-bottom",
+                    "pl": "padding-left",
+                    "pr": "padding-right"
+                }
+            }
+        }
+    ],
+    "overflow": [
+        {
+            "head": "Overflow",
+            "list": [
+                [
+                    "overflow-auto",
+                    "explicit"
+                ],
+                [
+                    "auto",
+                    "alias"
+                ],
+                [
+                    "of-auto",
+                    "shorthand"
+                ]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "of",
+                "apply": true,
+                "list": {
+                    "overflow-visible": "overflow-visible",
+                    "overflow-hidden": "overflow-hidden",
+                    "clip": "overflow-clip",
+                    "scroll": "overflow-scroll",
+                    "auto": "overflow-auto"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+
+    "actions": [
+        {
+            "head": "Actions",
+            "apply": true,
+            "possible": "actions",
+            "list": [
+                ["$1{color-orange}", "$1", "a", "a href=\"http://www.knowcss.com/\""]
+            ]
+        }
+    ],
+
+    "modifiers": [
+        {
+            "head": "Modifiers",
+            "apply": true,
+            "possible": "modifiers",
+            "list": [
+                ["$1{color-orange}", "$1", "a", "a href=\"http://www.knowcss.com/\""]
+            ]
+        }
+    ],
+
+    "selectors": [
+        {
+            "head": "Selectors",
+            "apply": true,
+            "possible": "selectors",
+            "list": [
+                ["$1{color-orange}", "$1", "a", "a href=\"http://www.knowcss.com/\""]
+            ]
+        }
+    ],
+
+    "media": [
+        {
+            "head": "Media Queries",
+            "apply": true,
+            "possible": "media",
+            "list": [
+                ["media-$1{color-orange}", "$1", "a", "a href=\"http://www.knowcss.com/\""]
+            ]
+        },
+        {
+            "head": "Exclude Media Queries",
+            "apply": true,
+            "possible": ["max-resolution", "prefers-color-scheme", "orientation-portrait", "orientation-landscape"],
+            "split": ["not", "!"],
+            "list": [
+                ["$2media-$1{color-orange}", "$1", "a", "a href=\"http://www.knowcss.com/\""]
+            ]
+        }
+    ]
+}

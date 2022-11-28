@@ -1,11 +1,13 @@
 'use strict'
 
 var KwOg = {};
+
 function KwUp(text) {
     let elem = KwLy("highlighting-content");
     if (text[text.length - 1] == "\n") {
         text += " ";
     }
+    window.localStorage.setItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow', text);
     elem.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
     Prism.highlightElement(elem);
 }
@@ -62,13 +64,29 @@ function KwAe(dO, dT) {
         if (typeof dA === 'string') { KwEs(dS[dA]); }
     }
 }
-function KwAp(hA, hB) {
+function KwAp(hA, hB, hF) {
     var hC = KwLy(hB);
     if (hC) {
-        if (KwOg[hB] !== hA.value) {
+        if (hF || KwOg[hB] !== hA.value) {
             KwOg[hB] = hA.value;
             KwAe(hC, hA.value);
-            $know().render("[know]", true);
+            $know().render("[know]");
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function(event) {
+    var eP = document.createElement('style');
+    eP.innerHTML = css;
+    document.body.appendChild(eP);
+    var eH = '';
+    try { eH = window.localStorage.getItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow'); }
+    catch(e) { eH = ''; }
+    if (eH.length == 0) { eh = KwLy('root').innerHTML; }
+    var eD = KwLy('editing');
+    eD.value = eH;
+    KwUp(eH);
+    KwCt(eD, event);
+    for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
+    eD.focus();
+});

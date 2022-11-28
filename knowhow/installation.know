@@ -1,0 +1,54 @@
+<div know="[bx]">
+    <div know="[hd]">How do I install KnowCSS?</div>
+    <div know="[ft]">
+        <div know="[xt]">
+            <div know="[xt] [ct]">
+                <div know="[cd]" class="noshift3">
+                    <i class="bi-files" know="cursor-pointer float-right" onClick="
+						event.preventDefault();
+						var cH = document.getElementById('install').innerText;
+						if (window.clipboardData) {  window.clipboardData.setData('text/plain', cH); }
+						else if (event.clipboardData) { event.clipboardData.setData('text/plain', cH); }
+						else if (navigator.clipboard) { navigator.clipboard.writeText(cH).then(() => {}, () => {}); }
+						else {
+							var cB = document.createElement('textarea');
+							document.body.appendChild(cB);
+							cB.value = cH;
+							cB.select();
+							var cS = document.execCommand('copy');
+							document.body.removeChild(cB);
+                        }
+ 						this.blur();
+    					return false;
+    				"></i>
+                    <span id="install">
+                        <span know="[nr] font-weight-300!">&lt!-- Copy these 2 files locally to customize
+                            colors and shorthand --&gt;</span>
+                        <br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span
+                            know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/src/knowcss-colors.js"</span>&gt;&lt;/script&gt;
+                        <br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span
+                            know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/src/knowcss-shorthand.js"</span>&gt;&lt;/script&gt;
+                        <br>
+                        <br><span know="[nr] font-weight-300!">&lt!-- Use latest stable, minified
+                            version --&gt;</span>
+                        <br><span know="[blue]">&lt;script <span know="[orange]">src=</span><span
+                            know="[pink] word-break=break-word">"https://cdn.jsdelivr.net/gh/knowcss/knowcss@latest/dist/js/knowcss.min.js"</span>&gt;&lt;/script&gt;
+                        <br>
+                         <br>&lt;div <span know="[orange]">id=</span><span
+                            know="[pink]">"root"</span>&gt;
+                        <br><span know="[ml] [blue]">&lt;div <span
+                            know="[orange]">know=</span><span know="[pink]">&quot;bold
+                            color-black font-size-16px&quot;</span>&gt;<span
+                            know="[black]">Hello, world.</span>&lt;/div&gt;</span>
+                        <br><span know="[ml] [blue]">&lt;div <span
+                            know="[orange]">know=</span><span know="[pink]">&quot;color-333
+                            font-size-12px italic&quot;</span>&gt;<span
+                            know="color-333 font-size-12px italic">KnowCSS was
+                         	here!</span>&lt;/div&gt;</span>
+                        <br>&lt;/div&gt;
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

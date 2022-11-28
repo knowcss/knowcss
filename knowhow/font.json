@@ -1,0 +1,143 @@
+{
+    "font-family": [
+        {
+            "head": "Font Family",
+            "list": [
+                ["font-family-Geneva", "explicit"],
+                ["family-Verdana", "alias"],
+                ["f-Arial", "shorthand"]
+            ]
+        }
+    ],
+
+    "font-size": [
+        {
+            "head": "Font Size",
+            "desc": "For font-size values, you may set a raw integer/number/float value which will automatically be convered to the expected px and rem sizes.",
+            "more": "The 3 variations below will generate: {font-size: 16px; font-size: 1rem!important}",
+            "list": [
+                ["font-size-16px", "explicit"],
+                ["px-16px", "alias"],
+                ["16", "shorthand"]
+            ]
+        }
+    ],
+
+    "font-weight": [
+        {
+            "head": "Font Weight",
+            "list": [
+                ["font-weight-300", "explicit"],
+                ["light", "alias"],
+                ["fw-300", "shorthand"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "fw",
+                "apply": true,
+                "list": {
+                    "thin": "font-weight-100",
+                    "extralight": "font-weight-200",
+                    "light": "font-weight-300",
+                    "normal": "font-weight-400",
+                    "medium": "font-weight-500",
+                    "semibold": "font-weight-600",
+                    "bold": "font-weight-700",
+                    "extrabold": "font-weight-800"
+                }
+            }
+        }
+    ],
+
+    "spacing": [
+        {
+            "head": "Font Spacing",
+            "desc": "",
+            "list": [
+                ["text-indent-2px indent-2px", "text indentation"],
+                ["letter-spacing-2px space-2px", "letter spacing"],
+                ["line-height-2px line-2px", "line height"],
+                ["word-spacing-2px word-2px", "word spacing"]
+            ]
+        }
+    ],
+
+    "white-space": [
+        {
+            "head": "White Space",
+            "desc": "",
+            "list": [
+                ["white-space-nowrap", "explicit"],
+                ["nowrap", "alias"],
+                ["pre", "alias"],
+                ["pre-line", "alias"],
+                ["pre-wrap", "alias"]
+            ]
+        }
+    ],
+
+    "font-style": [
+        {
+            "head": "Font Style",
+            "list": [
+                ["font-style-italic", "explicit"],
+                ["italic", "alias"],
+                ["fs-italic", "shorthand"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "fs",
+                "apply": true,
+                "list": {
+                    "thin": "font-style-normal",
+                    "italic": "font-style-italic",
+                    "oblique": "font-style-oblique"
+                }
+            }
+        }
+    ],
+
+    "font-variant-caps": [
+        {
+            "head": "Font Variant Caps",
+            "list": [
+                ["font-variant-caps=small-caps", "explicit"],
+                ["small-caps", "alias"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "apply": true,
+                "list": {
+                    "small-caps": "",
+                    "all-small-caps": "",
+                    "petite-caps": "",
+                    "all-petite-caps": "",
+                    "unicase": "",
+                    "titling-caps": ""
+                }
+            }
+        }
+    ],
+
+
+
+    "overflow-wrap": [
+        {
+            "head": "Overflow Wrap",
+            "desc": "",
+            "list": [
+                ["overflow-wrap=break-word", "explicit"],
+                ["break-word", "alias"]
+            ],
+            "reference": {
+                "head": "Variations:",
+                "short": "wrap",
+                "apply": true,
+                "list": {
+                    "break-word": "overflow-wrap=break-word",
+                    "anywhere": "overflow-wrap-anywhere"
+                }
+            }
+        }
+    ]
+}
