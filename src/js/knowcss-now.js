@@ -1,19 +1,5 @@
 'use strict'
 
-const storage = function (key, val, json) {
-    json = $wb.possible(json) ? json : true;
-    if ($wb.possible(val)) {
-        if (json) { val = $wb.json(val, false); }
-        window.localStorage.setItem(key, val);
-    }
-    else if ($wb.possible(key)) {
-        val = window.localStorage.getItem(key);
-        if (json) { val = $wb.json(val, true); }
-    }
-    else { val = window.localStorage; }
-    return val;
-};
-
 var KwOg = {};
 
 function KwUp(text) {
@@ -21,7 +7,7 @@ function KwUp(text) {
     if (text[text.length - 1] == "\n") {
         text += " ";
     }
-    window.localStorage.setItem('knowcssnow', text);
+    window.localStorage.setItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow', text);
     elem.innerHTML = text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
     Prism.highlightElement(elem);
 }
@@ -88,3 +74,19 @@ function KwAp(hA, hB, hF) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function(event) {
+    var eP = document.createElement('style');
+    eP.innerHTML = css;
+    document.body.appendChild(eP);
+    var eH = '';
+    try { eH = window.localStorage.getItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow'); }
+    catch(e) { eH = ''; }
+    if (eH.length == 0) { eh = KwLy('root').innerHTML; }
+    var eD = KwLy('editing');
+    eD.value = eH;
+    KwUp(eH);
+    KwCt(eD, event);
+    for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
+    eD.focus();
+});

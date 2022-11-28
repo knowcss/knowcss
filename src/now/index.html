@@ -10,19 +10,21 @@
         var regex = 'orange';
         var punc = '#384ef4';
 
+        const knowNowKey = "knowcssnow";
+
         const monospace = 'font-size-10pt! font-family-monospace! line-height-11pt! tab-size-2!';
         const mixins = {
-            'body': 'p-0 m-0 h-100% 100vh 100vw overflow-hidden',
+            'body': 'p-0 m-0 h-100% 100vh 100vw of-hidden',
             'panels': 'of-auto m-0 p-10px b-0 100vw border-box b-3px/solid/#f3f3f3 border-top-width-0!',
             'monospace': monospace + ' all{' + monospace + '}',
             'floating': 'absolute t-0 l-0',
-            'typing': 'zi-1',
+            'typing': 'zi-1 h-calc(25vh-36px)! mt-36px!',
             'match': 'p-0.4em/0.8em m-0/0/0.5em/0',
 
-            'highlighting': 'of-auto nowrap! zi-0 bg-fff h-25vh!',
+            'highlighting': 'of-auto nowrap! zi-0 bg-fff',
             'root': 'zi-2 mt-50vh h-50vh! p-16px',
             'code': 'mt-25vh h-25vh! pre',
-            'editing': 'webkit-scrollbar{display-none} focus{outline-none!} of-auto nowrap! resize-none c-transparent bg-transparent caret-color-#000 h-25vh 100vw outline-none!'
+            'editing': 'webkit-scrollbar{none} focus{outline-none!} of-auto nowrap! resize-none c-transparent bg-transparent caret-color-#000 100vw outline-none!'
         };
 
         const knowConfig = {
@@ -32,7 +34,7 @@
 
         // JAA TODO - convert this to KnowCSS mixins
         var css = `
-          [class*="language-"]{font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
+          #highlighting-content{font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
 
           .comment,.prolog,.doctype,.cdata{color:#aaa}
           .punctuation{color:` + punc + `}
@@ -54,26 +56,14 @@
         pre.diff-highlight.diff-highlight>code .deleted:not(.prefix),pre>code.diff-highlight.diff-highlight .deleted:not(.prefix){background-color:rgba(255,0,0,.3);display:inline}
         pre.diff-highlight.diff-highlight>code .inserted:not(.prefix),pre>code.diff-highlight.diff-highlight .inserted:not(.prefix){background-color:rgba(0,255,128,.3);display:inline}
         */
-
-        document.addEventListener('DOMContentLoaded', function(event) {
-            var eP = document.createElement('style');
-            eP.innerHTML = css;
-            document.body.appendChild(eP);
-            var eH = '';
-            try { eH = window.localStorage.getItem("knowcssnow"); }
-            catch(e) { eH = ''; }
-            var eH = eH || KwLy('root').innerHTML;
-            var eD = KwLy('editing');
-            eD.value = eH;
-            KwUp(eH);
-            KwCt(eD, event);
-            for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
-            eD.focus();
-        });
     </script>
 </head>
 
 <body know="[body] >{font-family-monospace}">
+    <div know="table zi-10 absolute t-0 l-0 h-22px 100vw bg-f6f6f6 bb-4px/solid/#cfcfcf p-3px/8px">
+        <div know="table-cell alignmiddle [monospace]">KnowCSS Now - The IDE for KnowCSS</div>
+    </div>
+
     <textarea know="[panels] [typing] [floating] [monospace] [match] [editing]" placeholder="Enter HTML Source Code" id="editing" spellcheck="false"
         oninput="KwUp(this.value); KwSs(this);" onscroll="KwSs(this);"
         onkeydown="KwCt(this, event); KwAp(this, 'root');"
@@ -83,7 +73,8 @@
         </code>
     </pre>
     <div know="[panels] [floating] [monospace] [code]" id="code"></div>
-    <div know="[panels] [root]" id="root"><div know="color-000 font-size-18px light">black 18px light</div>
+    <div know="[panels] [root]" id="root"><div know="24 semibold mb-20">Welcome to KnowCSS Now. Edit the HTML here to experiment with KnowCSS!</div>
+<div know="color-000 font-size-18px light">black 18px light</div>
 <div know="color-f00 font-size-24px bold">red 24px bold</div>
 <div know="color-00f font-size-18px semibold">blue 14px test</div>
 
