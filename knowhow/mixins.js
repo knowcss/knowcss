@@ -17,7 +17,7 @@ const components = {
         "pointer nohighlight",
         "hover>span{bg-933}",
         ">input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
-        ">span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.2s/ease-in}",
+        ">span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
         "first-child>span{origin-0%/0%}",
         "last-child>span{origin-0%/100%}"
     ],

@@ -34,6 +34,10 @@ var knowHow = {
                 if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
                 if (dataNav.length > 4) { dataNav[4].apply(this, []); }
             }
+            if (window.innerWidth < 768) {
+                knowElem('toggle-hamburger').checked = false;
+                this.toggle();
+            }
         }
         return this;
     },
@@ -47,6 +51,25 @@ var knowHow = {
     reveal: function (key) {
         knowElem(key).style.visibility = 'visible';
         return this;
+    },
+    toggle: function() {
+        // JAA TODO - add toggle{} selector
+        const navCheck = knowElem('toggle-hamburger').checked;
+        const navMobile = window.innerWidth < 768;
+        var navWidth = navMobile ? "100%" : 0;
+        var navBlock = ['none', 'hidden'];
+        if (!navCheck) {
+            if (!navMobile) { navWidth = '300px'; }
+        }
+        else {
+            if (navMobile) { navBlock = ['block', 'visible']; }
+            else { navBlock = ['table-cell', 'visible']; }
+        }
+        if (navMobile) {
+            const navCol = knowElem('navcol');
+            [navCol.style.display, navCol.style.visibility] = navBlock;
+        }
+        knowElem('navwrap').style.width = navWidth;
     },
     hamburger: function () {
         var nav = knowElem('nav');
@@ -63,25 +86,7 @@ var knowHow = {
             nav.appendChild(elem);
         }
         var hamburger = knowElem('hamburger');
-        hamburger.onclick = (event) => {
-            // JAA TODO - add toggle{} selector
-            const navCheck = knowElem('toggle-hamburger').checked;
-            const navMobile = window.innerWidth < 768;
-            var navWidth = navMobile ? "100%" : 0;
-            var navBlock = ['none', 'hidden'];
-            if (!navCheck) {
-                if (!navMobile) { navWidth = '300px'; }
-            }
-            else {
-                if (navMobile) { navBlock = ['block', 'visible']; }
-                else { navBlock = ['table-cell', 'visible']; }
-            }
-            if (navMobile) {
-                const navCol = knowElem('navcol');
-                [navCol.style.display, navCol.style.visibility] = navBlock;
-            }
-            knowElem('navwrap').style.width = navWidth;
-        };
+        hamburger.onclick = (event) => { $knowhow().toggle(); };
         return this;
     },
     render: function (keys, id) {
