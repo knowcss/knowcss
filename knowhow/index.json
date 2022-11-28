@@ -35,35 +35,5 @@
                 ]
             ]
         }
-    ],
-    "important": [
-        {
-            "head": "!Important Modifier",
-            "desc": "The !important modifier will apply if ! appears anywhere in the value or if -important appears at the end of a value.",
-            "list": [
-                [
-                    "font-size-24px!",
-                    "force 24px font-size"
-                ],
-                [
-                    "font-size-12px-important!",
-                    "force 12px font-size"
-                ]
-            ]
-        },
-        {
-            "head": "!Important Grouping",
-            "desc": "Multiple values may be grouped to apply !important to each with the !{} or important{} selector.",
-            "list": [
-                [
-                    "!{color-c33 padding-2px}",
-                    "force red with padding"
-                ],
-                [
-                    "important{color-3c3 font-size-12px}",
-                    "force blue 12px font-size"
-                ]
-            ]
-        }
     ]
 }

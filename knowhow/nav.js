@@ -22,6 +22,7 @@ const knowHowNav = {
     "font": ["Typography", "Family, Size, Weight, Space, Wrap, Style, Variant"],
     "modifier": ["Psuedo Elements", "Modifiers, Selectors, Actions"],
     "presentation": ["Presentation", "Display, Visibility, Position, Align, Float, Clear, Stack"],
+    "important": ["Important", "Override, Grouping"],
     "dimension": ["Dimensions", "Height, Width"],
     //"target": ["Targeting", "TODO -- All, Children, Adjacents, Siblings, Parents"],
     "color": ["Style", "Color, Heading, Common Colors", false, "know", function() {
