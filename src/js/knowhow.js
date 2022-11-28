@@ -37,6 +37,7 @@ var knowHow = {
             if (window.innerWidth < 768) {
                 knowElem('toggle-hamburger').checked = false;
                 this.toggle();
+                window.scrollTo(0, 0);
             }
         }
         return this;
