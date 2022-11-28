@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     var eH = '';
     try { eH = window.localStorage.getItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow'); }
     catch(e) { eH = ''; }
-    if (eH.length == 0) { eh = KwLy('root').innerHTML; }
+    if (!eH || eH.trim().length == 0) { eH = KwLy('root').innerHTML; }
     var eD = KwLy('editing');
     eD.value = eH;
     KwUp(eH);
