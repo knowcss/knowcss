@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-KnowCSS Version 2.0.5 by Jay Doublay
+KnowCSS Version 2.0.6 by Jay Doublay
 https://www.knowcss.com/
 
 NPM: https://www.npmjs.com/package/knowcss
@@ -304,6 +304,7 @@ function getShorterHand(classFound, classesFound, ii) {
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
+    [classFound, classImportant] = getImportant(classFound);
     if (!isNaN(classFound)) { classFound = "font-size-" + classFound + "px"; }
     else if (defined(knowCSSOptions.shortHand)) {
         if (classFound.indexOf('-webkit-') > -1) { classFound = classFound.replace('-webkit-', ''); classWebKit = true; }
@@ -311,7 +312,6 @@ function getShortHand(classFound, classesFound) {
         else if (classFound.indexOf('-ms-') > -1) { classFound = classFound.replace('-ms-', ''); classWebKit = true; }
         else if (classFound.indexOf('-o-') > -1) { classFound = classFound.replace('-o-', ''); classWebKit = true; }
         if (classFound.indexOf('--') > -1) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
-        [classFound, classImportant] = getImportant(classFound);
         if (classFound in knowCSSOptions.shortHand) {
             classFound = knowCSSOptions.shortHand[classFound].trim();
             if (classFound.indexOf(' ') > -1) {
@@ -632,7 +632,7 @@ function getActions(mS, mD) {
     var i = 0;
     var mA = '*';
     var mP = mA;
-    ['>', '~', '+'].forEach(function(val) {
+    ['>', '~', '+'].forEach(function (val) {
         if (mS.indexOf(val) > -1) {
             mP = mS.split(val, 2).pop();
             if (!mP) { mP = mA; }
@@ -1132,7 +1132,6 @@ function knowCSSRender(uI, uC, uO) {
         masterLine = '';
         masterTab = '';
     }
-    var explicitValue = '';
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
         styles.push(masterLine + start);
