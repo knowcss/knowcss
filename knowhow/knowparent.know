@@ -1,7 +1,7 @@
 <div know="[bx]">
     <div know="[hd]">Introducing KnowParent, the Simple Parent Selector</div>
     <div know="[xt] [ft]">
-        <div>While CSS lacks a native way to target parents of elements with classes, KnowCSS adds a simple method to do just that.
+        <div>While CSS lacks a native way to target parents of elements with styles, KnowCSS adds a simple method to do just that.
         <br>
         <br>Transforming a parent element based on its contents is vital for UI/UX and may be the sole reason you decide to utilize KnowCSS in your projects.
         <br>
