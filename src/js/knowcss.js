@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-KnowCSS Version 2.0.5 by Jay Doublay
+KnowCSS Version 2.0.6 by Jay Doublay
 https://www.knowcss.com/
 
 NPM: https://www.npmjs.com/package/knowcss
@@ -304,6 +304,7 @@ function getShorterHand(classFound, classesFound, ii) {
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
+    [classFound, classImportant] = getImportant(classFound);
     if (!isNaN(classFound)) { classFound = "font-size-" + classFound + "px"; }
     else if (defined(knowCSSOptions.shortHand)) {
         if (classFound.indexOf('-webkit-') > -1) { classFound = classFound.replace('-webkit-', ''); classWebKit = true; }
@@ -311,7 +312,6 @@ function getShortHand(classFound, classesFound) {
         else if (classFound.indexOf('-ms-') > -1) { classFound = classFound.replace('-ms-', ''); classWebKit = true; }
         else if (classFound.indexOf('-o-') > -1) { classFound = classFound.replace('-o-', ''); classWebKit = true; }
         if (classFound.indexOf('--') > -1) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
-        [classFound, classImportant] = getImportant(classFound);
         if (classFound in knowCSSOptions.shortHand) {
             classFound = knowCSSOptions.shortHand[classFound].trim();
             if (classFound.indexOf(' ') > -1) {
