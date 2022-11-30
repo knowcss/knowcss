@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-KnowCSS Version 2.0.6 by Jay Doublay
+KnowCSS Version 2.0.7 by Jay Doublay
 https://www.knowcss.com/
 
 NPM: https://www.npmjs.com/package/knowcss
@@ -194,16 +194,37 @@ function getREM(className, classValue, classesFound, remMultiplier) {
     }
     return classesFound;
 }
-function getParentSelector(screen) {
+function getParentSelector(screen, classFound, classesFound) {
     var originalScreen = screen;
-    var classParent = screen.indexOf('parent') > -1;
-    if (classParent && screen.indexOf('-') > -1) {
-        var modifierParts = screen.split('-', 2);
-        if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
-        else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
-        else { screen = 'none'; }
+    var classParent = false;
+    if (classFound.indexOf('^') > -1) {
+        classFound = classFound.replace(/\^/g, '');
+        classParent = true;
     }
-    return [classParent, screen];
+    else if (classFound.indexOf('parent-') > -1) {
+        classFound = classFound.replace('parent-', '');
+        classParent = true;
+    }
+    if (['^','parent'].includes(screen)) {
+        classParent = true;
+        screen = 'none';
+    }
+    else {
+        if (screen.indexOf('^') > -1) {
+            screen = screen.replace('^', 'parent-');
+            classParent = true;
+        }
+        else { classParent = screen.indexOf('parent') > -1; }
+        if (classParent && screen.indexOf('-') > -1) {
+            var modifierParts = screen.split('-', 2);
+            if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
+            else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
+            else { screen = 'none'; }
+        }
+    }
+    console.log(['getParent', screen, originalScreen, classFound, classParent]);
+
+    return [classParent, classFound, classesFound, screen];
 }
 var knowEnvironment = [];
 var userConditionals = [];
@@ -337,8 +358,8 @@ function getValue(val) {
     else if (val.indexOf('calc') == 0) { val = val.replace('-', ' - ').trim(); }
     return val;
 }
-function getKey(screen, modifier, name, action, val, important) {
-    return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
+function getKey(screen, modifier, name, action, val, important, parent) {
+    return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
 }
 function getDynamic(container, action) {
     var dynamic = '';
@@ -388,7 +409,7 @@ function getDynamic(container, action) {
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
-    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,255})\{(.*?)\}', 'gis') }
+    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis') }
     var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
     var containers = {}, screens = {}, modifiers = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
@@ -971,7 +992,7 @@ function knowCSSRender(uI, uC, uO) {
         classNew = '';
         classFirst = '';
         for (var key in classList) {
-            [screen, modifier, action] = key.split('_', 3);
+            [screen, modifier, action, parent] = key.split('_', 3);
             classesFound = getClasses(classList[key]);
             classFirst = '';
             classNextStart = classNext;
@@ -989,8 +1010,8 @@ function knowCSSRender(uI, uC, uO) {
                 if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
                 [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                 [classFound, classesFound] = getGridSystem(classFound, classesFound);
+                [classParent, classFound, classesFound, screen] = getParentSelector(screen, classFound, classesFound);
                 if (!isDefine) {
-                    [classParent, screen] = getParentSelector(screen);
                     [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                     if (allowEnvironment) {
                         [classFound, classImportant] = getImportant(classFound);
@@ -1021,7 +1042,7 @@ function knowCSSRender(uI, uC, uO) {
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
                         if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
-                        classKey = getKey(screen, modifier, className, action, classValue, classImportant);
+                        classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent);
                         /*
                         if (if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
@@ -1085,21 +1106,19 @@ function knowCSSRender(uI, uC, uO) {
         var smartClassGroup = {};
         var smartClassHere = "";
         var addParent = false;
+        var smartKeyID = "";
         for (var smartKey in smartClass) {
-            var smartKeys = smartClass[smartKey];
-            if (smartKeys in smartClassGroup) {
-                smartClassHere = smartClassGroup[smartKeys];
-            }
+            addParent = smartDetail[smartKey][4];
+            smartKeyID = smartClass[smartKey] + '__' + addParent.toString();
+            if (smartKeyID in smartClassGroup) { smartClassHere = smartClassGroup[smartKeyID]; }
             else {
                 smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";
                 smartClassHere = smartClassNext;
                 smartUnique[smartKey] = smartClassHere;
-                smartClassGroup[smartKeys] = smartClassHere;
+                smartClassGroup[smartKeyID] = smartClassHere;
             }
             smartDetail[smartKey][2] = smartClassHere;
-            addParent = smartDetail[smartKey][4];
-
-            smartKeys.split('__').forEach(function (ii) {
+            smartClass[smartKey].split('__').forEach(function (ii) {
                 if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
                 else { classTags[ii].classList.add(smartClassHere); }
                 classTags[ii].removeAttribute(knowID);
