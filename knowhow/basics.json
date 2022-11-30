@@ -1,0 +1,46 @@
+{
+    "standard": [
+        {
+            "head": "Standard Property and Value",
+            "desc": [
+                "You may use familiar utility classes for standard values that include any characters except for space or hyphen. Each class in the \"know\" attribute is separated by a space and analyzed by KnowCSS to determine your intention.",
+                "Note that KnowCSS will \"mangle\" these classes with color-000 become \"a\", font-size-18px becoming \"b\", light becoming \"c\", and so on..."
+            ],
+            "list": [
+                [
+                    "color-000 font-size-18px light",
+                    "black 18px light"
+                ],
+                [
+                    "color-f00 font-size-24px bold",
+                    "red 24px bold"
+                ],
+                [
+                    "color-00f font-size-18px semibold",
+                    "blue 14px semibold"
+                ]
+            ]
+        }
+    ],
+    "complex": [
+        {
+            "head": "Complex Property and Value",
+            "desc": [
+                "With the complex nature of CSS, the standard \"property-value\" above will work for most styles while others will require a slightly altered syntax.",
+                "Values with a space or hyphen should use an equal sign between the property and value to indicate which is which, with spaces converted to forward slash to keep the multi-value together in one property. This is to prevent any hyphen or space within the value from being misinterpreted by KnowCSS.",
+                "The equal sign will denote the property on the left and the value on the right while forward slash will denote that a value is a complex value with spaces present."
+            ],
+            "more": "Note: <span know=\"code\">box-sizing-border-box</span> would be interpeted as <span know=\"code\">box-sizing-border: box;</span> instead of the intended <span know=\"code\">box-sizing: border-box;</span>, so an = helps in this instance.",
+            "list": [
+                [
+                    "box-sizing=border-box border=1px/solid/red padding=5px/10px",
+                    "red border with padding"
+                ],
+                [
+                    "box-sizing=border-box border=2px/solid/blue margin=5px/10px",
+                    "blue border with margin"
+                ]
+            ]
+        }
+    ]
+}

@@ -30,6 +30,7 @@ const components = {
 const mixins = {
     "cx": "bg-f3f3f3 border-1px/solid/#ddd!",
     "sm": "block font-size-12px color-999",
+    "sh": "16 color-b65b0c",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "nr": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
@@ -37,7 +38,7 @@ const mixins = {
     "hd": "font-size-32px normal!", //aligncenter
     "xt": "margin-10px/0 margin-top-10px-! full",
     "mx": "center",
-    "ft": "font-size-16px",
+    "ft": "font-size-16px line-height-19px",
     "hr": "border-top-3px/solid/#f3f3f3 center",
     "hb": "border-bottom-3px/solid/#f3f3f3 center",
     "bx": "padding-15px/5px {{$box}}",

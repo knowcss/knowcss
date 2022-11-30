@@ -1,5 +1,7 @@
 const knowHowNav = {
-    "index": ["Getting Started", "The Basics of KnowCSS"],
+
+    "index": ["What is KnowCSS?", "The NoCSS Engine"],
+    "basics": ["Getting Started", "The Basics of KnowCSS"],
     "installation": ["Installation", "The Simplicity of KnowCSS", false, "know"],
 
     //"knowmotion": ["KnowMotion", "The Animation Add-On", true],

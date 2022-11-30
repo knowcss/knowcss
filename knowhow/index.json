@@ -1,38 +1,18 @@
 {
-    "standard": [
+    "intro": [
         {
-            "head": "Standard Property and Value",
-            "desc": "You may use familiar utility classes for standard values that include any characters except for space or hyphen.",
-            "list": [
-                [
-                    "color-000 font-size-18px light",
-                    "black 18px light"
-                ],
-                [
-                    "color-f00 font-size-24px bold",
-                    "red 24px bold"
-                ],
-                [
-                    "color-00f font-size-18px semibold",
-                    "blue 14px semibold"
-                ]
-            ]
-        }
-    ],
-    "complex": [
-        {
-            "head": "Complex Property and Value",
-            "desc": "Values with a space or hyphen should use an equal sign between the property and value to indicate which is which, with spaces converted to forward slash to keep the multi-value together in one property.",
-            "more": "Note: <span know=\"code\">box-sizing-border-box</span> would be interpeted as <span know=\"code\">box-sizing-border: box;</span> instead of the intended <span know=\"code\">box-sizing: border-box;</span>, so an = helps in this instance.",
-            "list": [
-                [
-                    "box-sizing=border-box border=1px/solid/red padding=5px/10px",
-                    "red border with padding"
-                ],
-                [
-                    "box-sizing=border-box border=2px/solid/blue margin=5px/10px",
-                    "blue border with margin"
-                ]
+            "head": "The KnowCSS Approach",
+            "desc": [
+                "Welcome to your journey into KnowCSS, the NoCSS Engine.",
+                "KnowCSS sets itself apart from other frameworks, libraries, and standard CSS methods by utilizing a NoCSS approach: meaning you'll never again have to author raw CSS, create independent CSS/SASS/SCSS/LESS files, trigger compiles and builds to convert your CSS/HTML to consumable versions, or worry about how to employ creative ways to construct your CSS. KnowCSS will do all of that for you!",
+                "With the \"know\" attribute, the built-in engine will analyze, generate, optimize, minify, and apply CSS to your HTML in real-time in-browser. The engine is engineered for speed, performance, no-CLS (Content Layout Shift) and to allow you to remain in a single file while creating the HTML for your project/website.",
+                "With KnowCSS, you'll save time, effort, and begin to develop at lightning speed, bypassing the necessity to switch between your HTML, CSS, and config files which often leads to losing your place, your patience... and, most importantly, your focus.",
+                "KnowCSS does not come pre-bundled with CSS files that require hours of study before development begins or frequent referring to documentation during active development. There is no pre-defined, extensive list of classes to memorize. KnowCSS may generate anything traditional, static CSS could generate. Once you understand how KnowCSS swaps the \"know\" attribute for styles, the only limitation to creating your CSS on the fly is your own imagination. With this free approach, KnowCSS is both backward AND forwards compatible with CSS.",
+                "KnowCSS adopts the Just-In-Time (aka real-time) method of applying your changes instantly to allow you to spend less time building, refreshing, debugging, and waiting! When you're ready to launch changes to your project, KnowCSS allows you to upload your raw files as-is, without any pre-processing or post-processing needed. This will reduce build and upload times and allow you to deploy your projects with speed!",
+                "With this approach, HTML initially present and any HTML injected into your page by JavaScript (internal or external) would trigger a render and immediately apply styles based on any new \"know\" attributes found. This is ideal for headless implementations or content fed from a CMS so that the HTML delivered is not dependent on already-defined classes and stylesheets.",
+                "These concepts make KnowCSS a revolutionary engine which is without constraints and boundaries.",
+                "KnowCSS was developed over 10 years ago by Jay Doublay based on an early concept for adding dynamic margins, padding, borders, font sizes, and colors to 100s of websites without pre-defining classes in the existing stylesheets. This allowed development of styling for those websites to become dynamic via a CMS, saving countless hours of adding styles as needed to static CSS files per website. Recently, it was decided that this concept should be expanded beyond its initial purpose to solve all the problems with modern CSS and offer the same power to you!",
+                "KnowCSS is on a mission to evolve, adapt, and grow to become your go-to method for CSS. Thank you for your interest in KnowCSS!"
             ]
         }
     ]
