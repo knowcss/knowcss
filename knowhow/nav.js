@@ -2,9 +2,9 @@ const knowHowNav = {
     "index": ["Getting Started", "The Basics of KnowCSS"],
     "installation": ["Installation", "The Simplicity of KnowCSS", false, "know"],
 
-    //"knowmotion": ["KnowMotion&trade;", "The Animation Add-On", true],
-    //"knowparent": ["KnowParent&trade;", "The Parent Selector"],
-    //"knownow": ["KnowCSS Now&trade;", "The In-Browser IDE"],
+    //"knowmotion": ["KnowMotion", "The Animation Add-On", true],
+    "knowparent": ["KnowParent", "The Parent Selector", false, "know"],
+    //"knownow": ["KnowCSS Now", "The In-Browser IDE"],
 
     //"screen": ["Screens", "TODO -- Screen Size, Breakpoints, Media Queries", true],
     //"template": ["Templates", "TODO -- Variables, Mixins, Shorthand, Runtime"],

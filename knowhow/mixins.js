@@ -28,6 +28,7 @@ const components = {
     ]
 }
 const mixins = {
+    "cx": "bg-f3f3f3 border-1px/solid/#ddd!",
     "sm": "block font-size-12px color-999",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "nr": "color-2D862D font-weight-400",
