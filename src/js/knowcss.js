@@ -632,7 +632,7 @@ function getActions(mS, mD) {
     var i = 0;
     var mA = '*';
     var mP = mA;
-    ['>', '~', '+'].forEach(function(val) {
+    ['>', '~', '+'].forEach(function (val) {
         if (mS.indexOf(val) > -1) {
             mP = mS.split(val, 2).pop();
             if (!mP) { mP = mA; }
@@ -1132,7 +1132,6 @@ function knowCSSRender(uI, uC, uO) {
         masterLine = '';
         masterTab = '';
     }
-    var explicitValue = '';
     for (var screen in css) {
         [start, end, tab] = getWrapper(screen);
         styles.push(masterLine + start);
