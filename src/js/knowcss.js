@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-KnowCSS Version 2.0.7 by Jay Doublay
+KnowCSS Version 2.0.9 by Jay Doublay
 https://www.knowcss.com/
 
 NPM: https://www.npmjs.com/package/knowcss
