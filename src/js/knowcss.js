@@ -152,9 +152,6 @@ function getImportant(val) {
     }
     return [val, important];
 }
-
-// TODO - add support for col-SCREEN and offset-SCREEN (ex: col-sm-1 offset-xl-3)
-// Already have support for SCREEN-col and SCREEN-offset
 function getGridSystem(classFound, classesFound) {
     var gridFound = false;
     if (classFound == "row") {
@@ -164,6 +161,7 @@ function getGridSystem(classFound, classesFound) {
     }
     else if (classFound.indexOf('col-') == 0) {
         var whichCol = classFound.replace(/^col-/, '');
+        if (whichCol.length == 0) { whichCol = 12; }
         var whichPct = (parseInt(whichCol) / 12) * 100;
         classFound = "width-" + parseFloat(whichPct.toFixed(6)) + "%";
         classesFound.push("flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + classFound, "position-relative", classFound);
@@ -171,6 +169,7 @@ function getGridSystem(classFound, classesFound) {
     }
     else if (classFound.indexOf('offset-') == 0) {
         var whichOffset = classFound.replace(/^offset-/, '');
+        if (whichOffset.length == 0) { whichOffset = 12; }
         var whichPct = (parseInt(whichOffset) / 12) * 100;
         classFound = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
         gridFound = true;
@@ -222,8 +221,6 @@ function getParentSelector(screen, classFound, classesFound) {
             else { screen = 'none'; }
         }
     }
-    console.log(['getParent', screen, originalScreen, classFound, classParent]);
-
     return [classParent, classFound, classesFound, screen];
 }
 var knowEnvironment = [];
@@ -326,12 +323,17 @@ function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
     [classFound, classImportant] = getImportant(classFound);
-    if (!isNaN(classFound)) { classFound = "font-size-" + classFound + "px"; }
+    if (!isNaN(classFound)) {
+        if (classFound > 0 && (classFound % 100) == 0) { classFound = 'font-weight-' + classFound; }
+        else { classFound = "font-size-" + classFound + "px"; }
+    }
     else if (defined(knowCSSOptions.shortHand)) {
-        if (classFound.indexOf('-webkit-') > -1) { classFound = classFound.replace('-webkit-', ''); classWebKit = true; }
-        else if (classFound.indexOf('-moz-') > -1) { classFound = classFound.replace('-moz-', ''); classWebKit = true; }
-        else if (classFound.indexOf('-ms-') > -1) { classFound = classFound.replace('-ms-', ''); classWebKit = true; }
-        else if (classFound.indexOf('-o-') > -1) { classFound = classFound.replace('-o-', ''); classWebKit = true; }
+        ['-webkit-','-moz-','-ms-','-o-'].forEach(function(val) {
+            if (classFound.indexOf(val) > -1) {
+                classFound = classFound.replace(val, '');
+                classWebKit = true;
+            }
+        });
         if (classFound.indexOf('--') > -1) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
         if (classFound in knowCSSOptions.shortHand) {
             classFound = knowCSSOptions.shortHand[classFound].trim();
@@ -810,7 +812,6 @@ function getNextLetter(nA) {
     while (nC == nD);
     return nA;
 }
-// TODO - pass a mapping of letter to random letter as a cypher for randomizing
 function getRandomClass() {
     var prefixID = "", nA = '';
     var ret = false;
@@ -886,8 +887,14 @@ function getScreenPrefixes(classString) {
             key = classesFound[i];
             if (key.indexOf('-') > -1 && key.indexOf('{') == -1) {
                 parts = key.split('-');
-                prefix = parts.shift();
-                if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
+                if (parts.length > 200 && parts[1] in screenSizes) {
+                    prefix = parts[1];
+                    parts.splice(1, 1);
+                }
+                else { prefix = parts.shift(); }
+                if (prefix.length > 0) {
+                    if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
+                }
             }
             ret.push(key);
             i++;
@@ -935,7 +942,6 @@ function knowCSSRender(uI, uC, uO) {
         'minifycss': false,
         'classes': 'sequential',
         'normalize': false,
-        'share': false,
         'smart': !uC,
         'autorem': true,
         'rem': 16,
@@ -953,7 +959,6 @@ function knowCSSRender(uI, uC, uO) {
     }
     var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles.push('::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'); }
-    //if (['sequential', 'random'].includes(uX.classes) == false) { uX.classes = 'detail'; }
     var classTags = [];
     if (uC) {
         var zC = new RegExp(knowID + '=["|\'](.*?)["|\']', 'gis');
@@ -971,7 +976,6 @@ function knowCSSRender(uI, uC, uO) {
     getUserConditionals();
     getGreps();
     var attr = "";
-    var sharedClasses = {};
     var sharedClassKey = "";
     var isDefine = false;
     var smartClass = {};
@@ -986,7 +990,6 @@ function knowCSSRender(uI, uC, uO) {
         isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
-        //classTags[ii].setAttribute('data-' + knowID, attr);
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
@@ -1043,12 +1046,10 @@ function knowCSSRender(uI, uC, uO) {
                         [className, classValue] = getFamily(className, classValue);
                         if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
                         classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent);
-                        /*
-                        if (if (!uX.smart && uX.classes == 'detail') {
+                        if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
                             classesHere.push(classNew);
                         }
-                        */
                         if (screen in css === false) { css[screen] = {}; }
                         if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
                         if (modifier == 'none') { modifier = ''; }
@@ -1058,23 +1059,9 @@ function knowCSSRender(uI, uC, uO) {
                                 smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment];
                                 smartClass[sharedClassKey] = ii.toString();
                             }
-                            else {
-                                smartClass[sharedClassKey] += "__" + ii.toString();
-                            }
+                            else { smartClass[sharedClassKey] += "__" + ii.toString(); }
                         }
                         else {
-                            /*
-                            if (uX.share) {
-                                sharedClassKey = classKey + '__' + modifier;
-                                if (sharedClassKey in sharedClasses == false) {
-                                    classNext = getNextLetter(classNext);
-                                    sharedClasses[sharedClassKey] = classNext.toLowerCase();
-                                }
-                                classNew = sharedClasses[sharedClassKey];
-                                if (classesHere.indexOf(classNew) == -1) { classesHere.push(classNew); }
-                            }
-                            */
-
                             // JAA TODO - build array of unique values instead of appending strings
                             if (classKey in css[screen][action][0]) {
                                 if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
@@ -1112,7 +1099,11 @@ function knowCSSRender(uI, uC, uO) {
             smartKeyID = smartClass[smartKey] + '__' + addParent.toString();
             if (smartKeyID in smartClassGroup) { smartClassHere = smartClassGroup[smartKeyID]; }
             else {
-                smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a";
+                if (uX.classes == 'detail') {
+                    [modifier, className, classValue, classImportant, classWebKit] = smartDetail[smartKey][3];
+                    smartClassNext = getSafeClass(smartDetail[smartKey][0], modifier, className, smartDetail[smartKey][1], classValue, classImportant);
+                }
+                else { smartClassNext = smartClassNext ? getNextLetter(smartClassNext) : "a"; }
                 smartClassHere = smartClassNext;
                 smartUnique[smartKey] = smartClassHere;
                 smartClassGroup[smartKeyID] = smartClassHere;
