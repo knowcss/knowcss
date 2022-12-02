@@ -8,8 +8,6 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
-// JAA TODO
-// 0x1 result in width:0;height:1, max-0x1 result in max-width:0;max-height:1 (min-0x1)
 
 var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
@@ -88,14 +86,15 @@ var knowCSS = {
         if (refresh) { cssIncrement = 0; }
         this.options(options);
         var startTime = new Date().getTime();
-        this.z = document.querySelectorAll(this.key);
-        if (this.z === 'undefined' || this.z == null) { this.z = []; }
+        this.z = document.querySelectorAll(this.key) || [];
+        //if (this.z === 'undefined' || this.z == null) { this.z = []; }
         var num = 0;
         if (this.z) { num = knowCSSRender("root", false); }
-        var renderConsole = '{ knowcss' + (typeof num === 'number' ? '[' + num + ']' : '') + ' rendered in ' + (new Date().getTime() - startTime) + "ms }";
+        var isNum = typeof num === 'number';
+        var renderConsole = '{ knowcss' + (isNum ? '[' + num + ']' : '') + ' rendered in ' + (new Date().getTime() - startTime) + "ms }";
         var renderIn = knowLayer('render');
         if (renderIn && renderIn.innerText.length == 0) { renderIn.innerText = renderConsole; }
-        if (typeof num === "number") { console.log(renderConsole); }
+        if (isNum) { console.log(renderConsole); }
         return this;
     },
 
@@ -189,7 +188,7 @@ function shouldREM(className) {
     else if (['margin','paddin','spacin'].includes(className.substring(0, 6))) { ret = true; }
     else if (['top','bottom','left','right'].includes(className)) { ret = true; }
     else if (className.indexOf('-') > 0) {
-        if (['top','bottom','left','right'].includes(className.split('-').pop())) { ret = true; }
+        if (['top','bottom','left','right','width','height'].includes(className.split('-').pop())) { ret = true; }
     }
     return ret;
 }
@@ -205,14 +204,23 @@ function getREM(className, classValue, classesFound, remMultiplier) {
 }
 function getParentSelector(screen, classFound, classesFound) {
     var originalScreen = screen;
-    var classParent = false;
+    var classParent = 0;
     var classEvent = "";
     //JAA TODO - add more events
     var knowEvents = ["click"]; //"load","ready","resize","touch","mouse","swipe","drag"];
     var screenEvent = screen;
     if (screenEvent.indexOf('^') > -1) {
         screenEvent = screenEvent.replace(/\^/g, '');
-        classParent = true;
+        var screenUp = screenEvent;
+        if (screenEvent.indexOf('-') > -1) {
+            var screenParts = screenEvent.split('-', 2);
+            if (!isNaN(screenParts[0])) {
+                screenUp = screenParts[0];
+                screenEvent = screenParts[1];
+                screen = '^' + screenEvent;
+            }
+        }
+        classParent = !isNaN(screenUp) ? parseInt(screenUp) : 1;
     }
     if (knowEvents.indexOf(screenEvent) > -1 ) {
         classEvent = screenEvent;
@@ -221,23 +229,23 @@ function getParentSelector(screen, classFound, classesFound) {
     else {
         if (classFound.indexOf('^') > -1) {
             classFound = classFound.replace(/\^/g, '');
-            classParent = true;
+            classParent = 1;
         }
         else if (classFound.indexOf('parent-') > -1) {
             classFound = classFound.replace('parent-', '');
-            classParent = true;
+            classParent = 1;
         }
         else if (['^','parent'].includes(screen)) {
-            classParent = true;
+            classParent = 1;
             screen = 'none';
         }
         else {
             if (screen.indexOf('^') > -1) {
                 screen = screen.replace('^', 'parent-');
-                classParent = true;
+                if (classParent == 0) { classParent = 1; }
             }
-            else { classParent = screen.indexOf('parent') > -1; }
-            if (classParent && screen.indexOf('-') > -1) {
+            else { classParent = screen.indexOf('parent') > -1 ? 1 : 0; }
+            if (classParent > 0 && screen.indexOf('-') > -1) {
                 var modifierParts = screen.split('-', 2);
                 if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
                 else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
@@ -347,7 +355,14 @@ function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
     [classFound, classImportant] = getImportant(classFound);
-    if (!isNaN(classFound)) {
+    var wByH = classFound.indexOf('x') > -1 && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(classFound);
+    if (wByH) {
+        var classValue = wByH[2];
+        if (!isNaN(classValue)) { classValue += 'px'; }
+        classFound = wByH[1] + 'width-' + classValue;
+        classesFound.push(wByH[1] + 'height-' + classValue);
+    }
+    else if (!isNaN(classFound)) {
         if (classFound > 0 && (classFound % 100) == 0) { classFound = 'font-weight-' + classFound; }
         else { classFound = "font-size-" + classFound + "px"; }
     }
@@ -399,10 +414,10 @@ function getDynamic(container, action) {
         [action, container] = container.split(dynamicSub, 2);
         keepAction = true;
     }
-    if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace('>', '> '); }
+    if (['all','*','>'].includes(container)) { dynamic = ' *'; }
+    else if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace(/\>/g, ' > ').trim(); }
     else if (container.indexOf('all') == 0) {
-        if (container == 'all') { dynamic = ' *'; }
-        else if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
+        if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
         else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
     }
     else if (container.indexOf('nth') > -1) {
@@ -436,7 +451,7 @@ function getDynamic(container, action) {
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
-    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis') }
+    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'); }
     var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
     var containers = {}, screens = {}, modifiers = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
@@ -583,7 +598,11 @@ function getShortColor(hA) {
 function getFamily(hA, hB) {
     if (hA.indexOf('family') > -1) {
         hA = 'font-family';
-        hB = hB.indexOf(' ') > -1 ? '"' + hB + '"' : hB;
+        if (hB.indexOf(',') > -1) {
+            var hS = [];
+            hB.split(',').forEach(function(val) { hS.push(val.indexOf(' ') > -1 ? '"' + val + '"' : val); });
+            hB = hS.join(',');
+        }
     }
     return [hA, hB];
 }
@@ -1015,7 +1034,7 @@ function knowCSSRender(uI, uC, uO) {
             if (uA in uX) { uX[uA] = uO[uA]; }
         }
     }
-    var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classMore = [], classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classTotal = 0, classList = [], classMixins = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
+    var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classImportant = '', classWebKit = false, classParts = [], classKey = '', classNew = '', classFirst = '', classList = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles.push('::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'); }
     var classTags = [];
     if (uC) {
@@ -1035,18 +1054,16 @@ function knowCSSRender(uI, uC, uO) {
     getGreps();
     var attr = "";
     var sharedClassKey = "";
-    var isDefine = false;
     var smartClass = {};
     var smartDetail = {};
-    var classParent = false;
+    var classParent = 0;
     var classEvent = "";
     var classEnvironment = "";
-    var allowEnvironment = false;
+    var allowEnvironment = true;
     var checkShorterHand = (typeof globalMixins !== 'undefined');
     var ii = 0;
     var tL = classTags.length;
     while (ii < tL) {
-        isDefine = classTags[ii].tagName == 'DEFINE';
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
         classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
@@ -1059,9 +1076,9 @@ function knowCSSRender(uI, uC, uO) {
             classFirst = '';
             classNextStart = classNext;
             if (uX.classes !== 'detail' && classNew === '') {
-                classTotal++;
-                if (uX.classes == 'sequential') { classNext = getNextLetter(classNext); }
-                else if (uX.classes == 'random') { classNext = getRandomClass(); }
+                classNext = getNextLetter(classNext);
+                //if (uX.classes == 'sequential') { classNext = getNextLetter(classNext); }
+                //else if (uX.classes == 'random') { classNext = getRandomClass(); }
                 classNew = classNext.toLowerCase();
                 // JAA TODO - build array of unique values instead of appending strings
                 if (!uX.smart) { classFirst += (classesHere.length > 0 ? ' ' : '') + classNew; }
@@ -1073,65 +1090,66 @@ function knowCSSRender(uI, uC, uO) {
                 [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                 [classFound, classesFound] = getGridSystem(classFound, classesFound);
                 [classParent, classFound, classesFound, screen, classEvent] = getParentSelector(screen, classFound, classesFound);
-                if (!isDefine) {
-                    [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
-                    if (allowEnvironment) {
-                        [classFound, classImportant] = getImportant(classFound);
-                        if (classEvent.length > 0 && classFound.indexOf('-') > -1) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
-                        className = '';
-                        classValue = '';
-                        if (classFound.indexOf('gradient') == 0) {
-                            classParts = classFound.split('-');
+                [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
+                if (allowEnvironment) {
+                    [classFound, classImportant] = getImportant(classFound);
+                    if (classEvent.length > 0 && classFound.indexOf('-') > -1) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
+                    className = '';
+                    classValue = '';
+                    /*
+                    if (classFound.indexOf('gradient') == 0) {
+                        classParts = classFound.split('-');
+                        classParts.shift();
+                        className = 'background-image';
+                        classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
+                        classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
+                    }
+                    else
+                    */
+                    if (classFound.indexOf(':') > -1) { [className, classValue] = classFound.split(':', 2); }
+                    else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
+                    else if (classFound.indexOf('-') > -1) {
+                        classParts = classFound.split('-');
+                        if (classParts[0] in knowCSSOptions.shorterHand) {
+                            className = knowCSSOptions.shorterHand[classParts[0]];
                             classParts.shift();
-                            className = 'background-image';
-                            classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
-                            classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
-                        }
-                        else if (classFound.indexOf(':') > -1) { [className, classValue] = classFound.split(':', 2); }
-                        else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
-                        else if (classFound.indexOf('-') > -1) {
-                            classParts = classFound.split('-');
-                            if (classParts[0] in knowCSSOptions.shorterHand) {
-                                className = knowCSSOptions.shorterHand[classParts[0]];
-                                classParts.shift();
-                                classValue = classParts.join('-');
-                            }
-                            else {
-                                classValue = classParts.pop();
-                                className = classParts.join('-');
-                            }
-                        }
-                        else { className = classFound; }
-                        if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
-                        classValue = getColor(getValue(classValue), className);
-                        [className, classValue] = getFamily(className, classValue);
-                        if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
-                        classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent, classEvent);
-                        if (!uX.smart && uX.classes == 'detail') {
-                            classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
-                            classesHere.push(classNew);
-                        }
-                        if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
-                        if (modifier == 'none') { modifier = ''; }
-                        if (uX.smart) {
-                            sharedClassKey = classKey + '__' + modifier + '__' + classEvent;
-                            if (sharedClassKey in smartClass == false) {
-                                smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment, classEvent];
-                                smartClass[sharedClassKey] = ii.toString();
-                            }
-                            else { smartClass[sharedClassKey] += "__" + ii.toString(); }
+                            classValue = classParts.join('-');
                         }
                         else {
-                            // JAA TODO - build array of unique values instead of appending strings
-                            if (classKey in css[screen][action][0]) {
-                                if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
-                                    css[screen][action][0][classKey] += ', .' + classNew + modifier;
-                                }
-                            }
-                            else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
-                            css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
+                            classValue = classParts.pop();
+                            className = classParts.join('-');
                         }
+                    }
+                    else { className = classFound; }
+                    if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
+                    classValue = getColor(getValue(classValue), className);
+                    [className, classValue] = getFamily(className, classValue);
+                    if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
+                    classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent, classEvent);
+                    if (!uX.smart && uX.classes == 'detail') {
+                        classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
+                        classesHere.push(classNew);
+                    }
+                    if (screen in css === false) { css[screen] = {}; }
+                    if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
+                    if (modifier == 'none') { modifier = ''; }
+                    if (uX.smart) {
+                        sharedClassKey = classKey + '__' + modifier + '__' + classEvent;
+                        if (sharedClassKey in smartClass == false) {
+                            smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment, classEvent];
+                            smartClass[sharedClassKey] = ii.toString();
+                        }
+                        else { smartClass[sharedClassKey] += "__" + ii.toString(); }
+                    }
+                    else {
+                        // JAA TODO - build array of unique values instead of appending strings
+                        if (classKey in css[screen][action][0]) {
+                            if (css[screen][action][0][classKey].indexOf('.' + classNew + modifier) == -1) {
+                                css[screen][action][0][classKey] += ', .' + classNew + modifier;
+                            }
+                        }
+                        else { css[screen][action][0][classKey] = '.' + classNew + modifier; }
+                        css[screen][action][1][classKey] = [modifier, className, classValue, classImportant, classWebKit];
                     }
                 }
             }
@@ -1141,7 +1159,6 @@ function knowCSSRender(uI, uC, uO) {
         }
         if (!uX.smart) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
-            //else if (isDefine) { classTags[ii].parentNode.removeChild(classTags[ii]); }
             else {
                 classesHere.forEach(function (key, val) { classTags[ii].classList.add(key); });
                 classTags[ii].removeAttribute(knowID);
@@ -1153,7 +1170,7 @@ function knowCSSRender(uI, uC, uO) {
     if (uX.smart) {
         var smartClassGroup = {};
         var smartClassHere = "";
-        var addParent = false;
+        var addParent = 0;
         var smartKeyID = "";
         var addEvent = "";
         var smartEvents = {};
@@ -1180,7 +1197,14 @@ function knowCSSRender(uI, uC, uO) {
                     smartEvents[ii][addEvent][1].push(smartClassHere);
                 }
                 else {
-                    if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
+                    if (addParent > 0) {
+                        var elemParent = classTags[ii];
+                        while (addParent > 0) {
+                            if (elemParent && "parentNode" in elemParent && "classList" in elemParent.parentNode) { elemParent = elemParent.parentNode; }
+                            addParent--;
+                        }
+                        elemParent.classList.add(smartClassHere);
+                    }
                     else { classTags[ii].classList.add(smartClassHere); }
                 }
                 classTags[ii].removeAttribute(knowID);
@@ -1197,14 +1221,15 @@ function knowCSSRender(uI, uC, uO) {
                         var addValue = !elemTarget.hasAttribute(addEvent) || elemTarget.getAttribute(addEvent) !== 'true';
                         elemTarget.setAttribute(addEvent, addValue.toString());
                         smartEvents[elem][event][1].forEach(function(elemClass) {
-                            if (!addValue) {
-                                if (addParent) { elemTarget.parentNode.classList.remove(elemClass); }
-                                else { elemTarget.classList.remove(elemClass); }
+                            var elemEffect = elemTarget;
+                            if (addParent > 0) {
+                                while (addParent > 0) {
+                                    if (elemEffect && "parentNode" in elemEffect && "classList" in elemEffect.parentNode) { elemEffect = elemEffect.parentNode; }
+                                    addParent--;
+                                }
                             }
-                            else {
-                                if (addParent) { elemTarget.parentNode.classList.add(elemClass); }
-                                else { elemTarget.classList.add(elemClass); }
-                            }
+                            if (addValue) { elemEffect.classList.add(elemClass); }
+                            else { elemEffect.classList.remove(elemClass); }
                         });
                     });
                 }
@@ -1246,7 +1271,7 @@ function knowCSSRender(uI, uC, uO) {
             for (var classKey in css[screen][action][0]) {
                 [modifier, className, classValue, classImportant, classWebKit] = css[screen][action][1][classKey];
                 if (className.length > 0 || classValue.length > 0) {
-                    if (classValue.length > 0 || classImportant.length > 0) {
+                    if (classValue.length > -1 || classImportant.length > 0) {
                         if (classValue.length == 0) { classValue = "''"; }
                         if (classImportant == '!') { classImportant = '!important'; }
                         if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
