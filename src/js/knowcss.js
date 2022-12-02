@@ -87,7 +87,6 @@ var knowCSS = {
         this.options(options);
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key) || [];
-        //if (this.z === 'undefined' || this.z == null) { this.z = []; }
         var num = 0;
         if (this.z) { num = knowCSSRender("root", false); }
         var isNum = typeof num === 'number';
@@ -203,7 +202,6 @@ function getREM(className, classValue, classesFound, remMultiplier) {
     return classesFound;
 }
 function getParentSelector(screen, classFound, classesFound) {
-    var originalScreen = screen;
     var classParent = 0;
     var classEvent = "";
     //JAA TODO - add more events
@@ -253,6 +251,8 @@ function getParentSelector(screen, classFound, classesFound) {
             }
         }
     }
+    if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
+    if (classParent > 99) { classParent = 0; }
     return [classParent, classFound, classesFound, screen, classEvent];
 }
 var knowEnvironment = [];
@@ -351,6 +351,11 @@ function getShorterHand(classFound, classesFound, ii) {
     }
     return [classFound, classesFound];
 }
+function getFontOrWeight (classFound) {
+    if (classFound > 0 && (classFound % 100) == 0) { classFound = 'font-weight-' + parseFloat(classFound); }
+    else { classFound = "font-size-" + parseFloat(classFound) + "px"; }
+    return classFound;
+}
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
@@ -362,10 +367,7 @@ function getShortHand(classFound, classesFound) {
         classFound = wByH[1] + 'width-' + classValue;
         classesFound.push(wByH[1] + 'height-' + classValue);
     }
-    else if (!isNaN(classFound)) {
-        if (classFound > 0 && (classFound % 100) == 0) { classFound = 'font-weight-' + classFound; }
-        else { classFound = "font-size-" + classFound + "px"; }
-    }
+    else if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
     else if (defined(knowCSSOptions.shortHand)) {
         ['-webkit-','-moz-','-ms-','-o-'].forEach(function(val) {
             if (classFound.indexOf(val) > -1) {
@@ -485,7 +487,7 @@ function getModifier(classList, classSecondary) {
                                 actionSet = actions[i];
                                 for (var actionKey in actionSet) {
                                     containerPrefix = actionSet[actionKey];
-                                    if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('^'); }
+                                    if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
                                     keyNew = '';
                                     if (containerPrefix.length > 0) {
                                         keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
@@ -509,7 +511,36 @@ function getModifier(classList, classSecondary) {
     return classList;
 }
 function getColor(hE, hC) {
-    if (hC.indexOf('background') > -1 || hC.indexOf('color') > -1) {
+    var hX = defined(knowCSSOptions.hexColors);
+    var hS = false;
+    if (hX) {
+        var hU = "";
+        if (hC.indexOf('@') > -1) { hU = "@"; }
+        else if (hC.indexOf('~') > -1) { hU = "~"; }
+        if (hU.length > 0) {
+            var hP = hC.split(hU, 2);
+            var hL = hP[0];
+            var hG = "";
+            if (hL.indexOf('~') > -1) {
+                [hL, hG] = hL.split("~", 2);
+                hG = '~' + hG;
+            }
+            if (hL in knowCSSOptions.hexColors) {
+                hE = knowCSSOptions.hexColors[hL].trim() + hU + hP[1] + hG;
+                hC = "color";
+            }
+        }
+        else if (hE in knowCSSOptions.hexColors) {
+            hE = knowCSSOptions.hexColors[hE].trim() + "@" + hC;
+            hC = "color";
+            hS = true;
+        }
+        else if (hC in knowCSSOptions.hexColors) {
+            hE = knowCSSOptions.hexColors[hC].trim() + "@" + hE;
+            hC = "color";
+        }
+    }
+    if (hS || hC.indexOf('background') > -1 || hC.indexOf('color') > -1) {
         if (hE.indexOf('(') == -1) {
             var aM = [];
             var zY = [false, 100, 100];
@@ -535,7 +566,7 @@ function getColor(hE, hC) {
                 i++;
             }
             var hF = hE.replace('#', '');
-            if (defined(knowCSSOptions.hexColors) && hF in knowCSSOptions.hexColors) { hF = knowCSSOptions.hexColors[hF].trim(); }
+            if (hX && hF in knowCSSOptions.hexColors) { hF = knowCSSOptions.hexColors[hF].trim(); }
             var zH = new RegExp('^([0-9a-f]{1,6})$', 'i');
             if (zH.test(hF)) {
                 hF = getShade(hF, zY[1]);
@@ -547,7 +578,7 @@ function getColor(hE, hC) {
             else { hE = '#' + hF; }
         }
     }
-    return hE;
+    return hS ? [hE, hC] : [hC, hE];
 }
 function getHex(sC) {
     var sH = sC.toString(16);
@@ -570,7 +601,7 @@ function getRGB(sC) {
         return [parseInt(sA[1], 16), parseInt(sA[2], 16), parseInt(sA[3], 16)];
     }
     else {
-        return sB;
+        return sC;
     }
 }
 function getOpacity(sC, sP) {
@@ -638,8 +669,8 @@ function getWrapper(xZ) {
         else { start.push('min-width:' + screenSizes[xZ][0] + 'px) and (max-width:' + screenSizes[xZ][1] + 'px'); }
         start.push(') {');
     }
-    else if (xZ.indexOf('^') > -1) {
-        var kE = xZ.split('^', 2);
+    else if (xZ.indexOf('?') > -1) {
+        var kE = xZ.split('?', 2);
         start.push('@media screen and (min-width:' + kE[0] + 'px) and (max-width:' + kE[1] + 'px) {');
     }
     else if (screenTypes.includes(xZ)) {
@@ -954,22 +985,37 @@ function crossMixins(classString) {
 // JAA TODO - support multiple screensizes and @size (with notX and !X)
 function getScreenPrefixes(classString) {
     var ret = [];
-    if (classString.indexOf('-') > -1) {
-        var key = '', prefix = '', parts = [];
+    var isAt = classString.indexOf('@@') > -1;
+    if (classString.indexOf('-') > -1 || isAt) {
+        var key = '', prefix = '', parts = [], modifier = "";
         var classesFound = classString.split(' ');
         var x = classesFound.length;
         var i = 0;
         while (i < x) {
             key = classesFound[i];
-            if (key.indexOf('-') > -1 && key.indexOf('{') == -1) {
-                parts = key.split('-');
+            modifier = "";
+            if (isAt) { parts = key.split('@'); }
+            else if (key.indexOf('{') == -1) { parts = key.split('-'); }
+            else { parts = []; }
+            if (parts.length > 0) {
                 if (parts.length > 200 && parts[1] in screenSizes) {
                     prefix = parts[1];
                     parts.splice(1, 1);
                 }
+                else if (isAt) { prefix = parts.pop(); }
                 else { prefix = parts.shift(); }
                 if (prefix.length > 0) {
-                    if (prefix in screenSizes || !isNaN(prefix)) { key = prefix + '((' + parts.join('-') + '))'; }
+                    if (prefix.indexOf(":") > -1) {
+                        [prefix, modifier] = prefix.split(':', 2);
+                    }
+                    if (prefix in screenSizes || !isNaN(prefix)) {
+                        if (modifier.length > 0) {
+                            key = prefix + "{" + modifier + '((' + parts.join('-') + '))}';
+                        }
+                        else {
+                            key = prefix + "{" + parts.join('-') + '}';
+                        }
+                    }
                 }
             }
             ret.push(key);
@@ -1122,7 +1168,8 @@ function knowCSSRender(uI, uC, uO) {
                     }
                     else { className = classFound; }
                     if (className in knowCSSOptions.shortHand) { className = knowCSSOptions.shortHand[className]; }
-                    classValue = getColor(getValue(classValue), className);
+
+                    [className, classValue] = getColor(getValue(classValue), className);
                     [className, classValue] = getFamily(className, classValue);
                     if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
                     classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent, classEvent);
@@ -1134,7 +1181,7 @@ function knowCSSRender(uI, uC, uO) {
                     if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
                     if (modifier == 'none') { modifier = ''; }
                     if (uX.smart) {
-                        sharedClassKey = classKey + '__' + modifier + '__' + classEvent;
+                        sharedClassKey = classKey + '__' + modifier + '__' + classParent + '__' + classEvent;
                         if (sharedClassKey in smartClass == false) {
                             smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment, classEvent];
                             smartClass[sharedClassKey] = ii.toString();

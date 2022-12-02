@@ -83,6 +83,13 @@ const shortHand = {
     /* transform */
     "origin": "transform-origin",
 
+    /* text-transform */
+    "capitalize": "text-transform=capitalize",
+    "uppercase": "text-transform=uppercase",
+    "lowercase": "text-transform=lowercase",
+    "full-width": "text-transform=full-width",
+    "full-size-kana": "text-transform=full-size-kana",
+
     /* text style */
     "italic": "font-style-italic",
     "oblique": "font-style-oblique",
