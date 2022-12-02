@@ -8,6 +8,9 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
+// JAA TODO
+// 0x1 result in width:0;height:1, max-0x1 result in max-width:0;max-height:1 (min-0x1)
+
 var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
@@ -18,6 +21,7 @@ var knowCSSOptions = {
     conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
 
+// JAA todo - add first/last/only/odd/even/etc shorthand for these
 const knowCSSLists = function () {
     return {
         // JAA TODO - function() like calc()
@@ -367,11 +371,12 @@ function getShortHand(classFound, classesFound) {
     return [classFound + classImportant, classesFound, classWebKit];
 }
 function getValue(val) {
-    if (defined(knowCSSOptions.hexColors) && val.indexOf('/') > -1) {
-        val = val.replace(/\//g, ' ');
+    val = val.replace(/;/g, '');
+    if (val.indexOf('/') > -1 || val.indexOf('|') > -1) {
+        val = val.replace(/[\/|\|]/g, ' ');
         var vals = val.split(' ');
         if (vals.length > 2) {
-            if (vals[2] in knowCSSOptions.hexColors) {
+            if (defined(knowCSSOptions.hexColors) && vals[2] in knowCSSOptions.hexColors) {
                 vals[2] = '#' + getShortColor(knowCSSOptions.hexColors[vals[2]]);
                 val = vals.join(' ');
             }
@@ -648,9 +653,9 @@ function getGreps() {
     webkitGrep = "^" + getLists.webkit.join("|").replace('/-/gi', '\\-');
 
     actionGrep = [
-        [" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")"],
-        [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")"],
-        [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")"]
+        [" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")", '::'],
+        [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")", ':'],
+        [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")", ':']
     ];
 
     screenTypes = getLists.screens;
@@ -688,6 +693,7 @@ function getActions(mS, mD) {
         zS = actionGrep[i][0].replace(mA, mP);
         while ((zA = zM.exec(mS)) !== null) {
             if (zS == ':' && mP != mA) { zA[1] += mP; }
+            if (zA[1] == mS) { zS = actionGrep[i][2]; }
             ret[i][zA[1]] = zS;
             zY = true;
         }
@@ -926,6 +932,7 @@ function crossMixins(classString) {
     };
     return rW.join(' ');
 }
+// JAA TODO - support multiple screensizes and @size (with notX and !X)
 function getScreenPrefixes(classString) {
     var ret = [];
     if (classString.indexOf('-') > -1) {
@@ -1080,6 +1087,7 @@ function knowCSSRender(uI, uC, uO) {
                             classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
                             classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
                         }
+                        else if (classFound.indexOf(':') > -1) { [className, classValue] = classFound.split(':', 2); }
                         else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
                         else if (classFound.indexOf('-') > -1) {
                             classParts = classFound.split('-');
