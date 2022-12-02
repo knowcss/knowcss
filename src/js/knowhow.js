@@ -32,8 +32,8 @@ var knowHow = {
                     this.reveal('root');
                 }
                 if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
-                if (dataNav.length > 4) { dataNav[4].apply(this, []); }
             }
+            if (dataNav.length > 4) { dataNav[4].apply(this, []); }
             if (window.innerWidth < 768) {
                 knowElem('toggle-hamburger').checked = false;
                 this.toggle();

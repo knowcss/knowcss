@@ -86,9 +86,12 @@ var knowCSS = {
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key);
         if (this.z === 'undefined' || this.z == null) { this.z = []; }
-        if (this.z) { knowCSSRender("root", false); }
+        var num = 0;
+        if (this.z) { num = knowCSSRender("root", false); }
+        var renderConsole = '{ knowcss' + (typeof num === 'number' ? '[' + num + ']' : '') + ' rendered in ' + (new Date().getTime() - startTime) + "ms }";
         var renderIn = knowLayer('render');
-        if (renderIn && renderIn.innerText.length == 0) { renderIn.innerText = '{ page rendered in ' + (new Date().getTime() - startTime) + "ms }"; }
+        if (renderIn && renderIn.innerText.length == 0) { renderIn.innerText = renderConsole; }
+        if (typeof num === "number") { console.log(renderConsole); }
         return this;
     },
 
@@ -178,13 +181,16 @@ function getGridSystem(classFound, classesFound) {
 }
 function shouldREM(className) {
     var ret = false;
-    if (['font-size', 'line-height', 'width', 'height'].includes(className)) { ret = true; }
-    else if (['margin', 'paddin', 'spacin'].includes(className.substring(0, 6))) { ret = true; }
-    else if (['top', 'bottom', 'left', 'right'].includes(className)) { ret = true; }
+    if (['font-size','line-height','width','height','top'].includes(className)) { ret = true; }
+    else if (['margin','paddin','spacin'].includes(className.substring(0, 6))) { ret = true; }
+    else if (['top','bottom','left','right'].includes(className)) { ret = true; }
+    else if (className.indexOf('-') > 0) {
+        if (['top','bottom','left','right'].includes(className.split('-').pop())) { ret = true; }
+    }
     return ret;
 }
 function getREM(className, classValue, classesFound, remMultiplier) {
-    if (shouldREM(className) && classValue.indexOf('px') > -1) {
+    if (shouldREM(className) && (classValue.indexOf('px') > -1 || !isNaN(classValue))) {
         var classRoot = classValue.replace('px', '');
         if (!isNaN(classRoot) && classRoot > 0) {
             var classRem = parseInt(classRoot) / (remMultiplier || 16);
@@ -196,32 +202,46 @@ function getREM(className, classValue, classesFound, remMultiplier) {
 function getParentSelector(screen, classFound, classesFound) {
     var originalScreen = screen;
     var classParent = false;
-    if (classFound.indexOf('^') > -1) {
-        classFound = classFound.replace(/\^/g, '');
+    var classEvent = "";
+    //JAA TODO - add more events
+    var knowEvents = ["click"]; //"load","ready","resize","touch","mouse","swipe","drag"];
+    var screenEvent = screen;
+    if (screenEvent.indexOf('^') > -1) {
+        screenEvent = screenEvent.replace(/\^/g, '');
         classParent = true;
     }
-    else if (classFound.indexOf('parent-') > -1) {
-        classFound = classFound.replace('parent-', '');
-        classParent = true;
-    }
-    if (['^','parent'].includes(screen)) {
-        classParent = true;
-        screen = 'none';
+    if (knowEvents.indexOf(screenEvent) > -1 ) {
+        classEvent = screenEvent;
+        screen = screenEvent;
     }
     else {
-        if (screen.indexOf('^') > -1) {
-            screen = screen.replace('^', 'parent-');
+        if (classFound.indexOf('^') > -1) {
+            classFound = classFound.replace(/\^/g, '');
             classParent = true;
         }
-        else { classParent = screen.indexOf('parent') > -1; }
-        if (classParent && screen.indexOf('-') > -1) {
-            var modifierParts = screen.split('-', 2);
-            if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
-            else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
-            else { screen = 'none'; }
+        else if (classFound.indexOf('parent-') > -1) {
+            classFound = classFound.replace('parent-', '');
+            classParent = true;
+        }
+        else if (['^','parent'].includes(screen)) {
+            classParent = true;
+            screen = 'none';
+        }
+        else {
+            if (screen.indexOf('^') > -1) {
+                screen = screen.replace('^', 'parent-');
+                classParent = true;
+            }
+            else { classParent = screen.indexOf('parent') > -1; }
+            if (classParent && screen.indexOf('-') > -1) {
+                var modifierParts = screen.split('-', 2);
+                if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
+                else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
+                else { screen = 'none'; }
+            }
         }
     }
-    return [classParent, classFound, classesFound, screen];
+    return [classParent, classFound, classesFound, screen, classEvent];
 }
 var knowEnvironment = [];
 var userConditionals = [];
@@ -360,8 +380,8 @@ function getValue(val) {
     else if (val.indexOf('calc') == 0) { val = val.replace('-', ' - ').trim(); }
     return val;
 }
-function getKey(screen, modifier, name, action, val, important, parent) {
-    return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
+function getKey(screen, modifier, name, action, val, important, parent, event) {
+    return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important + '_' + parent.toString() + '_' + event).toLowerCase().replace(/[\s\n\r]/gi, '-');
 }
 function getDynamic(container, action) {
     var dynamic = '';
@@ -718,6 +738,23 @@ function getUserMixins() {
         if (typeof allMixins[key] !== 'string') { allMixins[key] = allMixins[key].join(' '); }
     }
 }
+function moreMixins(classFound, classesFound, classImportant) {
+    var classFoundOriginal = classFound;
+    classFound = getMixins(crossMixins(classFound));
+    if (classFound !== classFoundOriginal) {
+        if (classFound.indexOf(' ') > -1) {
+            var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
+            classFound = classMore.shift();
+            if (classMore.length > 0) {
+                if (classImportant.length > 0) {
+                    classMore = classMore.map(function(val) { return classImportant + val; });
+                }
+                classesFound.push(...classMore);
+            }
+        }
+    }
+    return [classFound, classesFound];
+}
 function variableMixin(mZ) {
     var mP = "";
     var mR = "";
@@ -738,20 +775,33 @@ function variableMixin(mZ) {
     return [mF, mZ, mR, mC];
 }
 function getMixins(mA) {
-    var mO = mA;
     var mixin = '', newMixin = {}, anyNewMixin = false;
     var zM = new RegExp('\\[(.*?)\\]', 'i');
     var mX = [];
     var mS = "";
-    var mP = "";
     var mZ = "";
     var mR = "";
     var mC = "";
     var mF = false;
+    var mU = [];
+    var mV = "";
+    var i = 0;
+    var j = 0;
+    var x = 0;
     while ((mixin = zM.exec(mA)) !== null) {
         [mF, mZ, mR, mC] = variableMixin(mixin[1]);
         if (mF) {
-            mX.push(mS + allMixins[mZ].replace('$1', mR) + ' ');
+            mV = allMixins[mZ];
+            mU = mR.indexOf('/') > -1 ? mR.split('/') : [mR];
+            i = 1;
+            j = mU.length;
+            x = j + 10;
+            while (i <= x) {
+                mV = mV.replace(eval("/\\$" + i + "/g"), j >= i ? mU[i-1] : j == 1 ? mU[0] : '');
+                if (mV.indexOf('$') == -1) { break; }
+                i++;
+            }
+            mX.push(mS + mV + ' ');
             mS = " ";
         }
         else {
@@ -853,7 +903,7 @@ function getClasses(classString) {
     var rW = "";
     var grepTag = classString;
     while ((aM = zA.exec(grepTag)) !== null) {
-        if (['var', 'invert', 'translate', 'translateY', 'translateX'].includes(aM[1]) === false) {
+        if (['var','invert','translate','translateY','translateX'].includes(aM[1]) === false) {
             rW = aM[1] + "=" + aM[2].replace(/\s/g, '\/');
             classString = classString.replace(aM[0], rW);
         }
@@ -945,7 +995,8 @@ function knowCSSRender(uI, uC, uO) {
         'smart': !uC,
         'autorem': true,
         'rem': 16,
-        'autoprefix': true
+        'autoprefix': true,
+        'console': false
     };
     if (typeof knowConfig !== 'undefined') {
         for (var kC in knowConfig) {
@@ -981,6 +1032,7 @@ function knowCSSRender(uI, uC, uO) {
     var smartClass = {};
     var smartDetail = {};
     var classParent = false;
+    var classEvent = "";
     var classEnvironment = "";
     var allowEnvironment = false;
     var checkShorterHand = (typeof globalMixins !== 'undefined');
@@ -1013,11 +1065,12 @@ function knowCSSRender(uI, uC, uO) {
                 if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
                 [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                 [classFound, classesFound] = getGridSystem(classFound, classesFound);
-                [classParent, classFound, classesFound, screen] = getParentSelector(screen, classFound, classesFound);
+                [classParent, classFound, classesFound, screen, classEvent] = getParentSelector(screen, classFound, classesFound);
                 if (!isDefine) {
                     [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                     if (allowEnvironment) {
                         [classFound, classImportant] = getImportant(classFound);
+                        if (classEvent.length > 0 && classFound.indexOf('-') > -1) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
                         className = '';
                         classValue = '';
                         if (classFound.indexOf('gradient') == 0) {
@@ -1045,18 +1098,18 @@ function knowCSSRender(uI, uC, uO) {
                         classValue = getColor(getValue(classValue), className);
                         [className, classValue] = getFamily(className, classValue);
                         if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
-                        classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent);
+                        classKey = getKey(screen, modifier, className, action, classValue, classImportant, classParent, classEvent);
                         if (!uX.smart && uX.classes == 'detail') {
                             classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
                             classesHere.push(classNew);
                         }
                         if (screen in css === false) { css[screen] = {}; }
-                        if (action in css[screen] === false) { css[screen][action] = [{}, {}] }
+                        if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
                         if (modifier == 'none') { modifier = ''; }
                         if (uX.smart) {
-                            sharedClassKey = classKey + '__' + modifier;
+                            sharedClassKey = classKey + '__' + modifier + '__' + classEvent;
                             if (sharedClassKey in smartClass == false) {
-                                smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment];
+                                smartDetail[sharedClassKey] = [screen, action, "", [modifier, className, classValue, classImportant, classWebKit], classParent, classEnvironment, classEvent];
                                 smartClass[sharedClassKey] = ii.toString();
                             }
                             else { smartClass[sharedClassKey] += "__" + ii.toString(); }
@@ -1094,9 +1147,12 @@ function knowCSSRender(uI, uC, uO) {
         var smartClassHere = "";
         var addParent = false;
         var smartKeyID = "";
+        var addEvent = "";
+        var smartEvents = {};
         for (var smartKey in smartClass) {
             addParent = smartDetail[smartKey][4];
-            smartKeyID = smartClass[smartKey] + '__' + addParent.toString();
+            addEvent = smartDetail[smartKey][6];
+            smartKeyID = smartClass[smartKey] + '__' + addParent.toString() + '__' + addEvent.toString();
             if (smartKeyID in smartClassGroup) { smartClassHere = smartClassGroup[smartKeyID]; }
             else {
                 if (uX.classes == 'detail') {
@@ -1110,10 +1166,41 @@ function knowCSSRender(uI, uC, uO) {
             }
             smartDetail[smartKey][2] = smartClassHere;
             smartClass[smartKey].split('__').forEach(function (ii) {
-                if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
-                else { classTags[ii].classList.add(smartClassHere); }
+                if (addEvent.length > 0) {
+                    if (ii in smartEvents === false) { smartEvents[ii] = {}; }
+                    if (addEvent in smartEvents[ii] == false) { smartEvents[ii][addEvent] = [addParent, []]; }
+                    smartEvents[ii][addEvent][1].push(smartClassHere);
+                }
+                else {
+                    if (addParent) { classTags[ii].parentNode.classList.add(smartClassHere); }
+                    else { classTags[ii].classList.add(smartClassHere); }
+                }
                 classTags[ii].removeAttribute(knowID);
             });
+        }
+        if (Object.keys(smartEvents).length > 0) {
+            for (var elem in smartEvents) {
+                for (var event in smartEvents[elem]) {
+                    classTags[elem].addEventListener(event, function(e) {
+                        e.preventDefault();
+                        var addEvent = 'data-' + event;
+                        var addParent = smartEvents[elem][event][0];
+                        var elemTarget = classTags[elem];
+                        var addValue = !elemTarget.hasAttribute(addEvent) || elemTarget.getAttribute(addEvent) !== 'true';
+                        elemTarget.setAttribute(addEvent, addValue.toString());
+                        smartEvents[elem][event][1].forEach(function(elemClass) {
+                            if (!addValue) {
+                                if (addParent) { elemTarget.parentNode.classList.remove(elemClass); }
+                                else { elemTarget.classList.remove(elemClass); }
+                            }
+                            else {
+                                if (addParent) { elemTarget.parentNode.classList.add(elemClass); }
+                                else { elemTarget.classList.add(elemClass); }
+                            }
+                        });
+                    });
+                }
+            }
         }
 
         // JAA TODO:
@@ -1156,7 +1243,8 @@ function knowCSSRender(uI, uC, uO) {
                         if (classImportant == '!') { classImportant = '!important'; }
                         if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
                             var classFirstSix = className.substring(0, 5);
-                            if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
+                            if (['heigh','width','margi','borde','spaci','paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
+                            else if (['top','bottom','left','right'].includes(className)) { classValue += 'px'; }
                         }
                         stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
                         if (classWebKit || (uX.autoprefix && getWebKit(className))) {
@@ -1174,6 +1262,7 @@ function knowCSSRender(uI, uC, uO) {
         styles.push(end);
     }
     var stylesFinal = styles.join('');
+    var stylesTotal = styles.length;
     styles = [];
     if (uX.minifycss) { stylesFinal = stylesFinal.replace(/[\n\r\t]/gi, '').replace(/;\}/gi, '}').replace(/ \{/gi, '{').replace(/; /gi, ';').replace(/, /gi, ',').trim(); }
     if (uC) { return [div, stylesFinal]; }
@@ -1199,8 +1288,9 @@ function knowCSSRender(uI, uC, uO) {
             cssIncrement++;
             afterFirstRender = [classNext, classNextStart, smartClassNext];
         }
-        return true;
+        return uX.console ? stylesTotal : true;
     }
+    else { return uX.console ? 0 : false; }
 }
 
 if (typeof window !== 'undefined') {
