@@ -202,11 +202,24 @@ function getREM(className, classValue, classesFound, remMultiplier) {
     }
     return classesFound;
 }
+function knowAttr() {
+    return ["attr", "data"];
+}
+function knowEvents() {
+    return ["click"]; //"load","ready","resize","touch","mouse","swipe","drag"];
+}
+function knowParent(elem, level) {
+    var elemParent = elem;
+    while (level > 0) {
+        if (elemParent && "parentNode" in elemParent && "classList" in elemParent.parentNode) { elemParent = elemParent.parentNode; }
+        level--;
+    }
+    return elemParent;
+}
 function getParentSelector(screen, classFound, classesFound) {
     var classParent = 0;
     var classEvent = "";
     //JAA TODO - add more events
-    var knowEvents = ["click"]; //"load","ready","resize","touch","mouse","swipe","drag"];
     var screenEvent = screen;
     if (screenEvent.indexOf('^') > -1) {
         screenEvent = screenEvent.replace(/\^/g, '');
@@ -221,8 +234,12 @@ function getParentSelector(screen, classFound, classesFound) {
         }
         classParent = !isNaN(screenUp) ? parseInt(screenUp) : 1;
     }
-    if (knowEvents.indexOf(screenEvent) > -1 ) {
+    if (knowEvents().indexOf(screenEvent) > -1 ) {
         classEvent = screenEvent;
+        screen = screenEvent;
+    }
+    else if (knowAttr().indexOf(screenEvent) > -1 ) {
+        classEvent = "";
         screen = screenEvent;
     }
     else {
@@ -1234,23 +1251,26 @@ function knowCSSRender(uI, uC, uO) {
         var smartKeyID = "";
         var addEvent = "";
         var smartEvents = {};
+        var screenKey = "";
+        var aN = "", aV = "", aP = "";
         for (var smartKey in smartClass) {
-            var screenKey = smartDetail[smartKey][0];
-            if (['attr','data'].includes(screenKey)) {
-                var aN = smartDetail[smartKey][3][1];
-                var aV = smartDetail[smartKey][3][2];
-                var aP = screenKey == 'data' ? screenKey + '-' : '';
+            screenKey = smartDetail[smartKey][0];
+            addParent = smartDetail[smartKey][4];
+            if (knowAttr().includes(screenKey)) {
+                aN = smartDetail[smartKey][3][1];
+                aV = smartDetail[smartKey][3][2];
+                aP = screenKey == 'data' ? screenKey + '-' : '';
                 if (aN.indexOf('=') > -1) { aN = aN.split('=').pop(); }
                 [aV, aN] = getColor(aN, getValue(aV));
                 if (aV.length > 0 && aN.length > 0) {
                     smartClass[smartKey].split('__').forEach(function (ii) {
-                        classTags[ii].setAttribute(aP + aN, aV);
+                        if (addParent > 0) { knowParent(classTags[ii], addParent).setAttribute(aP + aN, aV); }
+                        else { classTags[ii].setAttribute(aP + aN, aV); }
                         classTags[ii].removeAttribute(knowID);
                     });
                 }
             }
             else {
-                addParent = smartDetail[smartKey][4];
                 addEvent = smartDetail[smartKey][6];
                 smartKeyID = smartClass[smartKey] + '__' + addParent.toString() + '__' + addEvent.toString();
                 if (smartKeyID in smartClassGroup) { smartClassHere = smartClassGroup[smartKeyID]; }
@@ -1272,14 +1292,7 @@ function knowCSSRender(uI, uC, uO) {
                         smartEvents[ii][addEvent][1].push(smartClassHere);
                     }
                     else {
-                        if (addParent > 0) {
-                            var elemParent = classTags[ii];
-                            while (addParent > 0) {
-                                if (elemParent && "parentNode" in elemParent && "classList" in elemParent.parentNode) { elemParent = elemParent.parentNode; }
-                                addParent--;
-                            }
-                            elemParent.classList.add(smartClassHere);
-                        }
+                        if (addParent > 0) { knowParent(classTags[ii], addParent).classList.add(smartClassHere); }
                         else { classTags[ii].classList.add(smartClassHere); }
                     }
                     classTags[ii].removeAttribute(knowID);
@@ -1297,13 +1310,7 @@ function knowCSSRender(uI, uC, uO) {
                         var addValue = !elemTarget.hasAttribute(addEvent) || elemTarget.getAttribute(addEvent) !== 'true';
                         elemTarget.setAttribute(addEvent, addValue.toString());
                         smartEvents[elem][event][1].forEach(function(elemClass) {
-                            var elemEffect = elemTarget;
-                            if (addParent > 0) {
-                                while (addParent > 0) {
-                                    if (elemEffect && "parentNode" in elemEffect && "classList" in elemEffect.parentNode) { elemEffect = elemEffect.parentNode; }
-                                    addParent--;
-                                }
-                            }
+                            var elemEffect = knowParent(elemTarget, addParent);
                             if (addValue) { elemEffect.classList.add(elemClass); }
                             else { elemEffect.classList.remove(elemClass); }
                         });
@@ -1318,7 +1325,7 @@ function knowCSSRender(uI, uC, uO) {
 
         for (var classKey in smartDetail) {
             var screen = smartDetail[classKey][0];
-            if (['attr','data'].includes(screen) == false) {
+            if (knowAttr().includes(screen) == false) {
                 var classNew = smartDetail[classKey][2];
                 var action = smartDetail[classKey][1];
                 var modifier = smartDetail[classKey][3][0];
