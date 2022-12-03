@@ -34,6 +34,8 @@ const shortHand = {
     "w": "width",
     "h": "height",
 
+    "tight": "m-0 p-0",
+
     "100vh": 'height-100vh',
     "100vw": 'width-100vw',
 

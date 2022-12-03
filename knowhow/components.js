@@ -1,9 +1,10 @@
 const components = {
 
     "tlbr": ["top-$1 left-$1 bottom-$3 right-$4"],
-    "box": ["top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6"],
+    "sq": ["top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6"],
     "wh": ["width-$1 height-$2"],
     "hw": ["height-$1 width-$2"],
+    "body": ["attr{bgcolor-$1 text-$2 link-$3 alink-$4 vlink-$5}"],
 
     "hamburger": [
         "none hidden position-relative xsmdown{visible block}",

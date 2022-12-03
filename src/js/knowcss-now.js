@@ -77,7 +77,7 @@ function KwAp(hA, hB, hF) {
 
 document.addEventListener('DOMContentLoaded', function(event) {
     var eP = document.createElement('style');
-    eP.innerHTML = css;
+    eP.innerHTML = typeof css !== 'undefined' ? css : '';
     document.body.appendChild(eP);
     var eH = '';
     try { eH = window.localStorage.getItem(typeof knowNowKey !== 'undefined' ? knowNowKey : 'knowcssnow'); }
