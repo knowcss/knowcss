@@ -1,5 +1,10 @@
 const components = {
 
+    "fill-block": [
+        "relative",
+        ">div{absolute w-100% mw-100% top-50% left-0 transform=translate(0,-250%) aligncenter}"
+    ],
+
     "tlbr": ["top-$1 left-$1 bottom-$3 right-$4"],
     "sq": ["top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6"],
     "wh": ["width-$1 height-$2"],

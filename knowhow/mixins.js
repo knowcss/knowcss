@@ -4,6 +4,7 @@ const cssVars = {
     "orange": "color-B65B0C",
     "pink": "color-C83B82",
     "blue": "color-384EF4",
+    "green": "color-2d862d",
     "black": "color-000",
     "family": "font-family-Helvetica",
     "css": '<span know="[go]">CSS</span>',

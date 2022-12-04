@@ -410,8 +410,8 @@ function getShortHand(classFound, classesFound) {
 function getValue(val) {
     val = val.replace(/;/g, '');
     var hX = defined(knowCSSOptions.hexColors);
-    if (val.indexOf('/') > -1 || val.indexOf('|') > -1) {
-        val = val.replace(/[\/|\|]/g, ' ');
+    if (val.indexOf('/') > -1 || val.indexOf('|') > -1 || val.indexOf('_') > -1) {
+        val = val.replace(/[\/|\||\_]/g, ' ');
         var vals = val.split(' ');
         if (vals.length > 2) {
             if (hX && vals[2] in knowCSSOptions.hexColors) {
@@ -862,6 +862,7 @@ function variableMixin(mZ) {
 }
 function getMixins(mA) {
     var mixin = '', newMixin = {}, anyNewMixin = false;
+    var original = mA;
     var zM = new RegExp('\\[(.*?)\\]', 'i');
     var mX = [];
     var mS = "";
@@ -883,6 +884,7 @@ function getMixins(mA) {
             i = 1;
             j = mU.length;
             x = j + 10;
+
             while (i <= x) {
                 mV = mV.replace(eval("/\\$" + i + "/g"), j >= i ? mU[i - 1] : j == 1 ? mU[0] : '');
                 if (mV.indexOf('$') == -1) { break; }
