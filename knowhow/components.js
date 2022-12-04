@@ -2,7 +2,7 @@ const components = {
 
     "fill-block": [
         "relative",
-        ">div{absolute w-100% mw-100% t-50% l-0 translateXY-0/250% aligncenter}"
+        ">div{absolute w-100% mw-100% t-50% l-0 translateXY=0/-250% aligncenter}"
     ],
 
     "tlbr": ["top-$1 left-$1 bottom-$3 right-$4"],

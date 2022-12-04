@@ -146,6 +146,7 @@ const screenSizeKeys = Object.keys(screenSizes);
 
 var defined = function (val) { return typeof val !== 'undefined' && val != null; };
 var contains = function (val, vals) { return val.indexOf(vals) > -1; };
+var begins = function (val, vals) { return val.indexOf(vals) == 0; };
 var containsAny = function (val, vals) {
     var i = 0;
     var x = vals.length;
@@ -177,7 +178,7 @@ function getGridSystem(classFound, classesFound) {
         classFound = "width-100%";
         classesFound.push("display=-webkit-box", "display=-ms-flexbox", "display-flex", "-ms-flex-wrap-wrap", "flex-wrap-wrap");
     }
-    else if (classFound.indexOf('col-') == 0) {
+    else if (begins(classFound, 'col-')) {
         var whichCol = classFound.replace(/^col-/, '');
         var alignCol = whichCol;
         if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
@@ -187,7 +188,7 @@ function getGridSystem(classFound, classesFound) {
         classFound = "width-" + parseFloat(whichPct.toFixed(6)) + "%";
         classesFound.push("display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + classFound, "position-relative");
     }
-    else if (classFound.indexOf('offset-') == 0) {
+    else if (begins(classFound, 'offset-')) {
         var whichOffset = classFound.replace(/^offset-/, '');
         if (whichOffset.length == 0) { whichOffset = 12; }
         var whichPct = (parseInt(whichOffset) / 12) * 100;
@@ -364,9 +365,9 @@ function getEnvironmentSelector(screen) {
         reverseEnvironment = true;
         classEnvironment = classEnvironment.replace('!', '');
     }
-    if (knowEnvironment.indexOf(classEnvironment) == -1) { classEnvironment = ""; }
+    if (!contains(knowEnvironment, classEnvironment)) { classEnvironment = ""; }
     else {
-        if (userConditionals.indexOf(classEnvironment) == -1) { allowEnvironment = false; }
+        if (!contains(userConditionals, classEnvironment)) { allowEnvironment = false; }
         else if (classEnvironment == screen) { screen = 'none'; }
         if (reverseEnvironment) { allowEnvironment = !allowEnvironment; }
     }
@@ -395,7 +396,7 @@ function replaceVars(className, classValue) {
     var x = j + 10;
     while (i <= x) {
         className = className.replace(eval("/\\$" + i + "/g"), j >= i ? classValues[i - 1] : j == 1 ? classValues[0] : '');
-        if (className.indexOf('$') == -1) { break; }
+        if (!contains(className, '$')) { break; }
         i++;
     }
     return className;
@@ -458,7 +459,7 @@ function getValue(val) {
         }
     }
     else if (hX && val in knowCSSOptions.hexColors) { val = '#' + getShortColor(knowCSSOptions.hexColors[val]); }
-    else if (val.indexOf('calc') == 0) { val = val.replace('-', ' - ').trim(); }
+    else if (begins(val, 'calc')) { val = val.replace('-', ' - ').trim(); }
     return val;
 }
 function getKeyShorter(modifier, name, val, important, parent, event) {
@@ -479,10 +480,10 @@ function getDynamic(container, action) {
         keepAction = true;
     }
     if (['all', '*', '>'].includes(container)) { dynamic = ' *'; }
-    else if (container.indexOf('>') == 0) { dynamic = ' ' + container.replace(/\>/g, ' > ').trim(); }
-    else if (container.indexOf('all') == 0) {
-        if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
-        else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
+    else if (begins(container, '>')) { dynamic = ' ' + container.replace(/\>/g, ' > ').trim(); }
+    else if (begins(container, 'all')) {
+        if (begins(container, 'all-')) { dynamic = ' ' + container.replace('all-', ''); }
+        else if (begins(container, 'all>')) { dynamic = ' ' + container.replace('all>', '> '); }
     }
     else if (contains(container, 'nth')) {
         if (contains(container, '-nth')) {
@@ -539,7 +540,7 @@ function getModifier(classList, classSecondary) {
                                     if (containerPrefix.length > 0) {
                                         keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
                                     }
-                                    else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || containerKey.indexOf('media-') == 0 || screenTypes.includes(containerKey) || ruleTypes.includes(containerKey)) {
+                                    else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || begins(containerKey, 'media-') || screenTypes.includes(containerKey) || ruleTypes.includes(containerKey)) {
                                         keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
                                     }
                                     if (keyNew.length > 0) {
@@ -589,7 +590,7 @@ function getColor(hE, hC) {
     }
 
     if (hS || containsAny(hC, ['background','color'])) {
-        if (hE.indexOf('(') == -1) {
+        if (!contains(hE, '(')) {
             var aM = [];
             var zY = [false, 100, 100];
             var zS = [
@@ -727,9 +728,9 @@ function getWrapper(xZ) {
     }
     else if (screenTypes.includes(xZ)) {
         start.push('@media ');
-        if (xZ.indexOf('not') == 0) { start.push('not ' + xZ.replace('not', '')); }
-        else if (xZ.indexOf('!') == 0) { start.push('not ' + xZ.replace('!', '')); }
-        else if (xZ.indexOf('only') == 0) { start.push('only ' + xZ.replace('only', '')); }
+        if (begins(xZ, 'not')) { start.push('not ' + xZ.replace('not', '')); }
+        else if (begins(xZ, '!')) { start.push('not ' + xZ.replace('!', '')); }
+        else if (begins(xZ, 'only')) { start.push('only ' + xZ.replace('only', '')); }
         else { start.push(xZ); }
         start.push(' {');
     }
@@ -868,8 +869,8 @@ function variableMixin(mZ) {
     var mR = "";
     var mC = "";
     var mF = false;
-    if (mZ.indexOf('[') == -1) {
-        if (mZ.indexOf('-') > 1) {
+    if (!contains(mZ, '[')) {
+        if (mZ.indexOf('-') > 0) {
             [mP, mR] = mZ.split('-', 2);
             if (mP in allMixins) {
                 mZ = mP;
@@ -1032,7 +1033,7 @@ function getScreenPrefixes(classString) {
             key = classesFound[i];
             modifier = "";
             if (isAt) { parts = key.split('@'); }
-            else if (key.indexOf('{') == -1) { parts = key.split('-'); }
+            else if (!contains(key, '{')) { parts = key.split('-'); }
             else { parts = []; }
             if (parts.length > 0) {
                 if (parts.length > 200 && parts[1] in screenSizes) {
@@ -1094,61 +1095,160 @@ function getContainers(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
+var knowMotionCounter = 0;
 function knowMotionRender (knowMotion) {
-    var classTags = [];
+    var ret = {
+        "class": "",
+        "found": false,
+        "keyframes": {},
+        "values": {}
+    };
+
+    var knowMotions = {
+        "slidein": 'transform=translateY(-250%) 0{transform=translateY(-250%)} 15/85{transform=translateY(-50%)} 100{transform-translateY(100%)}',
+        //simplify to 'translateY=-250% 0{translateY=-250%)} 15/85{translateY-50%} 100{translateY-100%}'
+    };
+    // move to animations library function later
+    knowMotion = knowMotion.replace('slidein', knowMotions.slidein);
 
     var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_]{1,255})\{(.*?)\}', 'gis');
     var zN = null, aM = [], aN = [], kF = "";
-    var classListCheck = {}, grepTag = '', keyFrames = [];
+    var classListCheck = {}, grepTag = '', keyFrames = {}, runningTag = '', classParts = [], classValue = "", className = "";
     var classList = { 'none_none_none': knowMotion };
+    var animationRef = "", animationID = "", animationVals = {}, keyFramesCSS = [], classValues = [], animationKeys = [], keyFrameValues = [], animationInitial = [], animationLast = "", x = 0;
+
+    var animationPrefix = 'animation-';
+    var animationShortHand = {
+        "fwd": ["fill-mode", "forwards"],
+        "bwd": ["fill-mode", "backwards"],
+        "rev": ["direction", "reverse"],
+        "alt": ["direction", "alternate"],
+        "altrev": ["direction", "alternate-reverse"],
+        "in": ["timing-function", "ease-in"],
+        "out": ["timing-function", "ease-out"],
+        "in-out": ["timing-function", "ease-in-out"],
+        "once": ["iteration-count", "1"],
+        "twice": ["titeration-count", "2"]
+    };
 
     for (var key in classList) { classListCheck[key] = true; }
     for (var key in classListCheck) {
         grepTag = classList[key];
+        runningTag = grepTag;
+        keyFrames = {};
         while ((aM = zA.exec(grepTag)) !== null) {
-            keyFrames = {};
             zN = new RegExp('^([0-9\/\-]{1,255})$', 'gis');
             aN = zN.exec(aM[1]);
             if (aN) {
                 kF = aN[1];
                 if (contains(kF, '-')) {
-                    console.log(['range keyframe found', kF]);
+                    kF.split('-').forEach(function(val) { keyFrames[val] = aM[2]; });
                 }
                 else if (contains(kF, '/')) {
-                    console.log(['split keyframe found', kF]);
+                    kF.split('/').forEach(function(val) { keyFrames[val] = aM[2]; });
                 }
-                else {
-                    console.log(['single keyframe found', kF]);
-                }
+                else { keyFrames[kF] = aM[2]; }
             }
-            else if (aM[1] == "from") {
-                console.log(['first keyframe found', aM[1], aM[2]]);
-            }
-            else if (aM[1] == "to") {
-                console.log(['last keyframe found', aM[1], aM[2]]);
-            }
+            else if (aM[1] == "from") { keyFrames["0"] = aM[2]; }
+            else if (aM[1] == "to") { keyFrames["100"] = aM[2]; }
             else {
-                console.log(['action found', aM[1], aM[2]]);
                 // loop through attributes to determine events and add listeners
                     // play-state = [pause|play|stop|restart]
             }
-            classList[key] = classList[key].replace(aM[0], '').trim();
+            runningTag = runningTag.replace(aM[0], '').trim();
         }
 
-        grepTag = classList[key].trim();
-        var classAttr = contains(grepTag, ' ') ? grepTag.split(' ') : [grepTag];
-        console.log(['attributes found', classAttr]);
-        // loop through attributes to determine state
-            // timing - [0-9]s
-            // delay - d[0-9]s
-            // mode - [fwd|bwd|both|forwards|backwards]
-            // curve - [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
-            // cubic-bezier - cb(a,b,c,d)
-            // count - [0-9] or [infinte]
-            // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
-    }
+        knowMotionCounter++;
 
-    return classTags;
+        animationID = "km" + knowMotionCounter;
+        animationVals = {
+            "name": animationID,
+            "duration": "", //timing - [0-9]s
+            "delay": "", // delay - d[0-9]s
+            "iteration-count": "", // count - [0-9] or [infinte|once|twice]
+            "direction": "", // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
+            "timing-function": "", // curve - cubic-bezier - cb(a,b,c,d) or [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
+            "fill-mode": "" // mode - [fwd|bwd|both|forwards|backwards]
+        };
+        animationInitial = [];
+
+        classValues = contains(runningTag, ' ') ? runningTag.split(' ') : [runningTag];
+        classValues.forEach(function(val) {
+            animationRef = "";
+            if (val in animationShortHand) {
+                animationRef = animationShortHand[val];
+                animationVals[animationRef[0]] = animationRef[1];
+            }
+            else if (["linear", "ease", "ease-in", "ease-out", "ease-in-out"].includes(val)) { animationVals["timing-function"] = val; }
+            else if (["forwards", "backwards", "both"].includes(val)) { animationVals["fill-mode"] = val; }
+            else if (["reverse", "alternate", "alternate-reverse", "normal"].includes(val)) { animationVals["direction"] = val; }
+            else if (["infinite"].includes(val) || /^\d+$/.test(val)) { animationVals["iteration-count"] = val; }
+            else if (/^\d+s$/.test(val)) { animationVals["duration"] = val; }
+            else if (/^\d*(\.\d+)+s$/.test(val)) { animationVals["duration"] = val; }
+            else if (/^d\d+s$/.test(val)) { animationVals["delay"] = val.replace('d', ''); }
+            else if (/^d\d*(\.\d+)+s$/.test(val)) { animationVals["delay"] = val.replace('d', ''); }
+            else if (contains(val, "last-") && "100" in keyFrames) {
+                animationLast = val.split('-', 2).pop();
+                if (animationLast in keyFrames) { keyFrames["100"] = keyFrames[animationLast]; }
+            }
+            else if (contains(val, "first-") && "0" in keyFrames) {
+                animationLast = val.split('-', 2).pop();
+                if (animationLast in keyFrames) { keyFrames["0"] = keyFrames[animationLast]; }
+            }
+            else {
+                // JAA TODO - create a parse class to get className + classValue via components/shorthand/mixins/etc
+                if (contains(val, '=')) {
+                    [className, classValue] = val.split('=', 2);
+                    animationInitial.push(className + ': ' + classValue);
+                }
+                else if (contains(val, '-')) {
+                    [className, classValue] = val.split('-', 2);
+                    animationInitial.push(className + ': ' + classValue);
+                }
+            }
+        });
+
+        x = Object.keys(keyFrames).length;
+        if (x > 0) {
+            if (x > 1) {
+                keyFrames = Object.keys(keyFrames).sort(function(a, b) {
+                    if (parseInt(a) > parseInt(b)) { return 1; }
+                    else { return -1; }
+                }).reduce( (obj, key) => { obj[key] = keyFrames[key]; return obj; }, {});
+            }
+            keyFramesCSS = ["@keyframes " + animationID + "{"];
+            keyFrameValues = [];
+            for (var keyFrame in keyFrames) {
+                keyFrameValues = [];
+                keyFrames[keyFrame].split(' ').forEach(function(classFound) {
+                    if (contains(classFound, '=')) {
+                        [className, classValue] = classFound.split('=', 2);
+                        keyFrameValues.push(className + ': ' + classValue);
+                    }
+                    else if (contains(classFound, '-')) {
+                        [className, classValue] = classFound.split('-', 2);
+                        keyFrameValues.push(className + ': ' + classValue);
+                    }
+                });
+                if (keyFrameValues.length > 0) {
+                    keyFramesCSS.push(" " + keyFrame + "% { " + keyFrameValues.join('; ') + "; }");
+                }
+            }
+            keyFramesCSS.push("}");
+            ret.keyframes = keyFramesCSS.join('');
+        }
+
+        animationKeys = animationInitial;
+        for (var key in animationVals) {
+            if (animationVals[key].length > 0) { animationKeys.push(animationPrefix + key + ": " + animationVals[key]); }
+        }
+        if (animationKeys.length > 0) {
+            ret.values = "." + animationID + " { " + animationKeys.join('; ') + '; }';
+            ret.class = animationID;
+            ret.found = true;
+        }
+    }
+    return ret;
 };
 function knowCSSRender(uI, uC, uO) {
     var uX = {
@@ -1175,6 +1275,30 @@ function knowCSSRender(uI, uC, uO) {
     }
     var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classImportant = '', classWebKit = false, classParts = [], classKey = '', classKeyLong = '', classNew = '', classFirst = '', classList = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles.push('::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'); }
+
+    getUserMixins();
+    getUserConditionals();
+    getGreps();
+
+    var knowMotionClasses = {};
+    var motionTags = document.querySelectorAll("[" + knowMotionID + "]");
+    var attrMotion = "";
+    var mi = 0;
+    var mL = motionTags.length;
+    while (mi < mL) {
+        attrMotion = motionTags[mi].getAttribute(knowMotionID);
+        if (attrMotion) {
+            knowMotionClasses = knowMotionRender(attrMotion);
+            if (knowMotionClasses.found) {
+                styles.push(masterLine + knowMotionClasses.keyframes);
+                styles.push(masterLine + knowMotionClasses.values);
+                motionTags[mi].classList.add(knowMotionClasses.class);
+                motionTags[mi].removeAttribute(knowMotionID);
+            }
+        }
+        mi++;
+    }
+
     var classTags = [];
     if (uC) {
         var zC = new RegExp(knowID + '=["|\'](.*?)["|\']', 'gis');
@@ -1188,11 +1312,7 @@ function knowCSSRender(uI, uC, uO) {
         if (knowStartup == null && div && "innerHTML" in div) { knowStartup = div.innerHTML; }
         classTags = document.querySelectorAll("[" + knowID + "]");
     }
-    getUserMixins();
-    getUserConditionals();
-    getGreps();
     var attr = "";
-    var attrMotion = "";
     var sharedClassKey = "";
     var smartClass = {};
     var smartDetail = {};
@@ -1276,8 +1396,6 @@ function knowCSSRender(uI, uC, uO) {
                         classNew = getSafeClass(screen, modifier, className, action, classValue, classImportant);
                         classesHere.push(classNew);
                     }
-                    if (screen in css === false) { css[screen] = {}; }
-                    if (action in css[screen] === false) { css[screen][action] = {}; }
                     if (uX.smart) {
                         sharedClassKey = classKeyLong + '__' + modifier + '__' + classParent + '__' + classEvent;
                         if (sharedClassKey in smartClass == false) {
@@ -1287,8 +1405,10 @@ function knowCSSRender(uI, uC, uO) {
                         else { smartClass[sharedClassKey] += "__" + ii.toString(); }
                     }
                     else {
+                        if (screen in css === false) { css[screen] = {}; }
+                        if (action in css[screen] === false) { css[screen][action] = {}; }
                         if (classKey in css[screen][action]) {
-                            if (css[screen][action][classKey].indexOf('.' + classNew + modifier) == -1) {
+                            if (!contains(css[screen][action][classKey], '.' + classNew + modifier)) {
                                 css[screen][action][classKey].push('.' + classNew + modifier);
                             }
                         }
@@ -1297,13 +1417,8 @@ function knowCSSRender(uI, uC, uO) {
                 }
             }
             if (!uX.smart) {
-                if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
+                if (classFirst.length > 0 && !contains(classesHere, classFirst)) { classesHere.push(classFirst); }
             }
-        }
-
-        if (!uC) {
-            attrMotion = classTags[ii].getAttribute(knowMotionID);
-            if (attrMotion) { knowMotionRender(attrMotion); }
         }
 
         if (!uX.smart) {
@@ -1328,7 +1443,8 @@ function knowCSSRender(uI, uC, uO) {
         for (var smartKey in smartClass) {
             screenKey = smartDetail[smartKey][0];
             addParent = smartDetail[smartKey][4];
-            if (knowAttr().includes(screenKey)) {
+            if (screenKey == "keyframe") { }
+            else if (knowAttr().includes(screenKey)) {
                 aN = smartDetail[smartKey][3][1];
                 aV = smartDetail[smartKey][3][2];
                 aP = screenKey == 'data' ? screenKey + '-' : '';
@@ -1402,10 +1518,11 @@ function knowCSSRender(uI, uC, uO) {
                 var action = smartDetail[classKey][1];
                 var modifier = smartDetail[classKey][3][0];
                 var classModifier = '.' + classNew + modifier;
+
                 if (screen in css === false) { css[screen] = {}; }
-                if (action in css[screen] === false) { css[screen][action] = [{}, {}]; }
+                if (action in css[screen] === false) { css[screen][action] = {}; }
                 if (classKey in css[screen][action]) {
-                    if (css[screen][action][classKey].indexOf(classModifier) == -1) {
+                    if (!contains(css[screen][action][classKey], classModifier)) {
                         css[screen][action][classKey].push(classModifier);
                     }
                 }
@@ -1425,24 +1542,26 @@ function knowCSSRender(uI, uC, uO) {
             cssGroup = {};
             classHere = '';
             for (var classKey in css[screen][action]) {
-                [modifier, className, classValue, classImportant, classWebKit] = smartDetail[classKey][3];
-                if (className.length > 0 || classValue.length > 0) {
-                    if (classValue.length > 0 || classImportant.length > 0) {
-                        if (classValue.length == 0) { classValue = "''"; }
-                        if (classImportant == '!') { classImportant = '!important'; }
-                        if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
-                            var classFirstSix = className.substring(0, 5);
-                            if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || contains(className, 'font-size')) { classValue += 'px'; }
-                            else if (['top', 'bottom', 'left', 'right'].includes(className)) { classValue += 'px'; }
+                if (classKey in smartDetail) {
+                    [modifier, className, classValue, classImportant, classWebKit] = smartDetail[classKey][3];
+                    if (className.length > 0 || classValue.length > 0) {
+                        if (classValue.length > 0 || classImportant.length > 0) {
+                            if (classValue.length == 0) { classValue = "''"; }
+                            if (classImportant == '!') { classImportant = '!important'; }
+                            if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
+                                var classFirstSix = className.substring(0, 5);
+                                if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || contains(className, 'font-size')) { classValue += 'px'; }
+                                else if (['top', 'bottom', 'left', 'right'].includes(className)) { classValue += 'px'; }
+                            }
+                            stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
+                            if (classWebKit || (uX.autoprefix && getWebKit(className))) {
+                                stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
+                                stylesHere += stylesWebKit.join('');
+                            }
+                            classHere = css[screen][action][classKey].join(', ');
+                            if (classHere in cssGroup == false) { cssGroup[classHere] = stylesHere; }
+                            else { cssGroup[classHere] += ' ' + stylesHere; }
                         }
-                        stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
-                        if (classWebKit || (uX.autoprefix && getWebKit(className))) {
-                            stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
-                            stylesHere += stylesWebKit.join('');
-                        }
-                        classHere = css[screen][action][classKey].join(', ');
-                        if (classHere in cssGroup == false) { cssGroup[classHere] = stylesHere; }
-                        else { cssGroup[classHere] += ' ' + stylesHere; }
                     }
                 }
             }
