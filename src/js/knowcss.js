@@ -125,6 +125,7 @@ var knowCSS = {
 };
 
 const knowID = 'know';
+const knowMotionID = 'knowmotion';
 
 var masterTab = '\t', masterLine = '\n';
 var smartUnique = {}, allMixins = {}, classNext = '', classNextStart = '', smartClassNext = '', afterFirstRender = [], cssIncrement = 0, knowStartup = null;
@@ -1093,6 +1094,62 @@ function getContainers(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
+function knowMotionRender (knowMotion) {
+    var classTags = [];
+
+    var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_]{1,255})\{(.*?)\}', 'gis');
+    var zN = null, aM = [], aN = [], kF = "";
+    var classListCheck = {}, grepTag = '', keyFrames = [];
+    var classList = { 'none_none_none': knowMotion };
+
+    for (var key in classList) { classListCheck[key] = true; }
+    for (var key in classListCheck) {
+        grepTag = classList[key];
+        while ((aM = zA.exec(grepTag)) !== null) {
+            keyFrames = {};
+            zN = new RegExp('^([0-9\/\-]{1,255})$', 'gis');
+            aN = zN.exec(aM[1]);
+            if (aN) {
+                kF = aN[1];
+                if (contains(kF, '-')) {
+                    console.log(['range keyframe found', kF]);
+                }
+                else if (contains(kF, '/')) {
+                    console.log(['split keyframe found', kF]);
+                }
+                else {
+                    console.log(['single keyframe found', kF]);
+                }
+            }
+            else if (aM[1] == "from") {
+                console.log(['first keyframe found', aM[1], aM[2]]);
+            }
+            else if (aM[1] == "to") {
+                console.log(['last keyframe found', aM[1], aM[2]]);
+            }
+            else {
+                console.log(['action found', aM[1], aM[2]]);
+                // loop through attributes to determine events and add listeners
+                    // play-state = [pause|play|stop|restart]
+            }
+            classList[key] = classList[key].replace(aM[0], '').trim();
+        }
+
+        grepTag = classList[key].trim();
+        var classAttr = contains(grepTag, ' ') ? grepTag.split(' ') : [grepTag];
+        console.log(['attributes found', classAttr]);
+        // loop through attributes to determine state
+            // timing - [0-9]s
+            // delay - d[0-9]s
+            // mode - [fwd|bwd|both|forwards|backwards]
+            // curve - [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
+            // cubic-bezier - cb(a,b,c,d)
+            // count - [0-9] or [infinte]
+            // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
+    }
+
+    return classTags;
+};
 function knowCSSRender(uI, uC, uO) {
     var uX = {
         'codeKey': '',
@@ -1135,6 +1192,7 @@ function knowCSSRender(uI, uC, uO) {
     getUserConditionals();
     getGreps();
     var attr = "";
+    var attrMotion = "";
     var sharedClassKey = "";
     var smartClass = {};
     var smartDetail = {};
@@ -1242,6 +1300,12 @@ function knowCSSRender(uI, uC, uO) {
                 if (classFirst.length > 0 && classesHere.indexOf(classFirst) == -1) { classesHere.push(classFirst); }
             }
         }
+
+        if (!uC) {
+            attrMotion = classTags[ii].getAttribute(knowMotionID);
+            if (attrMotion) { knowMotionRender(attrMotion); }
+        }
+
         if (!uX.smart) {
             if (uC) { div = div.replace(classTags[ii][0], 'data-class="' + classesHere.join(' ') + '"'); }
             else {
@@ -1421,7 +1485,10 @@ function knowCSSRender(uI, uC, uO) {
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
     var knowCSSProto = function (key) {
-        this.x = { "attr": "know" };
+        this.x = {
+            "attr": "know",
+            "motion": "knowmotion"
+        };
         this.key = key || "[" + knowID + "]";
         this.debugging = false;
     };
