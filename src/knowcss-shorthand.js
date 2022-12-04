@@ -23,6 +23,13 @@ const globalMixins = {
     "h16": "margin-top-0 margin-bottom-0.5rem font-weight-500 line-height-1.2"
 };
 
+const shortHandVariable = {
+    /* transform translate */
+    "translateY": "transform=translateY($1)",
+    "translateX": "transform=translateX($1)",
+    "translateXY": "transform=translate($1,$2)"
+};
+
 const shortHand = {
     "h1": "h16 font-size-calc(1.375rem/+/1.5vw)",
     "h2": "h16 font-size-calc(1.325rem/+/0.9vw)",

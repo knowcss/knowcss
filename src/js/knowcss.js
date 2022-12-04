@@ -13,6 +13,7 @@ var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
     shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
+    shortHandVariable: typeof shortHandVariable !== 'undefined' && shortHandVariable != null ? shortHandVariable : {},
     cssVars: typeof cssVars !== 'undefined' && cssVars != null ? cssVars : {},
     mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
     components: typeof components !== 'undefined' && components != null ? components : {},
@@ -143,6 +144,16 @@ for (var key in screenSized) {
 const screenSizeKeys = Object.keys(screenSizes);
 
 var defined = function (val) { return typeof val !== 'undefined' && val != null; };
+var contains = function (val, vals) { return val.indexOf(vals) > -1; };
+var containsAny = function (val, vals) {
+    var i = 0;
+    var x = vals.length;
+    while (i < x) {
+        if (val.indexOf(vals[i]) > -1) { return true; }
+        i++;
+    }
+    return false;
+};
 
 function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
 
@@ -153,7 +164,7 @@ function getImportant(val) {
     var important = '';
     val = (typeof val === 'string') ? val : '';
     val = val.replace('-!', '!').replace('-important', '!').replace('!important', '!').replace(/\!\!+/g, '!');
-    if (val.indexOf('!') > -1) {
+    if (contains(val, '!')) {
         val = val.replace('!', '');
         important = '!';
     }
@@ -168,7 +179,7 @@ function getGridSystem(classFound, classesFound) {
     else if (classFound.indexOf('col-') == 0) {
         var whichCol = classFound.replace(/^col-/, '');
         var alignCol = whichCol;
-        if (alignCol.indexOf('-') > -1) { [whichCol, alignCol] = alignCol.split('-', 2); }
+        if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
         if (['left', 'right', 'center'].includes(alignCol)) { classesFound.push('justify-content-' + alignCol); }
         if (whichCol.length == 0) { whichCol = 12; }
         var whichPct = (parseInt(whichCol) / 12) * 100;
@@ -195,7 +206,7 @@ function shouldREM(className) {
     return ret;
 }
 function getREM(className, classValue, classesFound, remMultiplier) {
-    if (shouldREM(className) && (classValue.indexOf('px') > -1 || !isNaN(classValue))) {
+    if (shouldREM(className) && (contains(classValue, 'px') || !isNaN(classValue))) {
         var classRoot = classValue.replace('px', '');
         if (!isNaN(classRoot) && classRoot > 0) {
             var classRem = parseInt(classRoot) / (remMultiplier || 16);
@@ -223,10 +234,10 @@ function getParentSelector(screen, classFound, classesFound) {
     var classParent = 0;
     var classEvent = "";
     var screenEvent = screen;
-    if (screenEvent.indexOf('^') > -1) {
+    if (contains(screenEvent, '^')) {
         screenEvent = screenEvent.replace(/\^/g, '');
         var screenUp = screenEvent;
-        if (screenEvent.indexOf('-') > -1) {
+        if (contains(screenEvent, '-')) {
             var screenParts = screenEvent.split('-', 2);
             if (!isNaN(screenParts[0])) {
                 screenUp = screenParts[0];
@@ -236,20 +247,20 @@ function getParentSelector(screen, classFound, classesFound) {
         }
         classParent = !isNaN(screenUp) ? parseInt(screenUp) : 1;
     }
-    if (knowEvents().indexOf(screenEvent) > -1) {
+    if (contains(knowEvents(), screenEvent)) {
         classEvent = screenEvent;
         screen = screenEvent;
     }
-    else if (knowAttr().indexOf(screenEvent) > -1) {
+    else if (contains(knowAttr(), screenEvent)) {
         classEvent = "";
         screen = screenEvent;
     }
     else {
-        if (classFound.indexOf('^') > -1) {
+        if (contains(classFound, '^')) {
             classFound = classFound.replace(/\^/g, '');
             classParent = 1;
         }
-        else if (classFound.indexOf('parent-') > -1) {
+        else if (contains(classFound, 'parent-')) {
             classFound = classFound.replace('parent-', '');
             classParent = 1;
         }
@@ -258,12 +269,12 @@ function getParentSelector(screen, classFound, classesFound) {
             screen = 'none';
         }
         else {
-            if (screen.indexOf('^') > -1) {
+            if (contains(screen, '^')) {
                 screen = screen.replace('^', 'parent-');
                 if (classParent == 0) { classParent = 1; }
             }
-            else { classParent = screen.indexOf('parent') > -1 ? 1 : 0; }
-            if (classParent > 0 && screen.indexOf('-') > -1) {
+            else { classParent = contains(screen, 'parent') ? 1 : 0; }
+            if (classParent > 0 && contains(screen, '-')) {
                 var modifierParts = screen.split('-', 2);
                 if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
                 else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
@@ -342,13 +353,13 @@ function getEnvironmentSelector(screen) {
     var classEnvironment = "";
     var allowEnvironment = true;
     var reverseEnvironment = false;
-    if (screen.indexOf('-') > -1) {
+    if (contains(screen, '-')) {
         var modifierParts = screen.split('-', 2);
         if (modifierParts[0] in screenSizes) { [screen, classEnvironment] = modifierParts; }
         else if (modifierParts[1] in screenSizes) { [classEnvironment, screen] = modifierParts; }
     }
     else { classEnvironment = screen; }
-    if (classEnvironment.indexOf('!') > -1) {
+    if (contains(classEnvironment, '!')) {
         reverseEnvironment = true;
         classEnvironment = classEnvironment.replace('!', '');
     }
@@ -363,7 +374,7 @@ function getEnvironmentSelector(screen) {
 function getShorterHand(classFound, classesFound, ii) {
     if (classFound in globalMixins) {
         classFound = globalMixins[classFound].trim();
-        if (classFound.indexOf(' ') > -1) {
+        if (contains(classFound, ' ')) {
             var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
             classFound = classMore.shift();
             if (classMore.length > 0) { classesFound.concat(...classMore); }
@@ -376,11 +387,23 @@ function getFontOrWeight(classFound) {
     else { classFound = "font-size-" + parseFloat(classFound) + "px"; }
     return classFound;
 }
+function replaceVars(className, classValue) {
+    var classValues = contains(classValue, '/') ? classValue.split('/') : [classValue];
+    var i = 1;
+    var j = classValues.length;
+    var x = j + 10;
+    while (i <= x) {
+        className = className.replace(eval("/\\$" + i + "/g"), j >= i ? classValues[i - 1] : j == 1 ? classValues[0] : '');
+        if (className.indexOf('$') == -1) { break; }
+        i++;
+    }
+    return className;
+}
 function getShortHand(classFound, classesFound) {
     var classWebKit = false;
     var classImportant = '';
     [classFound, classImportant] = getImportant(classFound);
-    var wByH = classFound.indexOf('x') > -1 && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(classFound);
+    var wByH = contains(classFound, 'x') && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(classFound);
     if (wByH) {
         var classValue = wByH[2];
         if (!isNaN(classValue)) { classValue += 'px'; }
@@ -388,17 +411,30 @@ function getShortHand(classFound, classesFound) {
         classesFound.push(wByH[1] + 'height-' + classValue);
     }
     else if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
-    else if (defined(knowCSSOptions.shortHand)) {
+    else {
+        var classChanged = false;
         ['-webkit-', '-moz-', '-ms-', '-o-'].forEach(function (val) {
-            if (classFound.indexOf(val) > -1) {
+            if (contains(classFound, val)) {
                 classFound = classFound.replace(val, '');
                 classWebKit = true;
             }
         });
-        if (classFound.indexOf('--') > -1) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
-        if (classFound in knowCSSOptions.shortHand) {
-            classFound = knowCSSOptions.shortHand[classFound].trim();
-            if (classFound.indexOf(' ') > -1) {
+        if (!classChanged && defined(knowCSSOptions.shortHand)) {
+            if (contains(classFound, '--')) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
+            if (classFound in knowCSSOptions.shortHand) {
+                classFound = knowCSSOptions.shortHand[classFound].trim();
+                classChanged = true;
+            }
+        }
+        if (!classChanged && contains(classFound, '-') && defined(knowCSSOptions.shortHandVariable)) {
+            var classParts = classFound.split('-', 2);
+            if (classParts[0] in knowCSSOptions.shortHandVariable) {
+                classFound = replaceVars(knowCSSOptions.shortHandVariable[classParts[0]].trim(), classParts[1]);
+                classChanged = true;
+            }
+        }
+        if (classChanged) {
+            if (contains(classFound, ' ')) {
                 var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
                 classFound = classMore.shift();
                 if (classMore.length > 0) { classesFound.push(...classMore); }
@@ -410,7 +446,7 @@ function getShortHand(classFound, classesFound) {
 function getValue(val) {
     val = val.replace(/;/g, '');
     var hX = defined(knowCSSOptions.hexColors);
-    if (val.indexOf('/') > -1 || val.indexOf('|') > -1 || val.indexOf('_') > -1) {
+    if (containsAny(val, ['/','|','_'])) {
         val = val.replace(/[\/|\||\_]/g, ' ');
         var vals = val.split(' ');
         if (vals.length > 2) {
@@ -435,8 +471,8 @@ function getDynamic(container, action) {
     var keepAction = false;
     var dynamicSub = '';
     var dynamicTag = '';
-    if (container.indexOf('~') > -1) { dynamicSub = '~'; }
-    else if (container.indexOf('+') > -1) { dynamicSub = '+'; }
+    if (contains(container, '~')) { dynamicSub = '~'; }
+    else if (contains(container, '+')) { dynamicSub = '+'; }
     if (dynamicSub.length > 0) {
         [action, container] = container.split(dynamicSub, 2);
         keepAction = true;
@@ -447,32 +483,17 @@ function getDynamic(container, action) {
         if (container.indexOf('all-') == 0) { dynamic = ' ' + container.replace('all-', ''); }
         else if (container.indexOf('all>') == 0) { dynamic = ' ' + container.replace('all>', '> '); }
     }
-    else if (container.indexOf('nth') > -1) {
-        if (container.indexOf('-nth') > -1) {
+    else if (contains(container, 'nth')) {
+        if (contains(container, '-nth')) {
             [dynamicTag, container] = container.split('-nth', 2);
             container = 'nth' + container;
         }
         var colon = ':' + (keepAction ? action + dynamicSub + dynamicTag + ':' : '');
-        if (container.indexOf('nth-child') > -1) { dynamic = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
-        else if (container.indexOf('nth-last-child') > -1) { dynamic = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-        else if (container.indexOf('nth-of-type') > -1) { dynamic = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-        else if (container.indexOf('nth-last-of-type') > -1) { dynamic = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        if (contains(container, 'nth-child')) { dynamic = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
+        else if (contains(container, 'nth-last-child')) { dynamic = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+        else if (contains(container, 'nth-of-type')) { dynamic = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+        else if (contains(container, 'nth-last-of-type')) { dynamic = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
     }
-    /*
-    else if (container.indexOf('child') > -1) {
-        if (container.indexOf('-first-child') > -1) {
-            [dynamicTag, container] = container.split('-first-child', 2);
-            container = 'first-child' + container;
-        }
-        else if (container.indexOf('-last-child') > -1) {
-            [dynamicTag, container] = container.split('-last-child', 2);
-            container = 'last-child' + container;
-        }
-        var colon = ':' + (keepAction ? action + dynamicSub + dynamicTag + ':' : '');
-        if (container.indexOf('first') > -1) { dynamic = colon + 'first-child'; }
-        else if (container.indexOf('last') > -1) { dynamic = colon + 'last-child'; }
-    }
-    */
     return [dynamic, keepAction ? '' : action];
 }
 function getModifier(classList, classSecondary) {
@@ -540,13 +561,13 @@ function getColor(hE, hC) {
     var hS = false;
     if (hX) {
         var hU = "";
-        if (hC.indexOf('@') > -1) { hU = "@"; }
-        else if (hC.indexOf('~') > -1) { hU = "~"; }
+        if (contains(hC, '@')) { hU = "@"; }
+        else if (contains(hC, '~')) { hU = "~"; }
         if (hU.length > 0) {
             var hP = hC.split(hU, 2);
             var hL = hP[0];
             var hG = "";
-            if (hL.indexOf('~') > -1) {
+            if (contains(hL, '~')) {
                 [hL, hG] = hL.split("~", 2);
                 hG = '~' + hG;
             }
@@ -566,7 +587,7 @@ function getColor(hE, hC) {
         }
     }
 
-    if (hS || hC.indexOf('background') > -1 || hC.indexOf('color') > -1) {
+    if (hS || containsAny(hC, ['background','color'])) {
         if (hE.indexOf('(') == -1) {
             var aM = [];
             var zY = [false, 100, 100];
@@ -657,11 +678,11 @@ function getShortColor(hA) {
     return hA;
 }
 function getFamily(hA, hB) {
-    if (hA.indexOf('family') > -1) {
+    if (contains(hA, 'family')) {
         hA = 'font-family';
-        if (hB.indexOf(',') > -1) {
+        if (contains(hB, ',')) {
             var hS = [];
-            hB.split(',').forEach(function (val) { hS.push(val.indexOf(' ') > -1 ? '"' + val + '"' : val); });
+            hB.split(',').forEach(function (val) { hS.push(contains(val, ' ') ? '"' + val + '"' : val); });
             hB = hS.join(',');
         }
     }
@@ -670,7 +691,7 @@ function getFamily(hA, hB) {
 function getWrapper(xZ) {
     var start = [], end = '}', tab = masterTab, line = masterLine;
     if (ruleTypes.includes(xZ)) { start.push('@' + xZ + ' {'); }
-    else if (xZ.indexOf('media-') > -1) {
+    else if (contains(xZ, 'media-')) {
         var xC = {
             'media': 'media',
             "not": "not all and",
@@ -679,7 +700,7 @@ function getWrapper(xZ) {
         };
         var xP = "";
         for (var xK in xC) {
-            if (xZ.indexOf(xK) > -1) {
+            if (contains(xZ, xK)) {
                 xP += xC[xK] + ' ';
                 xZ = xZ.replace(xK + '-', '').replace(xK, '');
             }
@@ -694,12 +715,12 @@ function getWrapper(xZ) {
     }
     else if (xZ in screenSizes) {
         start.push('@media screen and (');
-        if (xZ.indexOf('down') > -1) { start.push('max-width:' + screenSizes[xZ][1] + 'px'); }
-        else if (xZ.indexOf('up') > -1) { start.push('min-width:' + screenSizes[xZ][0] + 'px'); }
+        if (contains(xZ, 'down')) { start.push('max-width:' + screenSizes[xZ][1] + 'px'); }
+        else if (contains(xZ, 'up')) { start.push('min-width:' + screenSizes[xZ][0] + 'px'); }
         else { start.push('min-width:' + screenSizes[xZ][0] + 'px) and (max-width:' + screenSizes[xZ][1] + 'px'); }
         start.push(') {');
     }
-    else if (xZ.indexOf('?') > -1) {
+    else if (contains(xZ, '?')) {
         var kE = xZ.split('?', 2);
         start.push('@media screen and (min-width:' + kE[0] + 'px) and (max-width:' + kE[1] + 'px) {');
     }
@@ -761,7 +782,7 @@ function getActions(mS, mD) {
     var mA = '*';
     var mP = mA;
     ['>', '~', '+'].forEach(function (val) {
-        if (mS.indexOf(val) > -1) {
+        if (contains(mS, val)) {
             mP = mS.split(val, 2).pop();
             if (!mP) { mP = mA; }
             else { mP = val + mP; }
@@ -788,7 +809,7 @@ function getScreens(mS, mD) {
 
     while ((zA = zM.exec(mS)) !== null) {
         zB = zA[1];
-        if (zB.indexOf('!') > -1) {
+        if (contains(zB, '!')) {
             notScreens = true;
             zB = zB.replace(/\!/g, '');
         }
@@ -828,7 +849,7 @@ function moreMixins(classFound, classesFound, classImportant) {
     var classFoundOriginal = classFound;
     classFound = getMixins(crossMixins(classFound));
     if (classFound !== classFoundOriginal) {
-        if (classFound.indexOf(' ') > -1) {
+        if (contains(classFound, ' ')) {
             var classMore = classFound.split(/(\s+)/).filter(e => e.trim().length > 0);
             classFound = classMore.shift();
             if (classMore.length > 0) {
@@ -862,7 +883,6 @@ function variableMixin(mZ) {
 }
 function getMixins(mA) {
     var mixin = '', newMixin = {}, anyNewMixin = false;
-    var original = mA;
     var zM = new RegExp('\\[(.*?)\\]', 'i');
     var mX = [];
     var mS = "";
@@ -870,27 +890,10 @@ function getMixins(mA) {
     var mR = "";
     var mC = "";
     var mF = false;
-    var mU = [];
-    var mV = "";
-    var i = 0;
-    var j = 0;
-    var x = 0;
-    var mAP = mA;
     while ((mixin = zM.exec(mA)) !== null) {
         [mF, mZ, mR, mC] = variableMixin(mixin[1]);
         if (mF) {
-            mV = allMixins[mZ];
-            mU = mR.indexOf('/') > -1 ? mR.split('/') : [mR];
-            i = 1;
-            j = mU.length;
-            x = j + 10;
-
-            while (i <= x) {
-                mV = mV.replace(eval("/\\$" + i + "/g"), j >= i ? mU[i - 1] : j == 1 ? mU[0] : '');
-                if (mV.indexOf('$') == -1) { break; }
-                i++;
-            }
-            mX.push(mS + mV + ' ');
+            mX.push(mS + replaceVars(allMixins[mZ], mR) + ' ');
             mS = " ";
         }
         else {
@@ -909,18 +912,18 @@ function getMixins(mA) {
 function getDocument() {
     if (defined(knowCSSOptions.cssVars)) {
         var root = knowLayer('root');
-        if (root && root.innerHTML.indexOf('$') > -1) { root.innerHTML = getVariables(root.innerHTML); }
+        if (root && contains(root.innerHTML, '$')) { root.innerHTML = getVariables(root.innerHTML); }
     }
 }
 function getVariables(html) {
-    if (html.indexOf('$') > -1) {
+    if (contains(html, '$')) {
         var zZ = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), varKey = '';
         while ((varKey = zZ.exec(html)) !== null) {
             var varsFound = 0, varFound = '';
             if (defined(knowCSSOptions.cssVars)) {
                 if (varKey[1] in knowCSSOptions.cssVars) { varFound = knowCSSOptions.cssVars[varKey[1]].replace('/\\\\/gis', ''); }
             }
-            while (html.indexOf(varKey[0]) > -1) {
+            while (contains(html, varKey[0])) {
                 html = html.replace(varKey[0], varFound);
                 varsFound++;
                 if (varsFound > 500) { break; }
@@ -1018,8 +1021,8 @@ function crossMixins(classString) {
 // JAA TODO - support multiple screensizes and @size (with notX and !X)
 function getScreenPrefixes(classString) {
     var ret = [];
-    var isAt = classString.indexOf('@@') > -1;
-    if (classString.indexOf('-') > -1 || isAt) {
+    var isAt = contains(classString, '@@');
+    if (contains(classString, '-') || isAt) {
         var key = '', prefix = '', parts = [], modifier = "";
         var classesFound = classString.split(' ');
         var x = classesFound.length;
@@ -1038,7 +1041,7 @@ function getScreenPrefixes(classString) {
                 else if (isAt) { prefix = parts.pop(); }
                 else { prefix = parts.shift(); }
                 if (prefix.length > 0) {
-                    if (prefix.indexOf(":") > -1) {
+                    if (contains(prefix, ":")) {
                         [prefix, modifier] = prefix.split(':', 2);
                     }
                     if (prefix in screenSizes || !isNaN(prefix)) {
@@ -1075,7 +1078,7 @@ function getContainerExtras(classFound, classesFound) {
 }
 function getContainers(classString) {
     var ret = [];
-    if (classString.indexOf('container') > -1) {
+    if (contains(classString, 'container')) {
         var key = '';
         var classesFound = classString.split(' ');
         var x = classesFound.length;
@@ -1171,7 +1174,7 @@ function knowCSSRender(uI, uC, uO) {
                 [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                 if (allowEnvironment) {
                     [classFound, classImportant] = getImportant(classFound);
-                    if (classEvent.length > 0 && classFound.indexOf('-') > -1) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
+                    if (classEvent.length > 0 && contains(classFound, '-')) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
                     className = '';
                     classValue = '';
                     /*
@@ -1184,9 +1187,9 @@ function knowCSSRender(uI, uC, uO) {
                     }
                     else
                     */
-                    if (classFound.indexOf(':') > -1) { [className, classValue] = classFound.split(':', 2); }
-                    else if (classFound.indexOf('=') > -1) { [className, classValue] = classFound.split('=', 2); }
-                    else if (classFound.indexOf('-') > -1) {
+                    if (contains(classFound, ':')) { [className, classValue] = classFound.split(':', 2); }
+                    else if (contains(classFound, '=')) { [className, classValue] = classFound.split('=', 2); }
+                    else if (contains(classFound, '-')) {
                         classParts = classFound.split('-');
                         if (classParts[0] in knowCSSOptions.shorterHand) {
                             className = knowCSSOptions.shorterHand[classParts[0]];
@@ -1199,7 +1202,7 @@ function knowCSSRender(uI, uC, uO) {
                         }
                     }
                     else { className = classFound; }
-                    if (classValue.length == 0 && className.indexOf('#') > -1) {
+                    if (classValue.length == 0 && contains(className, '#')) {
                         classValue = className.replace('#', '');
                         className = 'color';
                     }
@@ -1265,7 +1268,7 @@ function knowCSSRender(uI, uC, uO) {
                 aN = smartDetail[smartKey][3][1];
                 aV = smartDetail[smartKey][3][2];
                 aP = screenKey == 'data' ? screenKey + '-' : '';
-                if (aN.indexOf('=') > -1) { aN = aN.split('=').pop(); }
+                if (contains(aN, '=')) { aN = aN.split('=').pop(); }
                 [aV, aN] = getColor(aN, getValue(aV));
                 if (aV.length > 0 && aN.length > 0) {
                     smartClass[smartKey].split('__').forEach(function (ii) {
@@ -1360,12 +1363,12 @@ function knowCSSRender(uI, uC, uO) {
             for (var classKey in css[screen][action]) {
                 [modifier, className, classValue, classImportant, classWebKit] = smartDetail[classKey][3];
                 if (className.length > 0 || classValue.length > 0) {
-                    if (classValue.length > -1 || classImportant.length > 0) {
+                    if (classValue.length > 0 || classImportant.length > 0) {
                         if (classValue.length == 0) { classValue = "''"; }
                         if (classImportant == '!') { classImportant = '!important'; }
                         if (!isNaN(classValue) && '' + parseInt(classValue) === classValue) {
                             var classFirstSix = className.substring(0, 5);
-                            if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || className.indexOf('font-size') > -1) { classValue += 'px'; }
+                            if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || contains(className, 'font-size')) { classValue += 'px'; }
                             else if (['top', 'bottom', 'left', 'right'].includes(className)) { classValue += 'px'; }
                         }
                         stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
