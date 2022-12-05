@@ -46,6 +46,8 @@ module.exports = [
             filename: '[name].min.' + js,
             path: publicDir
         },
-        plugins: [new MinifyPlugin()]
+        plugins: [new MinifyPlugin({
+            mangle: { topLevel: true }
+        })]
     }
 ];

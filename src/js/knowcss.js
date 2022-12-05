@@ -957,6 +957,7 @@ function getNextLetter(nA) {
     while (nC == nD);
     return nA;
 }
+/*
 function getRandomClass() {
     var prefixID = "", nA = '';
     var ret = false;
@@ -985,6 +986,7 @@ function getRandomClass() {
     usedClass[nA] = true;
     return nA;
 }
+*/
 function getSafeClass(screen, modifier, name, action, val, important) {
     var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
     key = key.replace(/none_/g, '').replace(/[\#\,\(\)\_]/g, '-').replace(/[^[a-z0-9\-]/g, '').replace(/(\-){2,10}/g, '-').replace(/^\-/g, '').replace(/\-$/g, '');
@@ -1286,7 +1288,6 @@ function knowCSSRender(uI, uC, uO) {
 
     var knowMotionClasses = {};
     var motionTags = document.querySelectorAll("[" + knowMotionID + "]");
-    var attrMotion = "";
     var mi = 0;
     var mL = motionTags.length;
     var setAnimation = function(mE, mC) {
