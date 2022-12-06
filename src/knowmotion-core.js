@@ -1,4 +1,11 @@
 const knowMotions = {
+    "ticker": [
+        "transform=translateY(-250%)",
+        "0{transform=translateY(-250%)}",
+        "15/85{transform=translateY(-50%)}",
+        "100{transform-translateY(100%)}"
+    ],
+
     "bounce": [
         "from,20%,53%,to{animation-timing-function=cubic-bezier(0.215,0.61,0.355,1) transform=translate3d(0,0,0)}",
         "40%,43%{animation-timing-function=cubic-bezier(0.755,0.05,0.855,0.06) transform=translate3d(0,-30px,0)_scaleY(1.1)}",

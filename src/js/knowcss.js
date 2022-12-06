@@ -8,6 +8,7 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
+// JAA TODO - replace forEach() with while (i < x) {}
 
 var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
@@ -1098,23 +1099,26 @@ function getContainers(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
+function parseClassValue (val) {
+    var className = "", classValue = ""
+    if (contains(val, ':')) { [className, classValue] = val.split(':', 2); }
+    else if (contains(val, '=')) { [className, classValue] = val.split('=', 2); }
+    else if (contains(val, '-')) { [className, classValue] = val.split('-', 2); }
+    else { className = val; }
+    return className.trim() + ': ' + classValue.replace(/\_/g, ' ').trim();
+}
+
 function knowMotionRender(knowMotion) {
     var ret = { "found": false };
 
     if (knowMotion) {
+        var foundMotions = typeof knowMotions !== 'undefined';
 
-        var knowMotions = {
-            "slidein": 'transform=translateY(-250%) 0{transform=translateY(-250%)} 15/85{transform=translateY(-50%)} 100{transform-translateY(100%)}',
-            //simplify to 'translateY=-250% 0{translateY=-250%)} 15/85{translateY-50%} 100{translateY-100%}'
-        };
-        // move to animations library function later
-        knowMotion = knowMotion.replace('slidein', knowMotions.slidein);
-
-        var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_]{1,255})\{(.*?)\}', 'gis');
-        var zN = null, aM = [], aN = [], kF = "";
-        var classListCheck = {}, grepTag = '', keyFrames = {}, runningTag = '', classParts = [], classValue = "", className = "";
+        var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
+        var zN = null, aM = [], aN = [], kF = "", kS = "", kP = [], val = "", i = 0, x = 0;
+        var classListCheck = {}, grepTag = '', keyFrames = {}, runningTag = '', classValue = "", className = "";
         var classList = { 'none_none_none': knowMotion };
-        var animationRef = "", animationID = "", animationVals = {}, keyFramesCSS = [], classValues = [], animationKeys = [], keyFrameValues = [], animationInitial = [], animationLast = "", animationReplay = 0, x = 0;
+        var animationRef = "", animationID = "", animationVals = {}, keyFramesCSS = [], classValues = [], animationKeys = [], keyFrameValues = [], animationInitial = [], animationPossible = [], animationLast = "", animationReplay = 0, runningTags = [];
 
         var animationPrefix = 'animation-';
         var animationShortHand = {
@@ -1132,21 +1136,38 @@ function knowMotionRender(knowMotion) {
 
         for (var key in classList) { classListCheck[key] = true; }
         for (var key in classListCheck) {
-            grepTag = classList[key];
+            if (foundMotions) {
+                runningTags = [];
+                classValues = classList[key].split(' ');
+                i = 0;
+                x = classValues.length;
+                while (i < x) {
+                    val = classValues[i];
+                    if (val in knowMotions) { runningTags.push(knowMotions[val].join(' ')); }
+                    else {  runningTags.push(val); }
+                    i++;
+                }
+                grepTag = runningTags.join(' ');
+            }
+            else { grepTag = classList[key]; }
             runningTag = grepTag;
+
             keyFrames = {};
             while ((aM = zA.exec(grepTag)) !== null) {
-                zN = new RegExp('^([0-9\/\-]{1,255})$', 'gis');
+                zN = new RegExp(/^([a-z0-9\/\-\,\%]{1,255})$/, 'gis');
                 aN = zN.exec(aM[1]);
                 if (aN) {
                     kF = aN[1];
-                    if (contains(kF, '-')) {
-                        kF.split('-').forEach(function (val) { keyFrames[val] = aM[2]; });
-                    }
-                    else if (contains(kF, '/')) {
-                        kF.split('/').forEach(function (val) { keyFrames[val] = aM[2]; });
-                    }
-                    else { keyFrames[kF] = aM[2]; }
+                    kS = "";
+                    if (contains(kF, '-')) { kS = "-"; }
+                    else if (contains(kF, '/')) { kS = "/"; }
+                    else if (contains(kF, ',')) { kS = ","; }
+                    kP = kS.length > 0 ? kF.split(kS) : [kF];
+                    kP.forEach(function (val) {
+                        if (val == "from") { keyFrames["0"] = aM[2]; }
+                        else if (val == "to") { keyFrames["100"] = aM[2]; }
+                        else { keyFrames[val.replace("%", "")] = aM[2]; }
+                    });
                 }
                 else if (aM[1] == "from") { keyFrames["0"] = aM[2]; }
                 else if (aM[1] == "to") { keyFrames["100"] = aM[2]; }
@@ -1160,20 +1181,26 @@ function knowMotionRender(knowMotion) {
             knowMotionLetter = getNextLetter(knowMotionLetter);
             animationID = "km" + knowMotionLetter;
 
+            console.log([animationID, keyFrames]);
+
             animationVals = {
                 "name": animationID,
-                "duration": "", //timing - [0-9]s
-                "delay": "", // delay - d[0-9]s
-                "iteration-count": "", // count - [0-9] or [infinte|once|twice]
+                "duration": "3s", //timing - [0-9]s
+                "delay": "0s", // delay - d[0-9]s
+                "iteration-count": "infinite", // count - [0-9] or [infinte|once|twice]
                 "direction": "", // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
                 "timing-function": "", // curve - cubic-bezier - cb(a,b,c,d) or [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
                 "fill-mode": "" // mode - [fwd|bwd|both|forwards|backwards]
             };
             animationInitial = [];
+            animationPossible = [];
             animationReplay = 0;
 
             classValues = contains(runningTag, ' ') ? runningTag.split(' ') : [runningTag];
-            classValues.forEach(function (val) {
+            i = 0;
+            x = classValues.length;
+            while (i < x) {
+                val = classValues[i].trim();
                 animationRef = "";
                 if (val in animationShortHand) {
                     animationRef = animationShortHand[val];
@@ -1199,18 +1226,19 @@ function knowMotionRender(knowMotion) {
                     animationReplay = val.split('-', 2).pop().replace('s', '');
                     if (isNaN(animationReplay)) { animationReplay = 0; }
                 }
-                else {
-                    // JAA TODO - create a parse class to get className + classValue via components/shorthand/mixins/etc
-                    if (contains(val, '=')) {
-                        [className, classValue] = val.split('=', 2);
-                        animationInitial.push(className + ': ' + classValue);
-                    }
-                    else if (contains(val, '-')) {
-                        [className, classValue] = val.split('-', 2);
-                        animationInitial.push(className + ': ' + classValue);
-                    }
+                else { animationPossible.push(val); }
+                i++;
+            };
+
+            if (animationPossible.length > 0) {
+                i = 0;
+                x = animationPossible.length;
+                while (i < x) {
+                    val = animationPossible[i].trim();
+                    if (val.length > 0) { animationInitial.push(parseClassValue(val)); }
+                    i++;
                 }
-            });
+            }
 
             x = Object.keys(keyFrames).length;
             if (x > 0) {
@@ -1224,16 +1252,13 @@ function knowMotionRender(knowMotion) {
                 keyFrameValues = [];
                 for (var keyFrame in keyFrames) {
                     keyFrameValues = [];
-                    keyFrames[keyFrame].split(' ').forEach(function (classFound) {
-                        if (contains(classFound, '=')) {
-                            [className, classValue] = classFound.split('=', 2);
-                            keyFrameValues.push(className + ': ' + classValue);
-                        }
-                        else if (contains(classFound, '-')) {
-                            [className, classValue] = classFound.split('-', 2);
-                            keyFrameValues.push(className + ': ' + classValue);
-                        }
-                    });
+                    classValues = keyFrames[keyFrame].split(' ');
+                    i = 0;
+                    x = classValues.length;
+                    while (i < x) {
+                        keyFrameValues.push(parseClassValue(classValues[i]));
+                        i++;
+                    };
                     if (keyFrameValues.length > 0) {
                         keyFramesCSS.push(" " + keyFrame + "% { " + keyFrameValues.join('; ') + "; }");
                     }
@@ -1244,7 +1269,7 @@ function knowMotionRender(knowMotion) {
 
             animationKeys = animationInitial;
             for (var key in animationVals) {
-                if (animationVals[key].length > 0) { animationKeys.push(animationPrefix + key + ": " + animationVals[key]); }
+                if (animationVals[key].length > 0) { animationKeys.push(animationPrefix + key + ": " + animationVals[key].replace(/\_/g, ' ')); }
             }
             if (animationKeys.length > 0) {
                 ret.values = "." + animationID + " { " + animationKeys.join('; ') + '; }';
