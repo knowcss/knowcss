@@ -1115,10 +1115,13 @@ function knowMotionRender(knowMotion) {
         var foundMotions = typeof knowMotions !== 'undefined';
 
         var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
-        var zN = null, aM = [], aN = [], kF = "", kS = "", kP = [], val = "", i = 0, x = 0;
-        var classListCheck = {}, grepTag = '', keyFrames = {}, runningTag = '', classValue = "", className = "";
+        var zN = null, aM = [], aN = [], aF = false, kF = "", kS = "", kP = [], val = "", i = 0, x = 0;
+        var classListCheck = {}, grepTag = '', keyFrames = {}, runningTag = '';
         var classList = { 'none_none_none': knowMotion };
-        var animationRef = "", animationID = "", animationVals = {}, keyFramesCSS = [], classValues = [], animationKeys = [], keyFrameValues = [], animationInitial = [], animationPossible = [], animationLast = "", animationReplay = 0, runningTags = [];
+
+        var keyFramesCSS = [], keyFrameValues = [];
+        var classValues = [], runningTags = [];
+        var animationRef = "", animationID = "", animationVals = {}, animationKeys = [], animationInitial = [], animationPossible = [], animationLast = "", animationReplay = 0;
 
         var animationPrefix = 'animation-';
         var animationShortHand = {
@@ -1134,6 +1137,12 @@ function knowMotionRender(knowMotion) {
             "twice": ["titeration-count", "2"]
         };
 
+        /*
+        var container = "", screen = "", modifier = "", action = "";
+        var containerPrefix = "", actionSet = [], keyNew = "", i = 0, actionsLen = 0;
+        var containers = [], screens = [], modifiers = [], actions = [];
+        */
+
         for (var key in classList) { classListCheck[key] = true; }
         for (var key in classListCheck) {
             if (foundMotions) {
@@ -1144,7 +1153,7 @@ function knowMotionRender(knowMotion) {
                 while (i < x) {
                     val = classValues[i];
                     if (val in knowMotions) { runningTags.push(knowMotions[val].join(' ')); }
-                    else {  runningTags.push(val); }
+                    else { runningTags.push(val); }
                     i++;
                 }
                 grepTag = runningTags.join(' ');
@@ -1156,6 +1165,7 @@ function knowMotionRender(knowMotion) {
             while ((aM = zA.exec(grepTag)) !== null) {
                 zN = new RegExp(/^([a-z0-9\/\-\,\%]{1,255})$/, 'gis');
                 aN = zN.exec(aM[1]);
+                aF = true;
                 if (aN) {
                     kF = aN[1];
                     kS = "";
@@ -1166,23 +1176,65 @@ function knowMotionRender(knowMotion) {
                     kP.forEach(function (val) {
                         if (val == "from") { keyFrames["0"] = aM[2]; }
                         else if (val == "to") { keyFrames["100"] = aM[2]; }
-                        else { keyFrames[val.replace("%", "")] = aM[2]; }
+                        else if (containsAny(val, ['%','/',','])) { keyFrames[val.replace("%", "")] = aM[2]; }
+                        else if (!isNaN(val)) { keyFrames[val] = aM[2]; }
+                        else if (val in screenSizes) { aF = false; }
+                        else { aF = false; }
                     });
                 }
-                else if (aM[1] == "from") { keyFrames["0"] = aM[2]; }
-                else if (aM[1] == "to") { keyFrames["100"] = aM[2]; }
-                else {
+                //else if (aM[1] == "from") { keyFrames["0"] = aM[2]; }
+                //else if (aM[1] == "to") { keyFrames["100"] = aM[2]; }
+                else { aF = false; }
+
+                if (!aF) {
                     // loop through attributes to determine events and add listeners
                     // play-state = [pause|play|stop|restart]
+
+                    // JAA TODO - move all this to a function to scan for container/screen/modifier/action
+                    /*
+                    container = aM[1];
+                    [screen, modifier, action] = key.split('_', 3);
+                    containers[container] = true;
+                    modifiers[modifier] = true;
+                    actions = getActions(container, action);
+                    screens = getScreens(container, screen);
+
+                    var classListNew = {};
+                    for (var containerKey in containers) {
+                        for (var screenKey in screens) {
+                            for (var modifierKey in modifiers) {
+                                actionsLen = actions.length;
+                                i = 0;
+                                while (i < actionsLen) {
+                                    actionSet = actions[i];
+                                    for (var actionKey in actionSet) {
+                                        containerPrefix = actionSet[actionKey];
+                                        if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
+                                        keyNew = '';
+                                        if (containerPrefix.length > 0) {
+                                            keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
+                                        }
+                                        else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || begins(containerKey, 'media-') || screenTypes.includes(containerKey) || ruleTypes.includes(containerKey)) {
+                                            keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
+                                        }
+                                        if (keyNew.length > 0) {
+                                            if (keyNew in classListNew) { classListNew[keyNew] += ' ' + aM[2]; }
+                                            else { classListNew[keyNew] = aM[2]; }
+                                        }
+                                    }
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                    console.log(classListNew);
+                    */
                 }
                 runningTag = runningTag.replace(aM[0], '').trim();
             }
 
             knowMotionLetter = getNextLetter(knowMotionLetter);
             animationID = "km" + knowMotionLetter;
-
-            console.log([animationID, keyFrames]);
-
             animationVals = {
                 "name": animationID,
                 "duration": "3s", //timing - [0-9]s
