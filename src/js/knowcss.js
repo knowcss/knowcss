@@ -417,12 +417,15 @@ function getShortHand(classFound, classesFound) {
     else if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
     else {
         var classChanged = false;
+        /*
         ['-webkit-', '-moz-', '-ms-', '-o-'].forEach(function (val) {
-            if (contains(classFound, val)) {
+            if (begins(classFound, val)) {
+                console.log(['found starting with', classFound, val]);
                 classFound = classFound.replace(val, '');
                 classWebKit = true;
             }
         });
+        */
         if (!classChanged && defined(knowCSSOptions.shortHand)) {
             if (contains(classFound, '--')) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
             if (classFound in knowCSSOptions.shortHand) {
