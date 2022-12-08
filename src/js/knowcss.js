@@ -234,6 +234,7 @@ function knowParent(elem, level) {
     }
     return elemParent;
 }
+// JAA TODO - check modifer & screen for ^, ^2-, parent-, parent2-, etc
 function getParentSelector(screen, classFound, classesFound, modifier) {
     var classParent = 0;
     var classEvent = "";
