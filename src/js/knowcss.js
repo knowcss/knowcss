@@ -508,16 +508,13 @@ function getModifier(classList, classSecondary) {
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
     else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'); }
     var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
-    var containers = {}, screens = {}, modifiers = {}, actions = {};
+    var screens = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
     for (var key in classList) { classListCheck[key] = true; }
     for (var key in classListCheck) {
         grepTag = classList[key];
         while ((aM = zA.exec(grepTag)) !== null) {
-            containers = {};
-            screens = {};
             [screen, modifier, action] = key.split('_', 3);
-
             classList[key] = classList[key].replace(aM[0], '').trim();
             container = aM[1];
             multiScreen = false;
@@ -526,36 +523,29 @@ function getModifier(classList, classSecondary) {
                 classList[screen + '_' + dynamic + '_' + action] = aM[2];
             }
             else {
-                [screen, modifier, action] = key.split('_', 3);
-                containers[container] = true;
-                modifiers[modifier] = true;
                 actions = getActions(container, action);
                 screens = getScreens(container, screen);
-                for (var containerKey in containers) {
-                    for (var screenKey in screens) {
-                        for (var modifierKey in modifiers) {
-                            var actionsLen = actions.length;
-                            var i = 0;
-                            while (i < actionsLen) {
-                                actionSet = actions[i];
-                                for (var actionKey in actionSet) {
-                                    containerPrefix = actionSet[actionKey];
-                                    if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
-                                    keyNew = '';
-                                    if (containerPrefix.length > 0) {
-                                        keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
-                                    }
-                                    else if (containerKey !== 'none' || modifierKey !== 'none' || actionKey !== 'none' || begins(containerKey, 'media-') || screenTypes.includes(containerKey) || ruleTypes.includes(containerKey)) {
-                                        keyNew = containerKey + '_' + modifierKey + '_' + actionKey;
-                                    }
-                                    if (keyNew.length > 0) {
-                                        if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
-                                        else { classList[keyNew] = aM[2]; }
-                                    }
-                                }
-                                i++;
+                for (var screenKey in screens) {
+                    var actionsLen = actions.length;
+                    var i = 0;
+                    while (i < actionsLen) {
+                        actionSet = actions[i];
+                        for (var actionKey in actionSet) {
+                            containerPrefix = actionSet[actionKey];
+                            if (containerPrefix.length > 0) {
+                                if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
+                                keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
+                            }
+                            else if (container !== 'none' || modifier !== 'none' || actionKey !== 'none' || begins(container, 'media-') || screenTypes.includes(container) || ruleTypes.includes(container)) {
+                                keyNew = container + '_' + modifier + '_' + actionKey;
+                            }
+                            else { keyNew = ''; }
+                            if (keyNew.length > 0) {
+                                if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
+                                else { classList[keyNew] = aM[2]; }
                             }
                         }
+                        i++;
                     }
                 }
             }
