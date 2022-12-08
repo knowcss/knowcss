@@ -234,10 +234,15 @@ function knowParent(elem, level) {
     }
     return elemParent;
 }
-function getParentSelector(screen, classFound, classesFound) {
+function getParentSelector(screen, classFound, classesFound, modifier) {
     var classParent = 0;
     var classEvent = "";
     var screenEvent = screen;
+    var modifierEvent = modifier;
+    if (contains(modifier, '^')) {
+        classParent = 1;
+        modifier = modifier.replace(/\^/g, '');
+    }
     if (contains(screenEvent, '^')) {
         screenEvent = screenEvent.replace(/\^/g, '');
         var screenUp = screenEvent;
@@ -277,7 +282,7 @@ function getParentSelector(screen, classFound, classesFound) {
                 screen = screen.replace('^', 'parent-');
                 if (classParent == 0) { classParent = 1; }
             }
-            else { classParent = contains(screen, 'parent') ? 1 : 0; }
+            else { classParent = contains(screen, 'parent') ? 1 : classParent; }
             if (classParent > 0 && contains(screen, '-')) {
                 var modifierParts = screen.split('-', 2);
                 if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
@@ -288,7 +293,7 @@ function getParentSelector(screen, classFound, classesFound) {
     }
     if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
     if (classParent > 99) { classParent = 0; }
-    return [classParent, classFound, classesFound, screen, classEvent];
+    return [classParent, classFound, classesFound, screen, classEvent, modifier];
 }
 var knowEnvironment = [];
 var userConditionals = [];
@@ -507,16 +512,17 @@ function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
     else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'); }
-    var screen = '', modifier = '', action = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
+    var screen = '', modifier = '', action = '', parent = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
     var screens = {}, actions = {};
-    var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {};
+    var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {}, parentContainer = "";
     for (var key in classList) { classListCheck[key] = true; }
     for (var key in classListCheck) {
         grepTag = classList[key];
         while ((aM = zA.exec(grepTag)) !== null) {
-            [screen, modifier, action] = key.split('_', 3);
+            [screen, modifier, action, parent] = key.split('_', 4);
             classList[key] = classList[key].replace(aM[0], '').trim();
             container = aM[1];
+            parentContainer = container.indexOf("^") > -1 ? "^" : "";
             multiScreen = false;
             [dynamic, action] = getDynamic(container, action);
             if (dynamic.length > 0) {
@@ -534,10 +540,10 @@ function getModifier(classList, classSecondary) {
                             containerPrefix = actionSet[actionKey];
                             if (containerPrefix.length > 0) {
                                 if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
-                                keyNew = screenKey + '_' + containerPrefix + actionKey + '_';
+                                keyNew = screenKey + '_' + parentContainer + containerPrefix + actionKey + '__';
                             }
                             else if (container !== 'none' || modifier !== 'none' || actionKey !== 'none' || begins(container, 'media-') || screenTypes.includes(container) || ruleTypes.includes(container)) {
-                                keyNew = container + '_' + modifier + '_' + actionKey;
+                                keyNew = container + '_' + modifier + '_' + actionKey + '_';
                             }
                             else { keyNew = ''; }
                             if (keyNew.length > 0) {
@@ -778,6 +784,7 @@ function getActions(mS, mD) {
     var i = 0;
     var mA = '*';
     var mP = mA;
+    var mU = mS.indexOf("^") > -1 ? "^": "";
     ['>', '~', '+'].forEach(function (val) {
         if (contains(mS, val)) {
             mP = mS.split(val, 2).pop();
@@ -797,7 +804,7 @@ function getActions(mS, mD) {
         }
         i++;
     }
-    if (!zY) { ret = [{}]; ret[0][mD] = ""; }
+    if (!zY) { ret = [{}]; ret[0][mU + mD] = ""; }
     return ret;
 }
 function getScreens(mS, mD) {
@@ -1352,7 +1359,7 @@ function knowCSSRender(uI, uC, uO) {
             if (uA in uX) { uX[uA] = uO[uA]; }
         }
     }
-    var div = null, css = {}, screen = '', modifier = '', className = '', action = '', classValue = '', classImportant = '', classWebKit = false, classParts = [], classKey = '', classKeyLong = '', classNew = '', classFirst = '', classList = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
+    var div = null, css = {}, screen = '', modifier = '', className = '', action = '', parent = '', classValue = '', classImportant = '', classWebKit = false, classParts = [], classKey = '', classKeyLong = '', classNew = '', classFirst = '', classList = [], classesFound = '', classFound = '', classesHere = [], styles = [], tab = '', cssGroup = {}, classHere = '', stylesHere, stylesWebKit = [], start = '', end = '', tab = '';
     if (uX.normalize === true) { styles.push('::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}[hidden],template{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]::-webkit-search-decoration{-webkit-appearance:none}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}a:active,a:hover{outline:0}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}body{margin:0}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button,input,optgroup,select,textarea{color:inherit;font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}button[disabled],html input[disabled]{cursor:default}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}details{display:block}dfn{font-style:italic}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}figure{margin:1em 40px}h1{font-size:2em;margin:.67em 0}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0;overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:none;-webkit-text-size-adjust:none;line-height:1.15}img{border-style:none;border:0}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input{line-height:normal}legend{border:0;padding:0;box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}main{display:block}mark{background:#ff0;color:#000}optgroup{font-weight:700}pre{font-family:monospace,monospace;font-size:1e;overflow:auto}progress{vertical-align:baseline}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}summary{display:list-item}sup{top:-.5em}svg:not(:root){overflow:hidden}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}template{display:none}textarea{overflow:auto}'); }
 
     getUserMixins();
@@ -1412,12 +1419,12 @@ function knowCSSRender(uI, uC, uO) {
     while (ii < tL) {
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
-        classList = { 'none_none_none': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
+        classList = { 'none_none_none_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
         classFirst = '';
         for (var key in classList) {
-            [screen, modifier, action, parent] = key.split('_', 3);
+            [screen, modifier, action, parent] = key.split('_', 4);
             classesFound = getClasses(classList[key]);
             classFirst = '';
             classNextStart = classNext;
@@ -1434,7 +1441,7 @@ function knowCSSRender(uI, uC, uO) {
                 if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
                 [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                 [classFound, classesFound] = getGridSystem(classFound, classesFound);
-                [classParent, classFound, classesFound, screen, classEvent] = getParentSelector(screen, classFound, classesFound);
+                [classParent, classFound, classesFound, screen, classEvent, modifier] = getParentSelector(screen, classFound, classesFound, modifier);
                 [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                 if (allowEnvironment) {
                     [classFound, classImportant] = getImportant(classFound);
