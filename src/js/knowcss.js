@@ -520,8 +520,7 @@ function getModifiers(container, modifier, action, single) {
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
-    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\_\|]{1,255})\{(.*?)\}', 'gis'); }
-    //else { zA = new RegExp('(.*?)\{(.*?)\}', 'gis'); }
+    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\_\|\,]{1,255})\{(.*?)\}', 'gis'); }
     var screen = '', modifier = '', action = '', parent = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
     var screens = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {}, parentContainer = "";
