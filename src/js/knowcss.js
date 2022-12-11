@@ -276,7 +276,7 @@ function getParentSelector(screen, classFound, classesFound, modifier) {
         }
         else if (['^', 'parent'].includes(screen)) {
             classParent = 1;
-            screen = 'none';
+            screen = 'n';
         }
         else {
             if (contains(screen, '^')) {
@@ -288,7 +288,7 @@ function getParentSelector(screen, classFound, classesFound, modifier) {
                 var modifierParts = screen.split('-', 2);
                 if (modifierParts[0] in screenSizes) { screen = modifierParts[0]; }
                 else if (modifierParts[1] in screenSizes) { screen = modifierParts[1]; }
-                else { screen = 'none'; }
+                else { screen = 'n'; }
             }
         }
     }
@@ -376,7 +376,7 @@ function getEnvironmentSelector(screen) {
     if (!contains(knowEnvironment, classEnvironment)) { classEnvironment = ""; }
     else {
         if (!contains(userConditionals, classEnvironment)) { allowEnvironment = false; }
-        else if (classEnvironment == screen) { screen = 'none'; }
+        else if (classEnvironment == screen) { screen = 'n'; }
         if (reverseEnvironment) { allowEnvironment = !allowEnvironment; }
     }
     return [classEnvironment, screen, allowEnvironment];
@@ -520,7 +520,8 @@ function getModifiers(container, modifier, action, single) {
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
-    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'); }
+    else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\_\|]{1,255})\{(.*?)\}', 'gis'); }
+    //else { zA = new RegExp('(.*?)\{(.*?)\}', 'gis'); }
     var screen = '', modifier = '', action = '', parent = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
     var screens = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {}, parentContainer = "";
@@ -549,7 +550,10 @@ function getModifier(classList, classSecondary) {
                                 if (screenKey in screenSizes) { screenKey = screenSizes[screenKey].join('?'); }
                                 keyNew = screenKey + '_' + parentContainer + containerPrefix + actionKey + '__';
                             }
-                            else if (container !== 'none' || modifier !== 'none' || actionKey !== 'none' || begins(container, 'media-') || screenTypes.includes(container) || ruleTypes.includes(container)) {
+                            else if (contains(screenKey, '?')) {
+                                keyNew = screenKey + '_' + modifier + '_' + actionKey + '_';
+                            }
+                            else if (container !== 'n' || modifier !== 'n' || actionKey !== 'n' || begins(container, 'media-') || screenTypes.includes(container) || ruleTypes.includes(container)) {
                                 keyNew = container + '_' + modifier + '_' + actionKey + '_';
                             }
                             else { keyNew = ''; }
@@ -635,9 +639,13 @@ function getColor(hE, hC) {
             else { hE = (hE.length > 0 ? '#' : '') + hF; }
         }
     }
-    else if (['text', 'color', 'bgcolor', 'alink', 'vlink', 'link'].includes(hC)) {
+    else if (['color', 'bgcolor', 'alink', 'vlink', 'link'].includes(hC)) {
         var zH = new RegExp('^([0-9a-f]{1,6})$', 'i');
         if (zH.test(hE)) { hE = '#' + getHex(hE); }
+    }
+    else if (['text'].includes(hE)) {
+        var zH = new RegExp('^([0-9a-f]{1,6})$', 'i');
+        if (zH.test(hC)) { hC = '#' + getHex(hC); }
     }
     return hS ? [hE, hC] : [hC, hE];
 }
@@ -818,28 +826,63 @@ function getActions(mS, mD, mF) {
     return ret;
 }
 function getScreens(mS, mD) {
-    var ret = {}, all = [], zA = '', zB = '', notScreens = false;
-    var zM = new RegExp(screenGrep, 'gi');
+    var ret = {};
 
-    while ((zA = zM.exec(mS)) !== null) {
-        zB = zA[1];
-        if (contains(zB, '!')) {
-            notScreens = true;
-            zB = zB.replace(/\!/g, '');
+    var multiLoop = true;
+    var multiScreen = "";
+    var multiMax = 10;
+    var multiRange = [];
+    var multiFirst = "";
+    var multiLast = "";
+    while (multiLoop) {
+        var grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
+        if (grepFind) {
+            multiScreen = grepFind[1];
+            if (contains(multiScreen, '-')) {
+                multiRange = multiScreen.split('-');
+                multiFirst = multiRange.shift();
+                multiLast = multiRange.pop();
+                if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
+                else if (isNaN(multiFirst)) { multiFirst = 0; }
+                if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
+                else if (isNaN(multiLast)) { multiLast = 9999; }
+                ret[multiFirst + '?' + multiLast] = true;
+            }
+            else {
+                if (multiScreen in screenSizes || !isNaN(multiScreen)) { ret[multiScreen] = true; }
+            }
+            mS = mS.substring(multiScreen.length + 1);
+            multiMax--;
+            if (multiMax == 0 || mS.length == 0) { multiLoop = false; }
         }
-        ret[zB] = true;
-        all.push(zB);
+        else { multiLoop = false; }
     }
-    if (notScreens) {
-        var screenSizeContainers = all;
-        var screenSizeKey = '';
-        ret = {};
-        var x = screenSizeKeys.length;
-        var i = 0;
-        while (i < x) {
-            screenSizeKey = screenSizeKeys[i];
-            if (!screenSizeContainers.includes(screenSizeKey)) { ret[screenSizeKey] = true; }
-            i++;
+
+    if (mS.length == 0) { }
+    else if (mS in screenSizes || !isNaN(mS)) { ret[mS] = true; }
+    else {
+        var all = [], zA = '', zB = '', notScreens = false;
+        var zM = new RegExp(screenGrep, 'gi');
+        while ((zA = zM.exec(mS)) !== null) {
+            zB = zA[1];
+            if (contains(zB, '!')) {
+                notScreens = true;
+                zB = zB.replace(/\!/g, '');
+            }
+            ret[zB] = true;
+            all.push(zB);
+        }
+        if (notScreens) {
+            var screenSizeContainers = all;
+            var screenSizeKey = '';
+            ret = {};
+            var x = screenSizeKeys.length;
+            var i = 0;
+            while (i < x) {
+                screenSizeKey = screenSizeKeys[i];
+                if (!screenSizeContainers.includes(screenSizeKey)) { ret[screenSizeKey] = true; }
+                i++;
+            }
         }
     }
     if (Object.keys(ret).length == 0) { ret[mD] = true; }
@@ -1000,7 +1043,7 @@ function getRandomClass() {
 */
 function getSafeClass(screen, modifier, name, action, val, important) {
     var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
-    key = key.replace(/none_/g, '').replace(/[\#\,\(\)\_]/g, '-').replace(/[^[a-z0-9\-]/g, '').replace(/(\-){2,10}/g, '-').replace(/^\-/g, '').replace(/\-$/g, '');
+    key = key.replace(/n_/g, '').replace(/[\#\,\(\)\_]/g, '-').replace(/[^[a-z0-9\-]/g, '').replace(/(\-){2,10}/g, '-').replace(/^\-/g, '').replace(/\-$/g, '');
     if (('0123456789').includes(key.substring(0, 1))) { key = 'sz-' + key; }
     return key;
 }
@@ -1131,7 +1174,7 @@ function knowMotionRender(knowMotion) {
         var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
         var zN = null, aM = [], aN = [], aF = false, kF = "", kS = "", kP = [], val = "", i = 0, x = 0;
         var classListCheck = [], grepTag = '', keyFrames = {}, runningTag = '';
-        var classList = { 'none_none_none_': knowMotion };
+        var classList = { 'n_n_n_': knowMotion };
 
         var keyFramesCSS = [], keyFrameValues = [];
         var classValues = [], runningTags = [];
@@ -1331,7 +1374,7 @@ function knowMotionRender(knowMotion) {
             }
 
             if (animationKeys.length > 0) {
-                if (screen != 'none') {
+                if (screen != 'n') {
                     if (contains(screen, 'down')) { screenPrefix = 'max-width:' + screenSizes[screen][1] + 'px'; }
                     else if (contains(screen, 'up')) { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px'; }
                     else { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px) and (max-width:' + screenSizes[screen][1] + 'px'; }
@@ -1468,8 +1511,6 @@ const parseQuick = function (attr) {
             masterGroups[masterKey][1] = grepRetain.join(' ');
         });
     });
-
-    console.log(JSON.stringify(masterGroups, null, 2));
 };
 
 function knowCSSRender(uI, uC, uO) {
@@ -1508,7 +1549,7 @@ function knowCSSRender(uI, uC, uO) {
     var mL = motionTags.length;
     var setAnimation = function (mE, mC) {
         setInterval(function () {
-            mE.style.animation = "none";
+            mE.style.animation = "n";
             setTimeout(function () { mE.style.animation = ""; }, 10);
         }, mC);
     };
@@ -1558,7 +1599,7 @@ function knowCSSRender(uI, uC, uO) {
 
         parseQuick(getMixins(getVariables(attr)));
 
-        classList = { 'none_none_none_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
+        classList = { 'n_n_n_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
         classFirst = '';
@@ -1576,10 +1617,12 @@ function knowCSSRender(uI, uC, uO) {
             }
             while (classesFound.length > 0) {
                 classFound = classesFound.shift().trim();
-                [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
-                if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
-                [classFound, classesFound] = getContainerExtras(classFound, classesFound);
-                [classFound, classesFound] = getGridSystem(classFound, classesFound);
+                if ([screen,modifier].includes('attr') === false) {
+                    [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
+                    if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
+                    [classFound, classesFound] = getContainerExtras(classFound, classesFound);
+                    [classFound, classesFound] = getGridSystem(classFound, classesFound);
+                }
                 [classParent, classFound, classesFound, screen, classEvent, modifier] = getParentSelector(screen, classFound, classesFound, modifier);
                 [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                 if (allowEnvironment) {
@@ -1621,7 +1664,7 @@ function knowCSSRender(uI, uC, uO) {
                     [className, classValue] = getColor(getValue(classValue), className);
                     [className, classValue] = getFamily(className, classValue);
                     if (uX.autorem) { classesFound = getREM(className, classValue, classesFound, uX.rem); }
-                    if (modifier == 'none') { modifier = ''; }
+                    if (modifier == 'n') { modifier = ''; }
                     classKeyLong = getKey(screen, modifier, className, action, classValue, classImportant, classParent, classEvent);
                     classKey = getKeyShorter("", modifier, className, "", classValue, classImportant, classParent, classEvent);
                     if (!uX.smart && uX.classes == 'detail') {
@@ -1784,7 +1827,7 @@ function knowCSSRender(uI, uC, uO) {
                                 if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(classFirstSix) || contains(className, 'font-size')) { classValue += 'px'; }
                                 else if (['top', 'bottom', 'left', 'right'].includes(className)) { classValue += 'px'; }
                             }
-                            stylesHere = getCleanStyles(className + (action != 'none' ? action : '') + ':' + classValue + classImportant + ';');
+                            stylesHere = getCleanStyles(className + (action != 'n' ? action : '') + ':' + classValue + classImportant + ';');
                             if (classWebKit || (uX.autoprefix && getWebKit(className))) {
                                 stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
                                 stylesHere += stylesWebKit.join('');
