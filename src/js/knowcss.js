@@ -479,35 +479,43 @@ function getKeyShorter(modifier, name, val, important, parent, event) {
 function getKey(screen, modifier, name, action, val, important, parent, event) {
     return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important + '_' + parent.toString() + '_' + event).toLowerCase().replace(/[\s\n\r]/gi, '-');
 }
-function getDynamic(container, action) {
-    var dynamic = '';
+function getParents(container, parent) {
+    var ret = [];
+    if (contains(container, '^')) { ret[1] = true; }
+    else { ret[0] = true; }
+    return ret;
+}
+function getModifiers(container, modifier, action, single) {
+    var ret = {};
+    var modifier = '';
     var keepAction = false;
-    var dynamicSub = '';
-    var dynamicTag = '';
-    if (contains(container, '~')) { dynamicSub = '~'; }
-    else if (contains(container, '+')) { dynamicSub = '+'; }
-    if (dynamicSub.length > 0) {
-        [action, container] = container.split(dynamicSub, 2);
+    var modifierSub = '';
+    var modifierTag = '';
+    if (contains(container, '~')) { modifierSub = '~'; }
+    else if (contains(container, '+')) { modifierSub = '+'; }
+    if (modifierSub.length > 0) {
+        [action, container] = container.split(modifierSub, 2);
         keepAction = true;
     }
-    if (['all', '*', '>'].includes(container)) { dynamic = ' *'; }
-    else if (begins(container, '>')) { dynamic = ' ' + container.replace(/\>/g, ' > ').trim(); }
+    if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
+    else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
     else if (begins(container, 'all')) {
-        if (begins(container, 'all-')) { dynamic = ' ' + container.replace('all-', ''); }
-        else if (begins(container, 'all>')) { dynamic = ' ' + container.replace('all>', '> '); }
+        if (begins(container, 'all-')) { modifier = ' ' + container.replace('all-', ''); }
+        else if (begins(container, 'all>')) { modifier = ' ' + container.replace('all>', '> '); }
     }
     else if (contains(container, 'nth')) {
         if (contains(container, '-nth')) {
-            [dynamicTag, container] = container.split('-nth', 2);
+            [modifierTag, container] = container.split('-nth', 2);
             container = 'nth' + container;
         }
-        var colon = ':' + (keepAction ? action + dynamicSub + dynamicTag + ':' : '');
-        if (contains(container, 'nth-child')) { dynamic = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
-        else if (contains(container, 'nth-last-child')) { dynamic = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-        else if (contains(container, 'nth-of-type')) { dynamic = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-        else if (contains(container, 'nth-last-of-type')) { dynamic = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
+        if (contains(container, 'nth-child')) { modifier = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
+        else if (contains(container, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+        else if (contains(container, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+        else if (contains(container, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
     }
-    return [dynamic, keepAction ? '' : action];
+    ret[modifier] = true;
+    return [single ? modifier : ret, keepAction ? '' : action];
 }
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
@@ -525,7 +533,7 @@ function getModifier(classList, classSecondary) {
             container = aM[1];
             parentContainer = container.indexOf("^") > -1 ? "^" : "";
             multiScreen = false;
-            [dynamic, action] = getDynamic(container, action);
+            [dynamic, action] = getModifiers(container, modifier, action, true);
             if (dynamic.length > 0) { classList[screen + '_' + dynamic + '_' + action + '_'] = aM[2]; }
             else {
                 actions = getActions(container, action);
@@ -783,7 +791,7 @@ function getActions(mS, mD, mF) {
     var i = 0;
     var mA = '*';
     var mP = mA;
-    var mU = mS.indexOf("^") > -1 ? "^": "";
+    var mU = mS.indexOf("^") > -1 ? "^" : "";
     ['>', '~', '+'].forEach(function (val) {
         if (contains(mS, val)) {
             mP = mS.split(val, 2).pop();
@@ -805,7 +813,7 @@ function getActions(mS, mD, mF) {
     }
     if (!zY) { ret = [{}]; ret[0][mU + mD] = ""; }
     if (mF) {
-        ret = ret.filter(function(val) { return Object.keys(val).length > 0; });
+        ret = ret.filter(function (val) { return Object.keys(val).length > 0; });
     }
     return ret;
 }
@@ -1101,7 +1109,7 @@ function getContainers(classString) {
     else { ret = [classString]; }
     return ret.join(' ');
 }
-function parseClassValue (val) {
+function parseClassValue(val) {
     var className = "", classValue = ""
     if (contains(val, ':')) { [className, classValue] = val.split(':', 2); }
     else if (contains(val, '=')) { [className, classValue] = val.split('=', 2); }
@@ -1215,7 +1223,7 @@ function knowMotionRender(knowMotion) {
                     kP.forEach(function (val) {
                         if (val == "from") { keyFrames["0"] = aM[2]; }
                         else if (val == "to") { keyFrames["100"] = aM[2]; }
-                        else if (containsAny(val, ['%','/',',','-'])) { keyFrames[val.replace("%", "")] = aM[2]; }
+                        else if (containsAny(val, ['%', '/', ',', '-'])) { keyFrames[val.replace("%", "")] = aM[2]; }
                         else if (!isNaN(val)) { keyFrames[val] = aM[2]; }
                         else if (val in screenSizes) { aF = false; }
                         else { aF = false; }
@@ -1227,7 +1235,7 @@ function knowMotionRender(knowMotion) {
                     actions = getActions(container, action);
                     screens = getScreens(container, screen);
                     for (var screenKey in screens) {
-                        actions.forEach(function(actionSet) {
+                        actions.forEach(function (actionSet) {
                             for (var actionKey in actionSet) {
                                 keyNew = screenKey + '_' + modifier + '_' + actionKey + '_' + animationLetter;
                                 if (key !== keyNew) {
@@ -1340,7 +1348,7 @@ function knowMotionRender(knowMotion) {
 };
 
 
-const parseQuick = function(attr) {
+const parseQuick = function (attr) {
     var greps = [
         new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'),
         new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis')
@@ -1349,16 +1357,15 @@ const parseQuick = function(attr) {
     var checkGroups = [];
     var screen = "", modifier = "", action = "", parent = "";
     var screens = [], modifiers = [], actions = [], parents = [];
-    var dynamic = "";
     var grepGroup = "", grepOriginal = "", grepFound = [], grepFull = "", grepWrap = "", grepClasses = "";
     var masterKeyNew = "";
 
     // screen_modifier_action_parent key: [check again based on changes, raw know value]
-    var masterGroups = {"n_n_n_n": [false, attr]};
+    var masterGroups = { "n_n_n_n": [false, attr] };
 
-    greps.forEach(function(grepVal) {
+    greps.forEach(function (grepVal) {
         checkGroups = Object.keys(masterGroups);
-        checkGroups.forEach(function(masterKey) {
+        checkGroups.forEach(function (masterKey) {
             [screen, modifier, action, parent] = masterKey.split('_', 4);
             grepGroup = masterGroups[masterKey][1];
             grepOriginal = masterGroups[masterKey][1];
@@ -1370,10 +1377,8 @@ const parseQuick = function(attr) {
                 // screen range with hyphen -> sm-lg, xl-xxl, sm-lg/xl-xxl, etc
                 screens = getScreens(grepWrap, screen);
 
-                //modifiers = getModifiers(grepWrap, modifier);
-                [dynamic, action] = getDynamic(grepWrap, action);
-                if (dynamic.length > 0) { modifier = dynamic; }
-                modifiers = {}; modifiers[modifier] = "";
+                // modifiers which may clear action
+                [modifiers, action] = getModifiers(grepWrap, modifier, action);
 
                 // actions from modifiers/selectors/actions master list
                 actions = getActions(grepWrap, action, true);
@@ -1381,16 +1386,14 @@ const parseQuick = function(attr) {
                 // parent with caret: ^
                 // parent with parent prefix and any non a-z0-9 splitter: parent:, parent-, parent_, parent~, etc
                 // up level parent with number before ^ or parent -> 2^, 3parent, etc
-                //parents = getParent(grepWrap, parent);
-                if (grepWrap.indexOf('^')) { parent = 1; }
-                parents = {}; parents[parent] = "";
+                parents = getParents(grepWrap, parent);
 
                 grepOriginal = grepOriginal.replace(grepFull, '').trim();
 
                 // loop through screens/modifiers/actions/parents and check for != n_n_n_n to append to masterGroups
                 for (var screensKey in screens) {
                     for (var modifiersKey in modifiers) {
-                        actions.forEach(function(actionVal) {
+                        actions.forEach(function (actionVal) {
                             for (var actionsKey in actionVal) {
                                 for (var parentsKey in parents) {
                                     masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
@@ -1414,41 +1417,31 @@ const parseQuick = function(attr) {
             if (grepOriginal.length > 0) {
                 [screen, modifier, action, parent] = masterKey.split('_', 4);
                 var grepOriginals = grepOriginal.split(' ');
-                var grepClass = "";
+                var grepClass = "", grepPrefix = "", grepSuffix = "", grepKeep = true, grepFind = null;
                 while (grepOriginals.length > 0) {
                     grepClass = grepOriginals.shift();
-                    var grepKeep = true;
-                    var grepFind = /^[A-Za-z0-9\s]+/.exec(grepClass);
+                    grepKeep = true;
+                    grepFind = /^[A-Za-z0-9\s]+/.exec(grepClass);
                     if (grepFind) {
-                        var grepPrefix = grepFind[0];
-                        var grepSuffix = grepClass;
+                        grepPrefix = grepFind[0];
                         if (grepPrefix !== grepClass) {
-                            screens = {};
-                            actions = {};
-                            modifiers = {};
-                            parents = {};
+                            grepSuffix = grepClass;
 
                             //screens = getScreens(grepWrap, screen)
                             //switch to get screens as long as !isNan() is supported to match a screen size
                             if (grepPrefix in screenSizes || !isNaN(grepPrefix)) { screens[grepPrefix] = true; }
                             else { screens[screen] = true; }
 
-                            //modifiers = getModifiers(grepWrap, modifier);
-                            [dynamic, action] = getDynamic(grepPrefix, action);
-                            if (dynamic.length > 0) { modifier = dynamic; }
-                            modifiers = {}; modifiers[modifier] = "";
-
+                            [modifiers, action] = getModifiers(grepPrefix, modifier, action);
                             actions = getActions(grepPrefix, action, true);
-
-                            //parents = getParent(grepWrap, parent);
-                            parents = {}; parents[parent] = "";
+                            parents = getParents(grepWrap, parent);
 
                             grepSuffix = grepSuffix.substring(grepPrefix.length + 1);
 
                             // Move to shared function
                             for (var screensKey in screens) {
                                 for (var modifiersKey in modifiers) {
-                                    actions.forEach(function(actionVal) {
+                                    actions.forEach(function (actionVal) {
                                         for (var actionsKey in actionVal) {
                                             for (var parentsKey in parents) {
                                                 masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
@@ -1457,7 +1450,7 @@ const parseQuick = function(attr) {
 
                                                     if (masterKeyNew in masterGroups) {
                                                         if (!contains(masterGroups[masterKeyNew][1], ' ' + grepSuffix)) {
-                                                           masterGroups[masterKeyNew][1] += ' ' + grepSuffix;
+                                                            masterGroups[masterKeyNew][1] += ' ' + grepSuffix;
                                                         }
                                                     }
                                                     else { masterGroups[masterKeyNew] = [false, grepSuffix]; }
@@ -1476,7 +1469,7 @@ const parseQuick = function(attr) {
         });
     });
 
-    //console.log(JSON.stringify(masterGroups, null, 2));
+    console.log(JSON.stringify(masterGroups, null, 2));
 };
 
 function knowCSSRender(uI, uC, uO) {
@@ -1513,10 +1506,10 @@ function knowCSSRender(uI, uC, uO) {
     var motionTags = document.querySelectorAll("[" + knowMotionID + "]");
     var mi = 0;
     var mL = motionTags.length;
-    var setAnimation = function(mE, mC) {
-        setInterval(function() {
+    var setAnimation = function (mE, mC) {
+        setInterval(function () {
             mE.style.animation = "none";
-            setTimeout(function() { mE.style.animation = ""; }, 10);
+            setTimeout(function () { mE.style.animation = ""; }, 10);
         }, mC);
     };
     while (mi < mL) {
@@ -1563,7 +1556,7 @@ function knowCSSRender(uI, uC, uO) {
         classesHere = [];
         attr = crossMixins(uC ? classTags[ii][1] : classTags[ii].getAttribute(knowID));
 
-        //parseQuick(getMixins(getVariables(attr)));
+        parseQuick(getMixins(getVariables(attr)));
 
         classList = { 'none_none_none_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
         classList = getModifier(getModifier(classList, false), true);
