@@ -410,7 +410,6 @@ function replaceVars(className, classValue) {
     return className;
 }
 function getShortHand(classFound, classesFound) {
-    var classWebKit = false;
     var classImportant = '';
     [classFound, classImportant] = getImportant(classFound);
     var wByH = contains(classFound, 'x') && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(classFound);
@@ -423,15 +422,6 @@ function getShortHand(classFound, classesFound) {
     else if (!isNaN(classFound)) { classFound = getFontOrWeight(classFound); }
     else {
         var classChanged = false;
-        /*
-        ['-webkit-', '-moz-', '-ms-', '-o-'].forEach(function (val) {
-            if (begins(classFound, val)) {
-                console.log(['found starting with', classFound, val]);
-                classFound = classFound.replace(val, '');
-                classWebKit = true;
-            }
-        });
-        */
         if (!classChanged && defined(knowCSSOptions.shortHand)) {
             if (contains(classFound, '--')) { classFound = classFound.replace(/\-{2,100}$/g, '-'); }
             if (classFound in knowCSSOptions.shortHand) {
@@ -454,7 +444,7 @@ function getShortHand(classFound, classesFound) {
             }
         }
     }
-    return [classFound + classImportant, classesFound, classWebKit];
+    return [classFound + classImportant, classesFound];
 }
 function getValue(val) {
     val = val.replace(/;/g, '');
@@ -1458,8 +1448,11 @@ const parseQuick = function (attr) {
             var grepRetain = [];
             if (grepOriginal.length > 0) {
                 [screen, modifier, action, parent] = masterKey.split('_', 4);
-                var grepOriginals = grepOriginal.split(' ');
+                //var grepOriginals = grepOriginal.split(' ');
+                //var grepOriginals = grepOriginal.split(/(\s+)/).filter(e => e.trim().length > 0)
+                var grepOriginals = grepOriginal.replace(/\s+/gi, ' ').split(' ');
                 var grepClass = "", grepPrefix = "", grepSuffix = "", grepKeep = true, grepFind = null;
+                var grepClassMore = [];
                 while (grepOriginals.length > 0) {
                     grepClass = grepOriginals.shift();
                     grepKeep = true;
@@ -1504,7 +1497,12 @@ const parseQuick = function (attr) {
                             }
                         }
                     }
-                    if (grepKeep) { grepRetain.push(grepClass); }
+                    if (grepKeep) {
+                        // Apply shorthand/mixins/etc here to the individual class and possibly grep even more {} variations from applies change
+                        [grepClass, grepClassMore] = getShortHand(grepClass, []);
+                        grepRetain.push(grepClass);
+                        if (grepClassMore.length > 0) { grepRetain.push(...grepClassMore); }
+                    }
                 }
             }
             masterGroups[masterKey][1] = grepRetain.join(' ');
@@ -1598,7 +1596,8 @@ function knowCSSRender(uI, uC, uO) {
 
         //parseQuick(getMixins(getVariables(attr)));
 
-        classList = { 'n_n_n_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
+        //classList = { 'n_n_n_': getScreenPrefixes(getContainers(getMixins(getVariables(attr)))) };
+        classList = { 'n_n_n_': getMixins(getVariables(attr)) };
         classList = getModifier(getModifier(classList, false), true);
         classNew = '';
         classFirst = '';
@@ -1616,8 +1615,8 @@ function knowCSSRender(uI, uC, uO) {
             }
             while (classesFound.length > 0) {
                 classFound = classesFound.shift().trim();
-                if ([screen,modifier].includes('attr') === false) {
-                    [classFound, classesFound, classWebKit] = getShortHand(classFound, classesFound);
+                if ([screen, modifier].includes('attr') === false) {
+                    [classFound, classesFound] = getShortHand(classFound, classesFound);
                     if (checkShorterHand) { [classFound, classesFound] = getShorterHand(classFound, classesFound); }
                     [classFound, classesFound] = getContainerExtras(classFound, classesFound);
                     [classFound, classesFound] = getGridSystem(classFound, classesFound);
