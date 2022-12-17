@@ -18,7 +18,7 @@ const knowHowNav = {
     //"normalize": ["Compatibility", "TODO -- Accessibility, Normalization, Auditing"],
     //"events": ["Environment", "TODO -- Browser, OS, Screen, Mobile, Orientation"],
     //"feature": ["Features", "TODO -- Media, Screen, Print, Speech"],
-    "reversions": ["Reversions", "Initial, Inherit, Revert, Unset"],
+    "reversions": ["Reversions", "Initial, Inherit, Revert, Unset, Auto, Normal"],
     "box": ["Box Model", "Margin, Border, Padding, Overflow"],
     "cursor": ["Pointer", "Pointer, Selection, Cursors"],
     "font": ["Typography", "Family, Size, Weight, Space, Wrap, Style, Variant"],

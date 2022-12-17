@@ -14,6 +14,7 @@
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
     <script src="../src/knowcss-shorthand.js"></script>
+    <script src="../knowhow/components.js"></script>
     <script src="../src/js/knowcss.js"></script>
 </head>
 
@@ -21,9 +22,21 @@
 
     <div id="root" role="main">
 
-        <div know="inherit{font-size} initial{margin} unset{padding} revert{font-weight}">reversions</div>
-        <div know="inherit-font-size! initial-margin! unset-padding! revert-font-weight!">reversions 2</div>
+        <div know="inherit{font-size} initial{width} unset{padding} revert{font-weight} normal{line-height} auto{margin}">reversions</div>
+        <div know="inherit-font-size! initial-width! unset-padding! revert-font-weight! normal-line-height! auto-margin!">reversions 2</div>
 
+        <div know="none"><define know="[out] w-200 h-200 b-1px/solid/red"></define></div>
+
+        <div know="table >div{cell aligntop p-10}">
+            <div><div know="fill-block [out]"><child>fill-block</child></div></div>
+            <div><div know="fill-cols [out]"><child>fill-cols</child><child>fill-cols</child></div></div>
+            <div><div know="fill-rows [out]"><child>fill-rows</child><child>fill-rows</child></div></div>
+        </div>
+        <div know="table >div{cell aligntop p-10}">
+            <div><div know="fill-grid [out]"><child>fill-grid</child><child>fill-grid</child></div></div>
+            <div><div know="fill-table [out]"><child>fill-table</child><child>fill-table</child></div></div>
+            <div><div know="fill-inline [out]"><child>fill-inline</child></div></div>
+        </div>
         <!--
             Dynamic: <div know="padding-24px/0 width-100% font-size-12px color-red md{font-size-14px}">Dynamic</div>
             Shorthand: <div know="p-24/0 w-100% px-12 red md{px-14}">Shorthand</div>

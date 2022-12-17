@@ -175,11 +175,11 @@ function getReversion(val, screen) {
             important = '!';
         }
     }
-    if (['inherit','initial','unset','revert'].includes(screen)) {
+    if (['inherit','initial','unset','revert','auto','normal'].includes(screen)) {
         val += '=' + screen;
         screen = "n";
     }
-    else if (['inher','initi','unset','rever'].includes(val.substr(0, 5))) {
+    else if (['inher','initi','unset','rever','auto-','norma'].includes(val.substr(0, 5))) {
         var valParts = val.split('-');
         var valPrefix = valParts.shift();
         val = valParts.join('-') + '=' + valPrefix;
@@ -495,29 +495,31 @@ function getModifiers(container, modifier, action, single) {
     var keepAction = false;
     var modifierSub = '';
     var modifierTag = '';
-    if (contains(container, '~')) { modifierSub = '~'; }
-    else if (contains(container, '+')) { modifierSub = '+'; }
-    if (modifierSub.length > 0) {
-        [action, container] = container.split(modifierSub, 2);
-        keepAction = true;
-    }
-
-    if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
-    else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
-    else if (begins(container, 'all')) {
-        if (begins(container, 'all-')) { modifier = ' ' + container.replace('all-', ''); }
-        else if (begins(container, 'all>')) { modifier = ' ' + container.replace('all>', '> '); }
-    }
-    else if (contains(container, 'nth')) {
-        if (contains(container, '-nth')) {
-            [modifierTag, container] = container.split('-nth', 2);
-            container = 'nth' + container;
+    if (begins(container, '+')) { modifier = ':first-child ' + container.replace(/\+/g, ' > ').trim(); }
+    else {
+        if (contains(container, '~')) { modifierSub = '~'; }
+        else if (contains(container, '+')) { modifierSub = '+'; }
+        if (modifierSub.length > 0) {
+            [action, container] = container.split(modifierSub, 2);
+            keepAction = true;
         }
-        var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
-        if (contains(container, 'nth-child')) { modifier = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
-        else if (contains(container, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-        else if (contains(container, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-        else if (contains(container, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
+        else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
+        else if (begins(container, 'all')) {
+            if (begins(container, 'all-')) { modifier = ' ' + container.replace('all-', ''); }
+            else if (begins(container, 'all>')) { modifier = ' ' + container.replace('all>', '> '); }
+        }
+        else if (contains(container, 'nth')) {
+            if (contains(container, '-nth')) {
+                [modifierTag, container] = container.split('-nth', 2);
+                container = 'nth' + container;
+            }
+            var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
+            if (contains(container, 'nth-child')) { modifier = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
+            else if (contains(container, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+            else if (contains(container, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+            else if (contains(container, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        }
     }
     ret[modifier] = true;
     return [single ? modifier : ret, keepAction ? '' : action];

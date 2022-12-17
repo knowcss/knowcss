@@ -1,8 +1,32 @@
 const components = {
 
+    // JAA TODO - add shorthand for flex-direction, justify-content, align-content, align-items, place-items
+
     "fill-block": [
         "relative",
-        ">div{absolute w-100% mw-100% t-50% l-0 translateXY=0/-250% aligncenter}"
+        "+child{absolute t-50% l-50% translate=-50%_-50% aligncenter}"
+    ],
+    "fill-rows": [
+        "display-flex flex-direction-column justify-content-center align-content-center align-items-center",
+        "+child{display-flex justify-content-center align-content-center align-items-center flex-1}"
+    ],
+    "fill-cols": [
+        "display-flex flex-direction-row justify-content-center align-content-center align-items-center",
+        "+child{display-flex justify-content-center align-content-center align-items-center flex-1}"
+    ],
+    "fill-grid": [
+        "grid place-items-center grid-auto-flow-column"
+    ],
+    "fill-table": [
+        "table",
+        "+child{cell alignmiddle aligncenter}"
+    ],
+    "fill-inline": [
+        "aligncenter",
+        "+child{aligncenter}"
+    ],
+    "fill-img": [
+        "block full"
     ],
 
     "tlbr": ["top-$1 left-$1 bottom-$3 right-$4"],
