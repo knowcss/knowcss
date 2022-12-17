@@ -29,12 +29,14 @@
             "list": [
                 ["font-weight-300", "explicit"],
                 ["light", "alias"],
-                ["fw-300", "shorthand"]
+                ["fw-300", "shorthand"],
+                ["300", "numeric"]
             ],
             "reference": {
                 "head": "Variations:",
                 "short": "fw",
                 "apply": true,
+                "extra": "font-weight-",
                 "list": {
                     "thin": "font-weight-100",
                     "extralight": "font-weight-200",

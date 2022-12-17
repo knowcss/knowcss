@@ -30,6 +30,7 @@ const knowCSSLists = function () {
         // JAA TODO - @name{} like @media{}
         "at": ["charset", "color-profile", "container", "counter-style", "font-face", "font-feature-values", "import", "keyframes", "layer", "namespace", "page", "property", "supports"],
 
+        "reversions": ['inherit','initial','unset','revert'],
         "media": ["any-hover", "hover", "any-pointer", "pointer", "min-width", "max-width", "width", "min-height", "max-height", "height", "orientation", "min-aspect-ratio", "max-aspect-ratio", "aspect-ratio", "color-gamut", "min-color-index", "min-color", "max-color-index", "max-color", "color-index", "forced-colors", "inverted-colors", "color", "max-monochrome", "min-monochrome", "monochrome", "display-mode", "dynamic-range", "scan", "update", "light-level", "video-dynamic-range", "max-resolution", "min-resolution", "resolution", "prefers-color-scheme", "prefers-contrast", "prefers-reduced-motion", "grid", "overflow-block", "overflow-inline", "scripting"],
         "modifiers": ["webkit-scrollbar", "after", "backdrop", "before", "cue", "cue-region", "file-selector-button", "first-letter", "first-line", "grammar-error", "marker", "placeholder", "placeholder-shown", "selection", "spelling-error", "target-text"],
         "selectors": ["last-child", "first-child", "only-child", "first-of-type", "last-of-type", "only-of-type", "nth-last-child", "nth-last-of-type"],
@@ -164,15 +165,27 @@ function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS N
 function knowLayer(name) {
     return document.getElementById(name);
 }
-function getImportant(val) {
+function getReversion(val, screen) {
     var important = '';
     val = (typeof val === 'string') ? val : '';
-    val = val.replace('-!', '!').replace('-important', '!').replace('!important', '!').replace(/\!\!+/g, '!');
-    if (contains(val, '!')) {
-        val = val.replace('!', '');
-        important = '!';
+    if (containsAny(val, ['!','important'])) {
+        val = val.replace('-important', '!').replace('!important', '!');
+        if (contains(val, '!')) {
+            val = val.replace(/\!/g, '').replace(/\-{1,16}$/, '').replace(/^\-{1,16}/, '');
+            important = '!';
+        }
     }
-    return [val, important];
+    if (['inherit','initial','unset','revert'].includes(screen)) {
+        val += '=' + screen;
+        screen = "n";
+    }
+    else if (['inher','initi','unset','rever'].includes(val.substr(0, 5))) {
+        var valParts = val.split('-');
+        var valPrefix = valParts.shift();
+        val = valParts.join('-') + '=' + valPrefix;
+        screen = "n";
+    }
+    return [val, important, screen];
 }
 function getGridSystem(classFound, classesFound) {
     var gridFound = true;
@@ -411,7 +424,8 @@ function replaceVars(className, classValue) {
 }
 function getShortHand(classFound, classesFound) {
     var classImportant = '';
-    [classFound, classImportant] = getImportant(classFound);
+    var classScreen = '';
+    [classFound, classImportant, classScreen] = getReversion(classFound, classScreen);
     var wByH = contains(classFound, 'x') && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(classFound);
     if (wByH) {
         var classValue = wByH[2];
@@ -487,6 +501,7 @@ function getModifiers(container, modifier, action, single) {
         [action, container] = container.split(modifierSub, 2);
         keepAction = true;
     }
+
     if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
     else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
     else if (begins(container, 'all')) {
@@ -771,9 +786,10 @@ function getGreps() {
     var i = 0;
     while (i < x) {
         screenTypes.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
-        i++
+        i++;
     }
     screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
+
     ruleTypes = getLists.at;
 }
 function getMediaQuery(mS) {
@@ -1624,7 +1640,7 @@ function knowCSSRender(uI, uC, uO) {
                 [classParent, classFound, classesFound, screen, classEvent, modifier] = getParentSelector(screen, classFound, classesFound, modifier);
                 [classEnvironment, screen, allowEnvironment] = getEnvironmentSelector(screen);
                 if (allowEnvironment) {
-                    [classFound, classImportant] = getImportant(classFound);
+                    [classFound, classImportant, screen] = getReversion(classFound, screen);
                     if (classEvent.length > 0 && contains(classFound, '-')) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
                     className = '';
                     classValue = '';

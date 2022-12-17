@@ -175,6 +175,7 @@ var knowHow = {
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
                         if ("alias" in val.reference && !val.reference.alias) { vals = ''; }
                         else if (vals == sO) { sO = ''; }
+                        if ("extra" in val.reference) { sH += " " + sG.replace(val.reference.extra, ""); }
                         var sA = val.reference.apply ? ' know="' + vals + '"' : '';
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + (sO + ' ' + vals + sH).trim() + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     };
