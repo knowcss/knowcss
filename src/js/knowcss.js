@@ -30,7 +30,7 @@ const knowCSSLists = function () {
         // JAA TODO - @name{} like @media{}
         "at": ["charset", "color-profile", "container", "counter-style", "font-face", "font-feature-values", "import", "keyframes", "layer", "namespace", "page", "property", "supports"],
 
-        "reversions": ['inherit','initial','unset','revert'],
+        "reversions": ['inherit', 'initial', 'unset', 'revert', 'auto', 'normal'],
         "media": ["any-hover", "hover", "any-pointer", "pointer", "min-width", "max-width", "width", "min-height", "max-height", "height", "orientation", "min-aspect-ratio", "max-aspect-ratio", "aspect-ratio", "color-gamut", "min-color-index", "min-color", "max-color-index", "max-color", "color-index", "forced-colors", "inverted-colors", "color", "max-monochrome", "min-monochrome", "monochrome", "display-mode", "dynamic-range", "scan", "update", "light-level", "video-dynamic-range", "max-resolution", "min-resolution", "resolution", "prefers-color-scheme", "prefers-contrast", "prefers-reduced-motion", "grid", "overflow-block", "overflow-inline", "scripting"],
         "modifiers": ["webkit-scrollbar", "after", "backdrop", "before", "cue", "cue-region", "file-selector-button", "first-letter", "first-line", "grammar-error", "marker", "placeholder", "placeholder-shown", "selection", "spelling-error", "target-text"],
         "selectors": ["last-child", "first-child", "only-child", "first-of-type", "last-of-type", "only-of-type", "nth-last-child", "nth-last-of-type"],
@@ -168,22 +168,21 @@ function knowLayer(name) {
 function getReversion(val, screen) {
     var important = '';
     val = (typeof val === 'string') ? val : '';
-    if (containsAny(val, ['!','important'])) {
+    if (containsAny(val, ['!', 'important'])) {
         val = val.replace('-important', '!').replace('!important', '!');
         if (contains(val, '!')) {
             val = val.replace(/\!/g, '').replace(/\-{1,16}$/, '').replace(/^\-{1,16}/, '');
             important = '!';
         }
     }
-    if (['inherit','initial','unset','revert','auto','normal'].includes(screen)) {
+    if (reversionTypes.includes(screen)) {
         val += '=' + screen;
         screen = "n";
     }
-    else if (['inher','initi','unset','rever','auto-','norma'].includes(val.substr(0, 5))) {
+    if (['inher', 'initi', 'unset', 'rever', 'auto-', 'norma'].includes(val.substr(0, 5))) {
         var valParts = val.split('-');
         var valPrefix = valParts.shift();
         val = valParts.join('-') + '=' + valPrefix;
-        screen = "n";
     }
     return [val, important, screen];
 }
@@ -528,7 +527,7 @@ function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
     else { zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\_\|\,]{1,255})\{(.*?)\}', 'gis'); }
-    var screen = '', modifier = '', action = '', parent = '', container = '', dynamic = '', grepTag = '', multiScreen = false;
+    var screen = '', modifier = '', action = '', parent = '', container = '', dynamic = '', grepTag = '', reversion = '', multiScreen = false;
     var screens = {}, actions = {};
     var classListCheck = {}, containerPrefix = '', keyNew = '', actionSet = {}, parentContainer = "";
     for (var key in classList) { classListCheck[key] = true; }
@@ -541,10 +540,11 @@ function getModifier(classList, classSecondary) {
             parentContainer = container.indexOf("^") > -1 ? "^" : "";
             multiScreen = false;
             [dynamic, action] = getModifiers(container, modifier, action, true);
+
             if (dynamic.length > 0) { classList[screen + '_' + dynamic + '_' + action + '_'] = aM[2]; }
             else {
                 actions = getActions(container, action);
-                screens = getScreens(container, screen);
+                [screens, reversion] = getScreens(container, screen);
                 for (var screenKey in screens) {
                     var actionsLen = actions.length;
                     var i = 0;
@@ -564,8 +564,8 @@ function getModifier(classList, classSecondary) {
                             }
                             else { keyNew = ''; }
                             if (keyNew.length > 0) {
-                                if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
-                                else { classList[keyNew] = aM[2]; }
+                                if (keyNew in classList) { classList[keyNew] += ' ' + aM[2] + reversion; }
+                                else { classList[keyNew] = aM[2] + reversion; }
                             }
                         }
                         i++;
@@ -770,6 +770,7 @@ var actionGrep = [];
 var screenGrep = '';
 var screenTypes = [];
 var ruleTypes = {};
+var reversionTypes = [];
 function getGreps() {
     const getLists = knowCSSLists();
 
@@ -791,6 +792,8 @@ function getGreps() {
         i++;
     }
     screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
+
+    reversionTypes = getLists.reversions;
 
     ruleTypes = getLists.at;
 }
@@ -835,34 +838,61 @@ function getActions(mS, mD, mF) {
 function getScreens(mS, mD) {
     var ret = {};
 
+    var reversion = '';
     var multiLoop = true;
     var multiScreen = "";
     var multiMax = 10;
     var multiRange = [];
+    var multiKeep = [];
+    var multiCheck = "";
     var multiFirst = "";
     var multiLast = "";
-    while (multiLoop) {
-        var grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
-        if (grepFind) {
-            multiScreen = grepFind[1];
-            if (contains(multiScreen, '-')) {
-                multiRange = multiScreen.split('-');
-                multiFirst = multiRange.shift();
-                multiLast = multiRange.pop();
-                if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
-                else if (isNaN(multiFirst)) { multiFirst = 0; }
-                if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
-                else if (isNaN(multiLast)) { multiLast = 9999; }
-                ret[multiFirst + '?' + multiLast] = true;
+
+    var grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
+    if (grepFind) {
+        multiScreen = grepFind[1];
+        multiKeep = [];
+        multiRange = contains(multiScreen, '-') ? multiScreen.split('-') : [multiScreen];
+        i = 0;
+        x = multiRange.length;
+        while (i < x) {
+            multiCheck = multiRange[i];
+            if (reversionTypes.includes(multiCheck)) {
+                reversion += (reversion.length > 0 ? '_' : '=') + multiCheck;
             }
-            else {
-                if (multiScreen in screenSizes || !isNaN(multiScreen)) { ret[multiScreen] = true; }
-            }
-            mS = mS.substring(multiScreen.length + 1);
-            multiMax--;
-            if (multiMax == 0 || mS.length == 0) { multiLoop = false; }
+            else { multiKeep.push(multiCheck); }
+            i++;
         }
-        else { multiLoop = false; }
+        mS = multiKeep.join('-');
+    }
+
+    if (mS.length > 0) {
+        while (multiLoop) {
+            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
+            if (grepFind) {
+                multiScreen = grepFind[1];
+                if (contains(multiScreen, '-')) {
+                    multiRange = multiScreen.split('-');
+                    multiFirst = multiRange.shift();
+                    if (multiRange.length > 0) {
+                        multiLast = multiRange.pop();
+                        if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
+                        else if (isNaN(multiFirst)) { multiFirst = 0; }
+                        if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
+                        else if (isNaN(multiLast)) { multiLast = 9999; }
+                        ret[multiFirst + '?' + multiLast] = true;
+                    }
+                    else if (multiFirst in screenSizes || !isNaN(multiFirst)) { ret[multiFirst] = true; }
+                }
+                else {
+                    if (multiScreen in screenSizes || !isNaN(multiScreen)) { ret[multiScreen] = true; }
+                }
+                mS = mS.substring(multiScreen.length + 1);
+                multiMax--;
+                if (multiMax == 0 || mS.length == 0) { multiLoop = false; }
+            }
+            else { multiLoop = false; }
+        }
     }
 
     if (mS.length == 0) { }
@@ -893,7 +923,7 @@ function getScreens(mS, mD) {
         }
     }
     if (Object.keys(ret).length == 0) { ret[mD] = true; }
-    return ret;
+    return [ret, reversion];
 }
 function getCleanStyles(style) {
     return style.replace(/(;){2,}/g, ';');
@@ -1201,7 +1231,7 @@ function knowMotionRender(knowMotion) {
             "twice": ["titeration-count", "2"]
         };
 
-        var container = "", screen = "", modifier = "", action = "";
+        var container = "", screen = "", modifier = "", action = "", reversion = "";
         var screens = [], actions = [];
         var keyNew = "", previousAnimation = "", animationLetter = "", screenPrefix = "";
 
@@ -1283,14 +1313,14 @@ function knowMotionRender(knowMotion) {
 
                 if (!aF) {
                     actions = getActions(container, action);
-                    screens = getScreens(container, screen);
+                    [screens, reversion] = getScreens(container, screen);
                     for (var screenKey in screens) {
                         actions.forEach(function (actionSet) {
                             for (var actionKey in actionSet) {
                                 keyNew = screenKey + '_' + modifier + '_' + actionKey + '_' + animationLetter;
                                 if (key !== keyNew) {
-                                    if (keyNew in classList) { classList[keyNew] += ' ' + aM[2]; }
-                                    else { classList[keyNew] = aM[2]; }
+                                    if (keyNew in classList) { classList[keyNew] += ' ' + aM[2] + reversion; }
+                                    else { classList[keyNew] = aM[2] + reversion; }
                                     if (classListCheck.indexOf(keyNew) == -1) { classListCheck.push(keyNew); }
                                 }
                             }
@@ -1405,7 +1435,7 @@ const parseQuick = function (attr) {
     ];
 
     var checkGroups = [];
-    var screen = "", modifier = "", action = "", parent = "";
+    var screen = "", modifier = "", action = "", parent = "", reversion = "";
     var screens = [], modifiers = [], actions = [], parents = [];
     var grepGroup = "", grepOriginal = "", grepFound = [], grepFull = "", grepWrap = "", grepClasses = "";
     var masterKeyNew = "";
@@ -1425,7 +1455,7 @@ const parseQuick = function (attr) {
                 // screen single -> sm, lg, 480, smup, smdown, etc
                 // screen list with any non a-z/0-9 splitter -> sm~lg, sm+lg, sm|lg, sm:lg, sm_lg, sm/lg, etc
                 // screen range with hyphen -> sm-lg, xl-xxl, sm-lg/xl-xxl, etc
-                screens = getScreens(grepWrap, screen);
+                [screens, reversion] = getScreens(grepWrap, screen);
 
                 // modifiers which may clear action
                 [modifiers, action] = getModifiers(grepWrap, modifier, action);
@@ -1480,7 +1510,7 @@ const parseQuick = function (attr) {
                         if (grepPrefix !== grepClass) {
                             grepSuffix = grepClass;
 
-                            //screens = getScreens(grepWrap, screen)
+                            //[screens, reversion] = getScreens(grepWrap, screen)
                             //switch to get screens as long as !isNan() is supported to match a screen size
                             if (grepPrefix in screenSizes || !isNaN(grepPrefix)) { screens[grepPrefix] = true; }
                             else { screens[screen] = true; }
