@@ -1436,7 +1436,7 @@ const parseQuick = function (attr) {
 
     var checkGroups = [];
     var screen = "", modifier = "", action = "", parent = "", reversion = "";
-    var screens = [], modifiers = [], actions = [], parents = [];
+    var screens = [], modifiers = [], actions = [], parents = [], reversion = [];
     var grepGroup = "", grepOriginal = "", grepFound = [], grepFull = "", grepWrap = "", grepClasses = "";
     var masterKeyNew = "";
 
@@ -1456,12 +1456,14 @@ const parseQuick = function (attr) {
                 // screen list with any non a-z/0-9 splitter -> sm~lg, sm+lg, sm|lg, sm:lg, sm_lg, sm/lg, etc
                 // screen range with hyphen -> sm-lg, xl-xxl, sm-lg/xl-xxl, etc
                 [screens, reversion] = getScreens(grepWrap, screen);
+                // JAA TODO - return reverions here -> [important, revert, initial, etc]
 
                 // modifiers which may clear action
                 [modifiers, action] = getModifiers(grepWrap, modifier, action);
 
                 // actions from modifiers/selectors/actions master list
                 actions = getActions(grepWrap, action, true);
+                // JAA TODO - return actions{} instead of actions[{}] here
 
                 // parent with caret: ^
                 // parent with parent prefix and any non a-z0-9 splitter: parent:, parent-, parent_, parent~, etc
