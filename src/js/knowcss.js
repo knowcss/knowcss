@@ -89,6 +89,7 @@ var knowCSS = {
     render: function (val, refresh, options) {
         if (refresh) { cssIncrement = 0; }
         this.options(options);
+        //knowCSSRenderOptimized();
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key) || [];
         var num = 0;
@@ -181,8 +182,10 @@ function getReversion(val, screen) {
     }
     if (['inher', 'initi', 'unset', 'rever', 'auto-', 'norma'].includes(val.substr(0, 5))) {
         var valParts = val.split('-');
-        var valPrefix = valParts.shift();
-        val = valParts.join('-') + '=' + valPrefix;
+        if (valParts.length > 1) {
+            var valPrefix = valParts.shift();
+            val = valParts.join('-') + '=' + valPrefix;
+        }
     }
     return [val, important, screen];
 }
@@ -976,30 +979,32 @@ function variableMixin(mZ) {
     return [mF, mZ, mR, mC];
 }
 function getMixins(mA) {
-    var mixin = '', newMixin = {}, anyNewMixin = false;
-    var zM = new RegExp('\\[(.*?)\\]', 'i');
-    var mX = [];
-    var mS = "";
-    var mZ = "";
-    var mR = "";
-    var mC = "";
-    var mF = false;
-    while ((mixin = zM.exec(mA)) !== null) {
-        [mF, mZ, mR, mC] = variableMixin(mixin[1]);
-        if (mF) {
-            mX.push(mS + replaceVars(allMixins[mZ], mR) + ' ');
-            mS = " ";
+    if (contains(mA, '[')) {
+        var mixin = '', newMixin = {}, anyNewMixin = false;
+        var zM = new RegExp('\\[(.*?)\\]', 'i');
+        var mX = [];
+        var mS = "";
+        var mZ = "";
+        var mR = "";
+        var mC = "";
+        var mF = false;
+        while ((mixin = zM.exec(mA)) !== null) {
+            [mF, mZ, mR, mC] = variableMixin(mixin[1]);
+            if (mF) {
+                mX.push(mS + replaceVars(allMixins[mZ], mR) + ' ');
+                mS = " ";
+            }
+            else {
+                newMixin[mZ] = true;
+                anyNewMixin = true;
+            }
+            mA = mA.replace(mixin[0], '');
         }
-        else {
-            newMixin[mZ] = true;
-            anyNewMixin = true;
+        mA = mX.join('') + mA;
+        mA = mA.trim();
+        if (anyNewMixin) {
+            for (mixin in newMixin) { allMixins[mixin] = mA; }
         }
-        mA = mA.replace(mixin[0], '');
-    }
-    mA = mX.join('') + mA;
-    mA = mA.trim();
-    if (anyNewMixin) {
-        for (mixin in newMixin) { allMixins[mixin] = mA; }
     }
     return mA;
 }
@@ -1441,14 +1446,14 @@ const parseQuick = function (attr) {
     var masterKeyNew = "";
 
     // screen_modifier_action_parent key: [check again based on changes, raw know value]
-    var masterGroups = { "n_n_n_n": [false, attr] };
+    var masterGroups = { "n__n_0": attr };
 
     greps.forEach(function (grepVal) {
         checkGroups = Object.keys(masterGroups);
         checkGroups.forEach(function (masterKey) {
             [screen, modifier, action, parent] = masterKey.split('_', 4);
-            grepGroup = masterGroups[masterKey][1];
-            grepOriginal = masterGroups[masterKey][1];
+            grepGroup = masterGroups[masterKey];
+            grepOriginal = masterGroups[masterKey];
             while ((grepFound = grepVal.exec(grepGroup)) !== null) {
                 [grepFull, grepWrap, grepClasses] = grepFound;
 
@@ -1479,11 +1484,11 @@ const parseQuick = function (attr) {
                                     masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
                                     if (masterKeyNew != masterKey) {
                                         if (masterKeyNew in masterGroups) {
-                                            if (!contains(masterGroups[masterKeyNew][1], ' ' + grepClasses)) {
+                                            if (!contains(masterGroups[masterKeyNew], ' ' + grepClasses)) {
                                                 masterGroups[masterKeyNew][1] += ' ' + grepClasses;
                                             }
                                         }
-                                        else { masterGroups[masterKeyNew] = [false, grepClasses]; }
+                                        else { masterGroups[masterKeyNew] = grepClasses; }
                                     }
                                 }
                             }
@@ -1532,8 +1537,8 @@ const parseQuick = function (attr) {
                                                     grepKeep = false;
 
                                                     if (masterKeyNew in masterGroups) {
-                                                        if (!contains(masterGroups[masterKeyNew][1], ' ' + grepSuffix)) {
-                                                            masterGroups[masterKeyNew][1] += ' ' + grepSuffix;
+                                                        if (!contains(masterGroups[masterKeyNew], ' ' + grepSuffix)) {
+                                                            masterGroups[masterKeyNew] += ' ' + grepSuffix;
                                                         }
                                                     }
                                                     else { masterGroups[masterKeyNew] = [false, grepSuffix]; }
@@ -1553,10 +1558,34 @@ const parseQuick = function (attr) {
                     }
                 }
             }
-            masterGroups[masterKey][1] = grepRetain.join(' ');
+            if (grepRetain.length == 0) { delete masterGroups[masterKey]; }
+            else { masterGroups[masterKey] = grepRetain.join(' '); }
         });
     });
+
+    return masterGroups;
 };
+
+
+function knowCSSRenderOptimized() {
+    var startTime = new Date().getTime();
+    var classTags = document.querySelectorAll("[" + knowID + "]");
+    var tL = classTags.length;
+    var ii = 0;
+    var classList = {};
+    var attr = "";
+    while (ii < tL) {
+        // simplify the crossMixins, getVariables, getMixins process into 1 function
+        attr = classTags[ii].getAttribute(knowID);
+        classList = parseQuick(getMixins(getVariables(crossMixins(attr))));
+        //if (Object.keys(classList).length > 0) {
+        //   console.log([attr, JSON.stringify(classList)]);
+        //}
+        ii++;
+    }
+    var endTime = new Date().getTime();
+    console.log(['optimized in', endTime - startTime]);
+}
 
 function knowCSSRender(uI, uC, uO) {
     var uX = {

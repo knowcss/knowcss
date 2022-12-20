@@ -84,9 +84,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
     catch(e) { eH = ''; }
     if (!eH || eH.trim().length == 0) { eH = KwLy('root').innerHTML; }
     var eD = KwLy('editing');
-    eD.value = eH;
-    KwUp(eH);
-    KwCt(eD, event);
-    for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
-    eD.focus();
+    if (eD) {
+        eD.value = eH;
+        KwUp(eH);
+        KwCt(eD, event);
+        for (var i=0; i<=1; i++) { KwAp(eD, 'root', true); }
+        eD.focus();
+    }
 });
