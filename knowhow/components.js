@@ -15,7 +15,7 @@ const components = {
         "+child{display-flex justify-content-center align-content-center align-items-center flex-1}"
     ],
     "fill-grid": [
-        "grid place-items-center grid-auto-flow-column"
+        "grid place-items-center grid-auto-flow-row"
     ],
     "fill-table": [
         "table",
