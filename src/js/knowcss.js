@@ -89,6 +89,7 @@ var knowCSS = {
     render: function (val, refresh, options) {
         if (refresh) { cssIncrement = 0; }
         this.options(options);
+        //getGreps();
         //knowCSSRenderOptimized();
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key) || [];
@@ -1487,7 +1488,7 @@ const parseQuick = function (attr) {
                                     if (masterKeyNew != masterKey) {
                                         if (masterKeyNew in masterGroups) {
                                             if (!contains(masterGroups[masterKeyNew], ' ' + grepClasses)) {
-                                                masterGroups[masterKeyNew][1] += ' ' + grepClasses;
+                                                masterGroups[masterKeyNew] += ' ' + grepClasses;
                                             }
                                         }
                                         else { masterGroups[masterKeyNew] = grepClasses; }
@@ -1511,6 +1512,46 @@ const parseQuick = function (attr) {
                 while (grepOriginals.length > 0) {
                     grepClass = grepOriginals.shift();
                     grepKeep = true;
+
+                    grepSuffix = grepClass;
+                    screens = {};
+                    modifiers = {};
+                    actions = {};
+                    parents = {};
+                    while ((grepFind = /^[A-Za-z0-9\-\s]+/.exec(grepSuffix)) !== null) {
+                        grepPrefix = grepFind[0];
+                        // get possible screen, reversion, modifier, action, parent here and leave remaining class
+                        screens = getScreens(grepPrefix, "n", screens)[0];
+                        modifiers = getModifiers(grepPrefix, "n", "n", false, modifiers)[0];
+                        actions = getActions(grepPrefix, "n", false, actions);
+                        parents = getParents(grepPrefix, "n", parents);
+                        grepSuffix = grepSuffix.substring(grepPrefix.length + 1);
+                        if (grepSuffix.length == 0) { break; }
+                    }
+
+                    /*
+                    for (var screensKey in screens) {
+                        for (var modifiersKey in modifiers) {
+                            for (var actionsKey in actions) {
+                                for (var parentsKey in parents) {
+                                    masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
+                                    console.log(masterKeyNew + ' -- ' + grepSuffix);
+                                    if (masterKeyNew != masterKey) {
+                                        grepKeep = false;
+                                        if (masterKeyNew in masterGroups) {
+                                            if (!contains(masterGroups[masterKeyNew], ' ' + grepSuffix)) {
+                                                masterGroups[masterKeyNew] += ' ' + grepSuffix;
+                                            }
+                                        }
+                                        else { masterGroups[masterKeyNew] = grepSuffix; }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    */
+
+                    /*
                     grepFind = /^[A-Za-z0-9\s]+/.exec(grepClass);
                     if (grepFind) {
                         grepPrefix = grepFind[0];
@@ -1518,7 +1559,7 @@ const parseQuick = function (attr) {
                             grepSuffix = grepClass;
 
                             //[screens, reversion] = getScreens(grepWrap, screen)
-                            //switch to get screens as long as !isNan() is supported to match a screen size
+                            //switch to get screens as long as !isNaN() is supported to match a screen size
                             if (grepPrefix in screenSizes || !isNaN(grepPrefix)) { screens[grepPrefix] = true; }
                             else { screens[screen] = true; }
 
@@ -1537,13 +1578,12 @@ const parseQuick = function (attr) {
                                                 masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
                                                 if (masterKeyNew != masterKey) {
                                                     grepKeep = false;
-
                                                     if (masterKeyNew in masterGroups) {
                                                         if (!contains(masterGroups[masterKeyNew], ' ' + grepSuffix)) {
                                                             masterGroups[masterKeyNew] += ' ' + grepSuffix;
                                                         }
                                                     }
-                                                    else { masterGroups[masterKeyNew] = [false, grepSuffix]; }
+                                                    else { masterGroups[masterKeyNew] = grepSuffix; }
                                                 }
                                             }
                                         }
@@ -1558,6 +1598,7 @@ const parseQuick = function (attr) {
                         grepRetain.push(grepClass);
                         if (grepClassMore.length > 0) { grepRetain.push(...grepClassMore); }
                     }
+                    */
                 }
             }
             if (grepRetain.length == 0) { delete masterGroups[masterKey]; }

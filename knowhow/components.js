@@ -2,6 +2,11 @@ const components = {
 
     // JAA TODO - add shorthand for flex-direction, justify-content, align-content, align-items, place-items
 
+    "fill-slide": [
+        "relative",
+        ">div{absolute w-100% mw-100% t-50% l-0 translateXY=0/-250% aligncenter}"
+    ],
+
     "fill-block": [
         "relative",
         "+child{absolute t-50% l-50% translate=-50%_-50% aligncenter}"
