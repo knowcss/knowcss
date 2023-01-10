@@ -1,7 +1,7 @@
 'use strict';
 
 /*
-KnowCSS Version 2.0.9 by Jay Doublay
+KnowCSS Version 2.1.0 by Jay Doublay
 https://www.knowcss.com/
 
 NPM: https://www.npmjs.com/package/knowcss
@@ -40,24 +40,6 @@ const knowCSSLists = function () {
     };
 };
 
-// JAA TODO - include webkit variations for classValues
-/*
-const knowCSSPrefixer = function () {
-    return {
-        "only": {
-            "webkit": [],
-            "moz": [],
-            "ms": [],
-            "o": []
-        },
-        "all": ["calc", "grid", "sticky", "transform", "fit-content", "max-content", "min-content", "linear-gradient"],
-        "spread": {
-            "flex": ["webkit-box", "webkit-flex", "ms-flexbox"]
-        }
-    };
-};
-*/
-
 var knowCSS = {
     settings: function (vals) {
         if (vals) {
@@ -90,9 +72,10 @@ var knowCSS = {
         if (refresh) { cssIncrement = 0; }
         this.options(options);
 
-        //getGreps();
-        //knowCSSRenderOptimized();
+        getGreps();
+        knowCSSRenderOptimized();
 
+        /*
         var startTime = new Date().getTime();
         this.z = document.querySelectorAll(this.key) || [];
         var num = 0;
@@ -102,6 +85,8 @@ var knowCSS = {
         var renderIn = knowLayer('render');
         if (renderIn && renderIn.innerText.length == 0) { renderIn.innerText = renderConsole; }
         if (isNum) { console.log(renderConsole); }
+        */
+
         return this;
     },
 
@@ -120,7 +105,7 @@ var knowCSS = {
 
     startup: function () { return knowStartup; },
 
-    now: knowCSSNow,
+    //now: knowCSSNow,
 
     lists: knowCSSLists,
 
@@ -139,6 +124,7 @@ var smartUnique = {}, allMixins = {}, classNext = '', classNextStart = '', smart
 
 var screenSized = { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 };
 var screenNum = 1, screenVal = 0, screenSizes = {};
+const screenSize = Object.keys(screenSized);
 for (var key in screenSized) {
     screenVal = screenSized[key] + (key == 'xxl' ? 0 : 0.98);
     screenSizes[key] = [screenNum, screenVal];
@@ -164,11 +150,530 @@ var containsAny = function (val, vals) {
     return false;
 };
 
-function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
-
-function knowLayer(name) {
-    return document.getElementById(name);
+function knowLayer(name) { return document.getElementById(name); }
+function getDocument() {
+    if (defined(knowCSSOptions.cssVars)) {
+        var root = knowLayer('root');
+        if (root && contains(root.innerHTML, '$')) { root.innerHTML = getVariables(root.innerHTML); }
+    }
 }
+
+var mediaGrep = '';
+var webkitGrep = '';
+var actionGrep = [];
+var screenGrep = '';
+var screenTypes = [];
+var ruleTypes = {};
+var reversionTypes = [];
+var reversionGrep = '';
+function getGreps() {
+    const getLists = knowCSSLists();
+    mediaGrep = "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$";
+    webkitGrep = "^" + getLists.webkit.join("|").replace('/-/gi', '\\-');
+    actionGrep = [
+        [" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")", '::'],
+        [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")", ':'],
+        [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")", ':']
+    ];
+    screenTypes = getLists.screens;
+    var x = screenSizeKeys.length;
+    var i = 0;
+    while (i < x) {
+        screenTypes.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
+        i++;
+    }
+    screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
+    reversionTypes = getLists.reversions;
+    reversionGrep = "(" + reversionTypes.join("|").replace('/-/gi', '\\-') + ")";
+    ruleTypes = getLists.at;
+}
+function getActions(mS, mD, def, level) {
+    var ret = def || {}, zA = '', zM = null, zS = '', zY = false;
+    var x = actionGrep.length;
+    var i = 0;
+    var mA = '*';
+    var mP = mA;
+    var mU = mS.indexOf("^") > -1 ? "^" : "";
+    ['>', '~', '+'].forEach(function (val) {
+        if (contains(mS, val)) {
+            mP = mS.split(val, 2).pop();
+            if (!mP) { mP = mA; }
+            else { mP = val + mP; }
+        }
+    });
+    mP = mP.replace(/>/g, ' ');
+    while (i < x) {
+        zM = new RegExp(actionGrep[i][1], 'gi');
+        zS = actionGrep[i][0].replace(mA, mP);
+        while ((zA = zM.exec(mS)) !== null) {
+            if (zS == ':' && mP != mA) { zA[1] += mP; }
+            if (zA[1] == mS) { zS = actionGrep[i][2]; }
+            ret[zA[1]] = zS;
+            zY = true;
+        }
+        i++;
+    }
+    if (!zY && (!level || level === 0)) {
+        ret = def || {};
+        ret[mU + mD] = "";
+    }
+    return ret;
+}
+function getScreens(mS, mD, def) {
+    var ret = def || {};
+
+    var reversion = '';
+    var multiLoop = true;
+    var multiScreen = "";
+    var multiMax = 10;
+    var multiRange = [];
+    var multiKeep = [];
+    var multiCheck = "";
+    var multiFirst = "";
+    var multiLast = "";
+
+    var grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
+    if (grepFind) {
+        multiScreen = grepFind[1];
+        multiKeep = [];
+        multiRange = contains(multiScreen, '-') ? multiScreen.split('-') : [multiScreen];
+        i = 0;
+        x = multiRange.length;
+        while (i < x) {
+            multiCheck = multiRange[i];
+            if (reversionTypes.includes(multiCheck)) {
+                reversion += (reversion.length > 0 ? '_' : '=') + multiCheck;
+            }
+            else { multiKeep.push(multiCheck); }
+            i++;
+        }
+        mS = multiKeep.join('-');
+    }
+
+    if (mS.length > 0) {
+        while (multiLoop) {
+            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
+            if (grepFind) {
+                multiScreen = grepFind[1];
+                if (contains(multiScreen, '-')) {
+                    multiRange = multiScreen.split('-');
+                    multiFirst = multiRange.shift();
+                    if (multiRange.length > 0) {
+                        multiLast = multiRange.pop();
+                        if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
+                        else if (isNaN(multiFirst)) { multiFirst = 0; }
+                        if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
+                        else if (isNaN(multiLast)) { multiLast = 9999; }
+                        if (multiFirst == 0 && multiLast == 9999) { ret["all"] = true; }
+                        else { ret[multiFirst + '?' + multiLast] = true; }
+                    }
+                    else if (multiFirst in screenSizes || !isNaN(multiFirst)) { ret[multiFirst] = true; }
+                }
+                else {
+                    if (multiScreen in screenSizes || !isNaN(multiScreen)) { ret[multiScreen] = true; }
+                }
+                mS = mS.substring(multiScreen.length + 1);
+                multiMax--;
+                if (multiMax == 0 || mS.length == 0) { multiLoop = false; }
+            }
+            else { multiLoop = false; }
+        }
+    }
+
+    if (mS.length == 0) { }
+    else if (mS in screenSizes || !isNaN(mS)) { ret[mS] = true; }
+    else {
+        var all = [], zA = '', zB = '', notScreens = false;
+        var zM = new RegExp(screenGrep, 'gi');
+        while ((zA = zM.exec(mS)) !== null) {
+            zB = zA[1];
+            if (contains(zB, '!')) {
+                notScreens = true;
+                zB = zB.replace(/\!/g, '');
+            }
+            ret[zB] = true;
+            all.push(zB);
+        }
+        if (notScreens) {
+            var screenSizeContainers = all;
+            var screenSizeKey = '';
+            ret = {};
+            var x = screenSizeKeys.length;
+            var i = 0;
+            while (i < x) {
+                screenSizeKey = screenSizeKeys[i];
+                if (!screenSizeContainers.includes(screenSizeKey)) { ret[screenSizeKey] = true; }
+                i++;
+            }
+        }
+    }
+    if (Object.keys(ret).length == 0) { ret[mD] = true; }
+    return [ret, reversion];
+}
+function getParents(container, parent, def) {
+    var ret = def || [];
+    var level = 0;
+    if (containsAny(container, ['^', 'parent'])) { level = parseInt(container.replace(/[^0-9]/g, '')) || 1; }
+    else { level = parent; }
+    ret[level] = true;
+    return ret;
+}
+function getModifiers(container, modifier, action, single, def) {
+    var ret = def || {};
+    var keepAction = false;
+    var modifierSub = '';
+    var modifierTag = '';
+    if (begins(container, '+')) { modifier = ':first-child ' + container.replace(/\+/g, ' > ').trim(); }
+    else {
+        if (contains(container, '~')) { modifierSub = '~'; }
+        else if (contains(container, '+')) { modifierSub = '+'; }
+        if (modifierSub.length > 0) {
+            [action, container] = container.split(modifierSub, 2);
+            keepAction = true;
+        }
+        if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
+        else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
+        else if (begins(container, 'all')) {
+            if (begins(container, 'all-')) { modifier = ' ' + container.replace('all-', ''); }
+            else if (begins(container, 'all>')) { modifier = ' ' + container.replace('all>', '> '); }
+        }
+        else if (contains(container, 'nth')) {
+            if (contains(container, '-nth')) {
+                [modifierTag, container] = container.split('-nth', 2);
+                container = 'nth' + container;
+            }
+            var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
+            if (contains(container, 'nth-child')) { modifier = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
+            else if (contains(container, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
+            else if (contains(container, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
+            else if (contains(container, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
+        }
+    }
+    ret[modifier] = true;
+    return [single ? modifier : ret, keepAction ? '' : action];
+}
+
+const cleanup = function (str) {
+    return str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
+};
+const removeHyphens = function (str) {
+    if (contains(str, '-')) {
+        str = str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '');
+    }
+    return str;
+}
+
+const parseScreens = function(val, ret) {
+    var num = 0;
+    if (val in screenSizes) {
+        ret[val] = true;
+        num++;
+    }
+    else if (!isNaN(val)) {
+        var str = parseInt(val);
+        if (str > 64 || str < 2) {
+            ret[val] = true;
+            num++;
+        }
+    }
+    else {
+        var multiLoop = true, multiMax = 10, grepFind, multiRange, multiFirst, multiLast, multiScreen, multiKey;
+        while (multiLoop) {
+            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(val);
+            if (grepFind) {
+                multiKey = "";
+                multiScreen = grepFind[1];
+                if (contains(multiScreen, '-')) {
+                    multiRange = multiScreen.split('-');
+                    multiFirst = multiRange.shift();
+                    if (multiRange.length > 0) {
+                        multiLast = multiRange.pop();
+                        if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
+                        else if (isNaN(multiFirst)) { multiFirst = 0; }
+                        if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
+                        else if (isNaN(multiLast)) { multiLast = 9999; }
+                        if (multiFirst != 0 || multiLast != 9999) { multiKey = multiFirst + '?' + multiLast; }
+                    }
+                    else if (multiFirst in screenSizes || !isNaN(multiFirst)) { multiKey = multiFirst; }
+                }
+                else if (multiScreen in screenSizes || !isNaN(multiScreen)) { multiKey = multiScreen; }
+                if (multiKey.length > 0) {
+                    val = val.substring(multiScreen.length + 1);
+                    ret[multiKey] = true;
+                    num++;
+                }
+                multiMax--;
+                if (multiMax == 0 || val.length == 0) { multiLoop = false; }
+            }
+            else { multiLoop = false; }
+        }
+        if (val.length > 0) {
+            var zA = '', zB = '', notScreens = [];
+            var zM = new RegExp(screenGrep, 'gi');
+            while ((zA = zM.exec(val)) !== null) {
+                zB = zA[1];
+                val = val.replace(zB, '');
+                if (contains(zB, '!')) { notScreens.push(zB.replace(/\!/g, '')); }
+                else { ret[zB] = true; }
+                num++;
+            }
+            if (notScreens.length > 0) {
+                var screenSizeKey = '';
+                var x = screenSize.length;
+                var i = 0;
+                while (i < x) {
+                    screenSizeKey = screenSize[i];
+                    if (!notScreens.includes(screenSizeKey)) { ret[screenSizeKey] = true; }
+                    i++;
+                }
+            }
+        }
+    }
+    return [num > 0, removeHyphens(val), ret];
+};
+const parseActions = function(val, ret) {
+    var zA = '', zM = null, zS = '', zY = false, num = 0;
+    var mA = '*';
+    var mP = mA;
+    var mU = val.indexOf("^") > -1 ? "^" : "";
+    ['>', '~', '+'].forEach(function (symbol) {
+        if (contains(val, symbol)) {
+            mP = val.split(symbol, 2).pop();
+            if (!mP) { mP = mA; }
+            else { mP = symbol + mP; }
+        }
+    });
+    mP = mP.replace(/>/g, ' ');
+
+    var i = 0;
+    var x = actionGrep.length;
+    while (i < x) {
+        zM = new RegExp(actionGrep[i][1], 'gi');
+        zS = actionGrep[i][0].replace(mA, mP);
+        while ((zA = zM.exec(val)) !== null) {
+            if (zS == ':' && mP != mA) { zA[1] += mP; }
+            if (zA[1] == val) { zS = actionGrep[i][2]; }
+            ret[zA[1]] = zS;
+            num++;
+            zY = true;
+        }
+        i++;
+    }
+
+    if (num == 0 && mU.length > 0) {
+        ret[mU + mD] = "";
+        num++;
+    }
+    return [num > 0, removeHyphens(val), ret];
+};
+const parseParents = function (val, ret) {
+    var level = 0;
+    val = val.replace('parent', '^');
+    if (val == '^') {
+        level = 1;
+        val = '';
+    }
+    else if (contains(val, '^')) {
+        var grepFind = /\^([0-9]+){1,2}/.exec(val);
+        if (grepFind) {
+            val = val.replace(grepFind[0], '');
+            level = parseInt(grepFind[1]) || 1;
+        }
+        else { level = 1; }
+        ret[level] = true;
+    }
+    return [level > 0, removeHyphens(val), ret];
+};
+const parseReversions = function (val, ret) {
+    var num = 0;
+    var zA = '';
+    while ((zA =  new RegExp(reversionGrep, 'gi').exec(val)) !== null) {
+        ret[zA[1]] = true;
+        val = val.replace(zA[1], '');
+        num++;
+    }
+    return [num > 0, removeHyphens(val), ret];
+};
+const parseScreenModifierActionParentReversion = function (masterKey, wrapper, screens, modifiers, actions, parents, reversions, environments, level) {
+    var ret = {
+        "screens": screens || {},
+        "modifiers": modifiers || {},
+        "actions": actions || {},
+        "parents": parents || [],
+        "reversions": reversions || {},
+        "environments": environments || {}
+    };
+
+    var grepSegments = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis');
+    var grepSegment = null;
+    var grepAny = false;
+    var grepVal = null;
+    while ((grepSegment = grepSegments.exec(wrapper)) !== null) {
+        grepVal = "" + grepSegment[1];
+        [grepAny, grepVal, ret.reversions] = parseReversions(grepVal, ret.reversions);
+        [grepAny, grepVal, ret.parents] = parseParents(grepVal, ret.parents);
+        [grepAny, grepVal, ret.screens] = parseScreens(grepVal, ret.screens);
+        //[grepAny, grepVal, ret.actions] = parseModifiers(grepVal, ret.actions);
+        [grepAny, grepVal, ret.actions] = parseActions(grepVal, ret.actions);
+        //[grepAny, grepVal, ret.actions] = parseEnvironments(grepVal, ret.actions);
+        wrapper = wrapper.substr(grepSegment[1]);
+        console.log(['segment', grepSegment[1], grepAny, grepVal, wrapper]);
+    }
+    console.log(JSON.stringify(ret, null, 1));
+
+    /*
+    var [screen, modifier, action, parent] = masterKey.split('_', 4);
+    var reversion = "";
+    [screens, reversion] = getScreens(wrapper, screen, screens); // pass screens in
+    [modifiers, action] = getModifiers(wrapper, modifier, action, false, modifiers); // pass modifiers
+    actions = getActions(wrapper, action, actions, level); // pass actions in
+    parents = getParents(wrapper, parent, level == 1 ? parents : []); // pass parents in
+    */
+
+    return [wrapper, screens, modifiers, actions, parents, reversions, environments];
+};
+const parseWrappers = function (groups, wrapper) {
+    var grepFound = null, grepSubFound = null;
+    wrapper = cleanup(wrapper);
+    var originalWrapper = wrapper;
+    Object.keys(groups).forEach(function (masterKey) {
+        var grepMain = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis');
+        while ((grepFound = grepMain.exec(wrapper)) !== null) {
+            var grepWrap = grepFound[1];
+            var grepClasses = cleanup(grepFound[2]);
+            var [grepWrap, screens, modifiers, actions, parents, reversions, environments] = parseScreenModifierActionParentReversion(masterKey, grepWrap, {}, {}, {}, [], {}, {}, 0);
+            var parentWrappers = JSON.stringify([screens, modifiers, actions, parents, reversions]);
+            var grepSplit = [grepClasses];
+            grepSplit.forEach(function (subWrap) {
+                var grepSub = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis');
+                while ((grepSubFound = grepSub.exec(subWrap)) !== null) {
+                    var grepSubWrap = grepSubFound[1];
+                    var grepSubClasses = cleanup(grepSubFound[2]);
+
+                    // JAA TODO - remove default wrappers from parent list to sub
+                    var [screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub, environmentsSub] = JSON.parse(parentWrappers);
+                    delete screensSub["n"];
+                    delete modifiersSub["0"];
+                    parentsSub = [];
+
+                    [grepSubWrap, screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub, environmentsSub] = parseScreenModifierActionParentReversion(masterKey, grepSubWrap, screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub, environmentsSub, 1);
+                    grepClasses = grepClasses.replace(grepSubFound[0], '');
+
+                    // JAA TODO get important{}, normal{}, safari{} etc too
+
+                    // JAA TODO - move this to shared function
+                    /*
+                    for (var screensKey in screensSub) {
+                        for (var modifiersKey in modifiersSub) {
+                            for (var actionsKey in actionsSub) {
+                                for (var parentsKey in parentsSub) {
+                                    var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
+                                    if (masterKeyNew != masterKey) {
+                                        if (masterKeyNew in groups) {
+                                            if (!contains(groups[masterKeyNew], ' ' + grepSubClasses)) { groups[masterKeyNew] += ' ' + grepSubClasses; }
+                                        }
+                                        else { groups[masterKeyNew] = grepSubClasses; }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    */
+                }
+            });
+
+            grepClasses = grepClasses.trim();
+            var grepClassesRemain = grepClasses.split(' ');
+            grepClassesRemain.forEach(function(classFound) {
+                if (classFound.length > 0) {
+                    var [screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle] = JSON.parse(parentWrappers);
+                    var classSingle = parseScreenModifierActionParentReversion("n_0_0_0", classFound, screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle, 1);
+                }
+            });
+
+            /*
+            var [screens, modifiers, actions, parents, reversions] = JSON.parse(parentWrappers);
+            grepClasses = cleanup(grepClasses);
+
+            for (var screensKey in screens) {
+                for (var modifiersKey in modifiers) {
+                    for (var actionsKey in actions) {
+                        for (var parentsKey in parents) {
+                            var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
+                            if (masterKeyNew != masterKey) {
+                                if (masterKeyNew in groups) {
+                                    if (!contains(groups[masterKeyNew], ' ' + grepClasses)) { groups[masterKeyNew] += ' ' + grepClasses; }
+                                }
+                                else { groups[masterKeyNew] = grepClasses; }
+                            }
+                        }
+                    }
+                }
+            }
+            */
+            originalWrapper = originalWrapper.replace(grepFound[0], '');
+        }
+
+        var grepClassesRemain = originalWrapper.split(' ');
+        grepClassesRemain.forEach(function (classFound) {
+            classFound = cleanup(classFound);
+            if (classFound.length > 0) {
+                [classFound, screens, modifiers, actions, parents, reversions] = parseScreenModifierActionParentReversion("n_0_0_0", classFound, {}, {}, {}, [], {}, {}, 0);
+
+                /*
+                for (var screensKey in screens) {
+                    for (var modifiersKey in modifiers) {
+                        for (var actionsKey in actions) {
+                            for (var parentsKey in parents) {
+                                var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
+                                if (masterKeyNew != masterKey) {
+                                    if (masterKeyNew in groups) {
+                                        if (!contains(groups[masterKeyNew], ' ' + classFound)) { groups[masterKeyNew] += ' ' + classFound; }
+                                    }
+                                    else { groups[masterKeyNew] = classFound; }
+                                }
+                            }
+                        }
+                    }
+                }
+                */
+                originalWrapper = originalWrapper.replace(classFound, '');
+            }
+        });
+
+        groups[masterKey] = cleanup(originalWrapper);
+    });
+
+    return groups;
+};
+const parseQuick = function (attr) { return parseWrappers({ "n_0_0_0": "" }, attr); };
+function knowCSSRenderOptimized() {
+    var startTime = new Date().getTime();
+    var classTags = document.querySelectorAll("[" + knowID + "]");
+    var tL = classTags.length;
+    var ii = 0;
+    var classList = {};
+    var attr = "";
+    while (ii < tL) {
+        attr = classTags[ii].getAttribute(knowID);
+        classList = parseQuick(attr);
+        //classList = parseQuick(getMixins(getVariables(crossMixins(attr))));
+        if (Object.keys(classList).length > 0) {
+            console.log(JSON.stringify(classList, null, 2));
+        }
+        ii++;
+    }
+    var endTime = new Date().getTime();
+    console.log(['optimized in', endTime - startTime]);
+}
+
+
+
+
+
+
+/*
+function knowCSSNow() { var hW = window.open("../src/now/index.html", "KnowCSS Now", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=" + (screen.height - 200) + ",top=50,left=" + (screen.width - 600)); }
 function getReversion(val, screen) {
     var important = '';
     val = (typeof val === 'string') ? val : '';
@@ -488,49 +993,6 @@ function getKeyShorter(modifier, name, val, important, parent, event) {
 function getKey(screen, modifier, name, action, val, important, parent, event) {
     return (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important + '_' + parent.toString() + '_' + event).toLowerCase().replace(/[\s\n\r]/gi, '-');
 }
-function getParents(container, parent, def) {
-    var ret = def || [];
-    var level = 0;
-    if (containsAny(container, ['^', 'parent'])) { level = parseInt(container.replace(/[^0-9]/g, '')) || 1; }
-    else { level = parent; }
-    ret[level] = true;
-    return ret;
-}
-function getModifiers(container, modifier, action, single, def) {
-    var ret = def || {};
-    //var modifier = '';
-    var keepAction = false;
-    var modifierSub = '';
-    var modifierTag = '';
-    if (begins(container, '+')) { modifier = ':first-child ' + container.replace(/\+/g, ' > ').trim(); }
-    else {
-        if (contains(container, '~')) { modifierSub = '~'; }
-        else if (contains(container, '+')) { modifierSub = '+'; }
-        if (modifierSub.length > 0) {
-            [action, container] = container.split(modifierSub, 2);
-            keepAction = true;
-        }
-        if (['all', '*', '>'].includes(container)) { modifier = ' *'; }
-        else if (begins(container, '>')) { modifier = ' ' + container.replace(/\>/g, ' > ').trim(); }
-        else if (begins(container, 'all')) {
-            if (begins(container, 'all-')) { modifier = ' ' + container.replace('all-', ''); }
-            else if (begins(container, 'all>')) { modifier = ' ' + container.replace('all>', '> '); }
-        }
-        else if (contains(container, 'nth')) {
-            if (contains(container, '-nth')) {
-                [modifierTag, container] = container.split('-nth', 2);
-                container = 'nth' + container;
-            }
-            var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
-            if (contains(container, 'nth-child')) { modifier = colon + 'nth-child(' + container.replace('nth-child-', '') + ')'; }
-            else if (contains(container, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + container.replace('nth-last-child-', '') + ')'; }
-            else if (contains(container, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + container.replace('nth-of-type-', '') + ')'; }
-            else if (contains(container, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + container.replace('nth-last-of-type-', '') + ')'; }
-        }
-    }
-    ret[modifier] = true;
-    return [single ? modifier : ret, keepAction ? '' : action];
-}
 function getModifier(classList, classSecondary) {
     var zA = '', aM = [];
     if (classSecondary) { zA = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'); }
@@ -772,171 +1234,11 @@ function getWrapper(xZ) {
     }
     return [start.join('') + line, end, tab];
 }
-var mediaGrep = '';
-var webkitGrep = '';
-var actionGrep = [];
-var screenGrep = '';
-var screenTypes = [];
-var ruleTypes = {};
-var reversionTypes = [];
-function getGreps() {
-    const getLists = knowCSSLists();
-
-    mediaGrep = "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$";
-
-    webkitGrep = "^" + getLists.webkit.join("|").replace('/-/gi', '\\-');
-
-    actionGrep = [
-        [" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")", '::'],
-        [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")", ':'],
-        [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")", ':']
-    ];
-
-    screenTypes = getLists.screens;
-    var x = screenSizeKeys.length;
-    var i = 0;
-    while (i < x) {
-        screenTypes.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
-        i++;
-    }
-    screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
-
-    reversionTypes = getLists.reversions;
-
-    ruleTypes = getLists.at;
-}
 function getMediaQuery(mS) {
     return new RegExp(mediaGrep).exec(mS);
 }
 function getWebKit(wS) {
     return new RegExp(webkitGrep).test(wS);
-}
-function getActions(mS, mD, mF, def, level) {
-    var ret = def || [{}, {}, {}], zA = '', zM = null, zS = '', zY = false;
-    var x = actionGrep.length;
-    var i = 0;
-    var mA = '*';
-    var mP = mA;
-    var mU = mS.indexOf("^") > -1 ? "^" : "";
-    ['>', '~', '+'].forEach(function (val) {
-        if (contains(mS, val)) {
-            mP = mS.split(val, 2).pop();
-            if (!mP) { mP = mA; }
-            else { mP = val + mP; }
-        }
-    });
-    mP = mP.replace(/>/g, ' ');
-    while (i < x) {
-        zM = new RegExp(actionGrep[i][1], 'gi');
-        zS = actionGrep[i][0].replace(mA, mP);
-        while ((zA = zM.exec(mS)) !== null) {
-            if (zS == ':' && mP != mA) { zA[1] += mP; }
-            if (zA[1] == mS) { zS = actionGrep[i][2]; }
-            if (i in ret === false) { ret[i] = {}; }
-            ret[i][zA[1]] = zS;
-            zY = true;
-        }
-        i++;
-    }
-    if (!zY && (!level || level === 0)) {
-        ret = def || [{}, {}, {}];
-        if (0 in ret === false) { ret[0] = {}; }
-        ret[0][mU + mD] = "";
-    }
-    if (mF) {
-        ret = ret.filter(function (val) { return Object.keys(val).length > 0; });
-    }
-    return ret;
-}
-function getScreens(mS, mD, def) {
-    var ret = def || {};
-
-    var reversion = '';
-    var multiLoop = true;
-    var multiScreen = "";
-    var multiMax = 10;
-    var multiRange = [];
-    var multiKeep = [];
-    var multiCheck = "";
-    var multiFirst = "";
-    var multiLast = "";
-
-    var grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
-    if (grepFind) {
-        multiScreen = grepFind[1];
-        multiKeep = [];
-        multiRange = contains(multiScreen, '-') ? multiScreen.split('-') : [multiScreen];
-        i = 0;
-        x = multiRange.length;
-        while (i < x) {
-            multiCheck = multiRange[i];
-            if (reversionTypes.includes(multiCheck)) {
-                reversion += (reversion.length > 0 ? '_' : '=') + multiCheck;
-            }
-            else { multiKeep.push(multiCheck); }
-            i++;
-        }
-        mS = multiKeep.join('-');
-    }
-
-    if (mS.length > 0) {
-        while (multiLoop) {
-            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(mS);
-            if (grepFind) {
-                multiScreen = grepFind[1];
-                if (contains(multiScreen, '-')) {
-                    multiRange = multiScreen.split('-');
-                    multiFirst = multiRange.shift();
-                    if (multiRange.length > 0) {
-                        multiLast = multiRange.pop();
-                        if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
-                        else if (isNaN(multiFirst)) { multiFirst = 0; }
-                        if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
-                        else if (isNaN(multiLast)) { multiLast = 9999; }
-                        ret[multiFirst + '?' + multiLast] = true;
-                    }
-                    else if (multiFirst in screenSizes || !isNaN(multiFirst)) { ret[multiFirst] = true; }
-                }
-                else {
-                    if (multiScreen in screenSizes || !isNaN(multiScreen)) { ret[multiScreen] = true; }
-                }
-                mS = mS.substring(multiScreen.length + 1);
-                multiMax--;
-                if (multiMax == 0 || mS.length == 0) { multiLoop = false; }
-            }
-            else { multiLoop = false; }
-        }
-    }
-
-    if (mS.length == 0) { }
-    else if (mS in screenSizes || !isNaN(mS)) { ret[mS] = true; }
-    else {
-        var all = [], zA = '', zB = '', notScreens = false;
-        var zM = new RegExp(screenGrep, 'gi');
-        while ((zA = zM.exec(mS)) !== null) {
-            zB = zA[1];
-            if (contains(zB, '!')) {
-                notScreens = true;
-                zB = zB.replace(/\!/g, '');
-            }
-            ret[zB] = true;
-            all.push(zB);
-        }
-        if (notScreens) {
-            var screenSizeContainers = all;
-            var screenSizeKey = '';
-            ret = {};
-            var x = screenSizeKeys.length;
-            var i = 0;
-            while (i < x) {
-                screenSizeKey = screenSizeKeys[i];
-                if (!screenSizeContainers.includes(screenSizeKey)) { ret[screenSizeKey] = true; }
-                i++;
-            }
-        }
-    }
-    if (Object.keys(ret).length == 0) { ret[mD] = true; }
-    return [ret, reversion];
 }
 function getCleanStyles(style) {
     return style.replace(/(;){2,}/g, ';');
@@ -1018,12 +1320,6 @@ function getMixins(mA) {
     }
     return mA;
 }
-function getDocument() {
-    if (defined(knowCSSOptions.cssVars)) {
-        var root = knowLayer('root');
-        if (root && contains(root.innerHTML, '$')) { root.innerHTML = getVariables(root.innerHTML); }
-    }
-}
 function getVariables(html) {
     if (contains(html, '$')) {
         var zZ = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), varKey = '';
@@ -1063,43 +1359,12 @@ function getNextLetter(nA) {
     while (nC == nD);
     return nA;
 }
-/*
-function getRandomClass() {
-    var prefixID = "", nA = '';
-    var ret = false;
-    var k = letters.length;
-    var i = 1;
-    var j = Object.keys(usedClass).length;
-    var g = j;
-    if (j > k) {
-        i = 0;
-        while (j > k) {
-            j -= k;
-            i++;
-        }
-    }
-    while (!ret) {
-        if (g < k) { nA = shuffled.substring(j, 1); }
-        else {
-            prefixID = letters[Math.floor(Math.random() * k)];
-            nA = prefixID + Math.random().toString(26).substring(2, i);
-        }
-        if (nA in usedClass == false) {
-            ret = true;
-            break;
-        }
-    }
-    usedClass[nA] = true;
-    return nA;
-}
-*/
 function getSafeClass(screen, modifier, name, action, val, important) {
     var key = (screen + '_' + modifier + '_' + name + '_' + action + '_' + val + '_' + important).toLowerCase().replace(/[\s\n\r]/gi, '-');
     key = key.replace(/n_/g, '').replace(/[\#\,\(\)\_]/g, '-').replace(/[^[a-z0-9\-]/g, '').replace(/(\-){2,10}/g, '-').replace(/^\-/g, '').replace(/\-$/g, '');
     if (('0123456789').includes(key.substring(0, 1))) { key = 'sz-' + key; }
     return key;
 }
-
 function getClasses(classString) {
     var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis');
     var aM = "";
@@ -1442,291 +1707,6 @@ function knowMotionRender(knowMotion) {
     return ret;
 };
 
-
-const parseScreenModifierActionParentReversion = function (masterKey, wrapper, screens, modifiers, actions, parents, reversions, level) {
-    var [screen, modifier, action, parent] = masterKey.split('_', 4);
-    var reversion = "";
-    [screens, reversion] = getScreens(wrapper, screen, screens); // pass screens in
-    [modifiers, action] = getModifiers(wrapper, modifier, action, false, modifiers); // pass modifiers
-    actions = getActions(wrapper, action, true, actions, level); // pass actions in
-    parents = getParents(wrapper, parent, level == 1 ? parents : []); // pass parents in
-    return [wrapper, screens, modifiers, actions, parents, reversions];
-};
-const parseWrappers = function (groups, wrapper) {
-    var grepFound = null, grepSubFound = null;
-    var originalWrapper = wrapper;
-    Object.keys(groups).forEach(function (masterKey) {
-        var grepMain = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis');
-        while ((grepFound = grepMain.exec(wrapper)) !== null) {
-            var grepWrap = grepFound[1];
-            var grepClasses = grepFound[2];
-            var [grepWrap, screens, modifiers, actions, parents, reversions] = parseScreenModifierActionParentReversion(masterKey, grepWrap, {}, {}, [{}, {}, {}], [], [], 0);
-            var parentWrappers = JSON.stringify([screens, modifiers, actions, parents, reversions]);
-            var grepSplit = [grepClasses];
-            grepSplit.forEach(function(subWrap) {
-                var grepSub = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis');
-                while ((grepSubFound = grepSub.exec(subWrap)) !== null) {
-                    var grepSubWrap = grepSubFound[1];
-                    var grepSubClasses = grepSubFound[2];
-
-                    // JAA TODO - remove default wrappers from parent list to sub
-                    var [screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub] = JSON.parse(parentWrappers);
-                    delete screensSub["n"];
-                    delete modifiersSub["0"];
-                    parentsSub = [];
-
-                    [grepSubWrap, screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub] = parseScreenModifierActionParentReversion(masterKey, grepSubWrap, screensSub, modifiersSub, actionsSub, parentsSub, reversionsSub, 1);
-                    grepClasses = grepClasses.replace(grepSubFound[0], '');
-
-                    // JAA TODO - move this to shared function
-                    for (var screensKey in screensSub) {
-                        for (var modifiersKey in modifiersSub) {
-                            for (var actionsNum in actionsSub) {
-                                for (var actionsKey in actionsSub[actionsNum]) {
-                                    for (var parentsKey in parentsSub) {
-                                        var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
-                                        if (masterKeyNew != masterKey) {
-                                            if (masterKeyNew in groups) {
-                                                if (!contains(groups[masterKeyNew], ' ' + grepSubClasses)) { groups[masterKeyNew] += ' ' + grepSubClasses; }
-                                            }
-                                            else { groups[masterKeyNew] = grepSubClasses; }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            grepClasses = grepClasses.trim();
-
-            var [screens, modifiers, actions, parents, reversions] = JSON.parse(parentWrappers);
-
-            for (var screensKey in screens) {
-                for (var modifiersKey in modifiers) {
-                    for (var actionsNum in actions) {
-                        for (var actionsKey in actions[actionsNum]) {
-                            for (var parentsKey in parents) {
-                                var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
-                                if (masterKeyNew != masterKey) {
-                                    if (masterKeyNew in groups) {
-                                        if (!contains(groups[masterKeyNew], ' ' + grepClasses)) { groups[masterKeyNew] += ' ' + grepClasses; }
-                                    }
-                                    else { groups[masterKeyNew] = grepClasses; }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            originalWrapper = originalWrapper.replace(grepFound[0], '');
-        }
-
-        groups[masterKey] = originalWrapper.trim();
-    });
-
-    return groups;
-};
-const parseQuick = function (attr) {
-    var greps = [
-        new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis'),
-        new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis')
-    ];
-
-    var checkGroups = [];
-    var screen = "", modifier = "", action = "", parent = "", reversion = "";
-    var screens = [], modifiers = [], actions = [], parents = [], reversion = [];
-    var grepGroup = "", grepOriginal = "", grepFound = [], grepFull = "", grepWrap = "", grepClasses = "";
-    var masterKeyNew = "";
-
-    // screen_modifier_action_parent key: [check again based on changes, raw know value]
-    var masterGroups = { "n__n_0": attr };
-
-    //var fastMasterGroups = parseWrappers({"n_0_0_0": ""}, attr);
-    //console.log(fastMasterGroups);
-
-    greps.forEach(function (grepVal) {
-        checkGroups = Object.keys(masterGroups);
-        checkGroups.forEach(function (masterKey) {
-            [screen, modifier, action, parent] = masterKey.split('_', 4);
-            grepGroup = masterGroups[masterKey];
-            grepOriginal = masterGroups[masterKey];
-            while ((grepFound = grepVal.exec(grepGroup)) !== null) {
-                [grepFull, grepWrap, grepClasses] = grepFound;
-
-                // screen single -> sm, lg, 480, smup, smdown, etc
-                // screen list with any non a-z/0-9 splitter -> sm~lg, sm+lg, sm|lg, sm:lg, sm_lg, sm/lg, etc
-                // screen range with hyphen -> sm-lg, xl-xxl, sm-lg/xl-xxl, etc
-                [screens, reversion] = getScreens(grepWrap, screen);
-                // JAA TODO - return reverions here -> [important, revert, initial, etc]
-
-                // modifiers which may clear action
-                [modifiers, action] = getModifiers(grepWrap, modifier, action);
-
-                // actions from modifiers/selectors/actions master list
-                actions = getActions(grepWrap, action, true);
-                // JAA TODO - return actions{} instead of actions[{}] here
-
-                // parent with caret: ^
-                // parent with parent prefix and any non a-z0-9 splitter: parent:, parent-, parent_, parent~, etc
-                // up level parent with number before ^ or parent -> 2^, 3parent, etc
-                parents = getParents(grepWrap, parent);
-
-                grepOriginal = grepOriginal.replace(grepFull, '').trim();
-
-                // loop through screens/modifiers/actions/parents and check for != n_n_n_n to append to masterGroups
-                for (var screensKey in screens) {
-                    for (var modifiersKey in modifiers) {
-                        actions.forEach(function (actionVal) {
-                            for (var actionsKey in actionVal) {
-                                for (var parentsKey in parents) {
-                                    masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
-                                    if (masterKeyNew != masterKey) {
-                                        if (masterKeyNew in masterGroups) {
-                                            if (!contains(masterGroups[masterKeyNew], ' ' + grepClasses)) {
-                                                masterGroups[masterKeyNew] += ' ' + grepClasses;
-                                            }
-                                        }
-                                        else { masterGroups[masterKeyNew] = grepClasses; }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-
-            // split any grepOriginal left to look for additional screen/modifier/action/parent
-            var grepRetain = [];
-            if (grepOriginal.length > 0) {
-                [screen, modifier, action, parent] = masterKey.split('_', 4);
-                //var grepOriginals = grepOriginal.split(' ');
-                //var grepOriginals = grepOriginal.split(/(\s+)/).filter(e => e.trim().length > 0)
-                var grepOriginals = grepOriginal.replace(/\s+/gi, ' ').split(' ');
-                var grepClass = "", grepPrefix = "", grepSuffix = "", grepKeep = true, grepFind = null;
-                var grepClassMore = [];
-                while (grepOriginals.length > 0) {
-                    grepClass = grepOriginals.shift();
-                    grepKeep = true;
-
-                    grepSuffix = grepClass;
-                    screens = {};
-                    modifiers = {};
-                    actions = {};
-                    parents = {};
-                    while ((grepFind = /^[A-Za-z0-9\-\s]+/.exec(grepSuffix)) !== null) {
-                        grepPrefix = grepFind[0];
-                        // get possible screen, reversion, modifier, action, parent here and leave remaining class
-                        screens = getScreens(grepPrefix, "n", screens)[0];
-                        modifiers = getModifiers(grepPrefix, "n", "n", false, modifiers)[0];
-                        actions = getActions(grepPrefix, "n", false, actions);
-                        parents = getParents(grepPrefix, "n", parents);
-                        grepSuffix = grepSuffix.substring(grepPrefix.length + 1);
-                        if (grepSuffix.length == 0) { break; }
-                    }
-
-                    /*
-                    for (var screensKey in screens) {
-                        for (var modifiersKey in modifiers) {
-                            for (var actionsKey in actions) {
-                                for (var parentsKey in parents) {
-                                    masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
-                                    console.log(masterKeyNew + ' -- ' + grepSuffix);
-                                    if (masterKeyNew != masterKey) {
-                                        grepKeep = false;
-                                        if (masterKeyNew in masterGroups) {
-                                            if (!contains(masterGroups[masterKeyNew], ' ' + grepSuffix)) {
-                                                masterGroups[masterKeyNew] += ' ' + grepSuffix;
-                                            }
-                                        }
-                                        else { masterGroups[masterKeyNew] = grepSuffix; }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    */
-
-                    /*
-                    grepFind = /^[A-Za-z0-9\s]+/.exec(grepClass);
-                    if (grepFind) {
-                        grepPrefix = grepFind[0];
-                        if (grepPrefix !== grepClass) {
-                            grepSuffix = grepClass;
-
-                            //[screens, reversion] = getScreens(grepWrap, screen)
-                            //switch to get screens as long as !isNaN() is supported to match a screen size
-                            if (grepPrefix in screenSizes || !isNaN(grepPrefix)) { screens[grepPrefix] = true; }
-                            else { screens[screen] = true; }
-
-                            [modifiers, action] = getModifiers(grepPrefix, modifier, action);
-                            actions = getActions(grepPrefix, action, true);
-                            parents = getParents(grepWrap, parent);
-
-                            grepSuffix = grepSuffix.substring(grepPrefix.length + 1);
-
-                            // Move to shared function
-                            for (var screensKey in screens) {
-                                for (var modifiersKey in modifiers) {
-                                    actions.forEach(function (actionVal) {
-                                        for (var actionsKey in actionVal) {
-                                            for (var parentsKey in parents) {
-                                                masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey;
-                                                if (masterKeyNew != masterKey) {
-                                                    grepKeep = false;
-                                                    if (masterKeyNew in masterGroups) {
-                                                        if (!contains(masterGroups[masterKeyNew], ' ' + grepSuffix)) {
-                                                            masterGroups[masterKeyNew] += ' ' + grepSuffix;
-                                                        }
-                                                    }
-                                                    else { masterGroups[masterKeyNew] = grepSuffix; }
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    if (grepKeep) {
-                        // Apply shorthand/mixins/etc here to the individual class and possibly grep even more {} variations from applies change
-                        [grepClass, grepClassMore] = getShortHand(grepClass, []);
-                        grepRetain.push(grepClass);
-                        if (grepClassMore.length > 0) { grepRetain.push(...grepClassMore); }
-                    }
-                    */
-                }
-            }
-            if (grepRetain.length == 0) { delete masterGroups[masterKey]; }
-            else { masterGroups[masterKey] = grepRetain.join(' '); }
-        });
-    });
-
-    return masterGroups;
-};
-
-
-function knowCSSRenderOptimized() {
-    var startTime = new Date().getTime();
-    var classTags = document.querySelectorAll("[" + knowID + "]");
-    var tL = classTags.length;
-    var ii = 0;
-    var classList = {};
-    var attr = "";
-    while (ii < tL) {
-        // simplify the crossMixins, getVariables, getMixins process into 1 function
-        attr = classTags[ii].getAttribute(knowID);
-        classList = parseQuick(getMixins(getVariables(crossMixins(attr))));
-        //if (Object.keys(classList).length > 0) {
-        //   console.log([attr, JSON.stringify(classList)]);
-        //}
-        ii++;
-    }
-    var endTime = new Date().getTime();
-    console.log(['optimized in', endTime - startTime]);
-}
-
 function knowCSSRender(uI, uC, uO) {
     var uX = {
         'codeKey': '',
@@ -1845,16 +1825,6 @@ function knowCSSRender(uI, uC, uO) {
                     if (classEvent.length > 0 && contains(classFound, '-')) { [classFound, classesFound] = moreMixins(classFound, classesFound, classImportant); }
                     className = '';
                     classValue = '';
-                    /*
-                    if (classFound.indexOf('gradient') == 0) {
-                        classParts = classFound.split('-');
-                        classParts.shift();
-                        className = 'background-image';
-                        classValue = 'linear-gradient(' + classParts.join(',').trim() + ')';
-                        classValue = classValue.replace(/,(bottom|top|left|right)/gi, ' $1');
-                    }
-                    else
-                    */
                     if (contains(classFound, ':')) { [className, classValue] = classFound.split(':', 2); }
                     else if (contains(classFound, '=')) { [className, classValue] = classFound.split('=', 2); }
                     else if (contains(classFound, '-')) {
@@ -2089,6 +2059,7 @@ function knowCSSRender(uI, uC, uO) {
     }
     else { return uX.console ? 0 : false; }
 }
+*/
 
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };

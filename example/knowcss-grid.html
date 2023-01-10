@@ -15,14 +15,45 @@
     <meta property="og:url" content="https://www.knowcss.com/" />
     <script src="../src/knowcss-shorthand.js"></script>
     <script src="../knowhow/components.js"></script>
-    <script src="../src/js/knowcss.js"></script>
+    <script src="../src/js/knowcss-quick.js"></script>
 </head>
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
 
     <div id="root" role="main">
 
-        <div know="sm:hover:disabled:active:bold">Test</div>
+        <!--<div know="sm-md:hover:disabled:active:bold">Test</div>-->
+
+        <div know="normal{font-size}"></div>
+        <div know="auto{width height}"></div>
+
+        <!--<div know="^2-hover{ 18 }"></div>
+        <div know="^-hover{ 19 }"></div>
+        <div know="^hover{ 20 }"></div>-->
+
+        <!-- <div know="none"><define know="w-200 h-200 b-1px/solid/red"></define></div>-->
+
+        <!--
+            <div know="sm:hover:disabled:active:bold">Test</div>
+            <child know="grid-column-span_2">fill-grid</child>
+        -->
+
+        <!-- NOT WORKING hover{ parent((x)) } -->
+        <!--<div know="
+            hover{
+                xsm((12 300 full))
+                md((b-2))
+                sm((14))
+                lg((15))
+                padding-top-10px
+                parent((18))
+                parent2((19))
+                parent3((20))
+            }
+            active{13 400}
+            xl{16}
+            color-red
+        ">test</div>-->
 
         <!-- JAA grid shorthand TODO -->
         <!-- fill-grid-row fill-grid-cols for variations with cols as default -->
