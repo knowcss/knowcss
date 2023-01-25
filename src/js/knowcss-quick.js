@@ -8,8 +8,6 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
-// JAA TODO - replace forEach() with while (i < x) {}
-
 var knowCSSOptions = {
     hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
@@ -182,11 +180,13 @@ function getGreps() {
         screenTypes.push("\\!" + screenSizeKeys[i], screenSizeKeys[i] + "down", screenSizeKeys[i] + "up", screenSizeKeys[i]);
         i++;
     }
-    screenGrep = "(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")";
+    screenGrep = "^(" + screenTypes.join("|").replace('/-/gi', '\\-') + ")$";
     reversionTypes = getLists.reversions;
     reversionGrep = "(" + reversionTypes.join("|").replace('/-/gi', '\\-') + ")";
     ruleTypes = getLists.at;
 }
+
+/*
 function getActions(mS, mD, def, level) {
     var ret = def || {}, zA = '', zM = null, zS = '', zY = false;
     var x = actionGrep.length;
@@ -352,19 +352,49 @@ function getModifiers(container, modifier, action, single, def) {
     ret[modifier] = true;
     return [single ? modifier : ret, keepAction ? '' : action];
 }
+*/
 
-const cleanup = function (str) {
-    return str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
-};
+const cleanup = function (str) { return str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim(); };
 const removeHyphens = function (str) {
-    if (contains(str, '-')) {
-        str = str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '');
-    }
+    if (contains(str, '-')) { str = str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, ''); }
     return str;
 }
-
-const parseScreens = function(val, ret) {
+const parseModifiers = function (val, ret) {
+    var modifier = "";
+    if (begins(val, '+')) { modifier = ':first-child ' + val.replace(/\+/g, ' > ').trim(); }
+    else {
+        var modifierSub = '', action = '', keepAction = false;
+        if (contains(val, '~')) { modifierSub = '~'; }
+        else if (contains(val, '+')) { modifierSub = '+'; }
+        if (modifierSub.length > 0) {
+            [action, val] = val.split(modifierSub, 2);
+            keepAction = true;
+        }
+        if (['all', '*', '>'].includes(val)) { modifier = ' *'; }
+        else if (begins(val, '>')) { modifier = ' ' + val.replace(/\>/g, ' > ').trim(); }
+        else if (begins(val, 'all')) {
+            if (begins(val, 'all-')) { modifier = ' ' + val.replace('all-', ''); }
+            else if (begins(val, 'all>')) { modifier = ' ' + val.replace('all>', '> '); }
+        }
+        else if (contains(val, 'nth')) {
+            var modifierTag = '';
+            if (contains(val, '-nth')) {
+                [modifierTag, val] = val.split('-nth', 2);
+                val = 'nth' + val;
+            }
+            var colon = ':' + (keepAction ? action + modifierSub + modifierTag + ':' : '');
+            if (contains(val, 'nth-child')) { modifier = colon + 'nth-child(' + val.replace('nth-child-', '') + ')'; }
+            else if (contains(val, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + val.replace('nth-last-child-', '') + ')'; }
+            else if (contains(val, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + val.replace('nth-of-type-', '') + ')'; }
+            else if (contains(val, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + val.replace('nth-last-of-type-', '') + ')'; }
+        }
+    }
+    if (modifier.length > 0) { ret[modifier] = true; }
+    return [modifier.length > 0, removeHyphens(val), ret];
+};
+const parseScreens = function (val, ret) {
     var num = 0;
+    var origval = val;
     if (val in screenSizes) {
         ret[val] = true;
         num++;
@@ -377,33 +407,38 @@ const parseScreens = function(val, ret) {
         }
     }
     else {
-        var multiLoop = true, multiMax = 10, grepFind, multiRange, multiFirst, multiLast, multiScreen, multiKey;
+        var multiLoop = true, multiMax = 10, grepFind, multiRange, multiFirst, multiLast, multiScreen, multiKey, multiNum, multiKeep = [];
+        var loopVal = val;
         while (multiLoop) {
-            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(val);
+            grepFind = /(^[A-Za-z0-9\s\-]+)/.exec(loopVal);
             if (grepFind) {
-                multiKey = "";
                 multiScreen = grepFind[1];
-                if (contains(multiScreen, '-')) {
-                    multiRange = multiScreen.split('-');
-                    multiFirst = multiRange.shift();
-                    if (multiRange.length > 0) {
-                        multiLast = multiRange.pop();
-                        if (multiFirst in screenSizes) { multiFirst = screenSizes[multiFirst][0]; }
-                        else if (isNaN(multiFirst)) { multiFirst = 0; }
-                        if (multiLast in screenSizes) { multiLast = screenSizes[multiLast][1]; }
-                        else if (isNaN(multiLast)) { multiLast = 9999; }
-                        if (multiFirst != 0 || multiLast != 9999) { multiKey = multiFirst + '?' + multiLast; }
+                if (contains(multiScreen, '-')) { multiRange = multiScreen.split('-'); }
+                else { multiRange = [multiScreen]; }
+                if (multiRange.length > 0) {
+                    multiFirst = 9999;
+                    multiLast = 0;
+                    multiKeep = [];
+                    for (var i = 0; i < multiRange.length; i++) {
+                        if (multiRange[i] in screenSizes) { multiNum = screenSizes[multiRange[i]][0]; }
+                        else if (!isNaN(multiRange[i])) { multiNum = multiRange[i]; }
+                        else { multiNum = -1; }
+                        if (multiNum > -1) {
+                            if (multiNum <= multiFirst) { multiFirst = multiNum; }
+                            if (multiNum >= multiLast) { multiLast = multiNum; }
+                        }
+                        else { multiKeep.push(multiRange[i]); }
                     }
-                    else if (multiFirst in screenSizes || !isNaN(multiFirst)) { multiKey = multiFirst; }
-                }
-                else if (multiScreen in screenSizes || !isNaN(multiScreen)) { multiKey = multiScreen; }
-                if (multiKey.length > 0) {
-                    val = val.substring(multiScreen.length + 1);
-                    ret[multiKey] = true;
-                    num++;
+                    if (multiFirst != 9999 || multiLast != 0) {
+                        if (multiFirst == multiLast) { multiLast = 9999; }
+                        ret[multiFirst + '?' + multiLast] = true;
+                        num++;
+                    }
+                    val = val.replace(multiScreen, multiKeep.join('-'));
+                    loopVal = loopVal.substring(multiScreen.length + 1);
                 }
                 multiMax--;
-                if (multiMax == 0 || val.length == 0) { multiLoop = false; }
+                if (multiMax <= 0 || loopVal.length == 0) { multiLoop = false; }
             }
             else { multiLoop = false; }
         }
@@ -429,9 +464,11 @@ const parseScreens = function(val, ret) {
             }
         }
     }
+
+    console.log(['screens', num, val, ret]);
     return [num > 0, removeHyphens(val), ret];
 };
-const parseActions = function(val, ret) {
+const parseActions = function (val, ret) {
     var zA = '', zM = null, zS = '', zY = false, num = 0;
     var mA = '*';
     var mP = mA;
@@ -487,7 +524,7 @@ const parseParents = function (val, ret) {
 const parseReversions = function (val, ret) {
     var num = 0;
     var zA = '';
-    while ((zA =  new RegExp(reversionGrep, 'gi').exec(val)) !== null) {
+    while ((zA = new RegExp(reversionGrep, 'gi').exec(val)) !== null) {
         ret[zA[1]] = true;
         val = val.replace(zA[1], '');
         num++;
@@ -513,11 +550,10 @@ const parseScreenModifierActionParentReversion = function (masterKey, wrapper, s
         [grepAny, grepVal, ret.reversions] = parseReversions(grepVal, ret.reversions);
         [grepAny, grepVal, ret.parents] = parseParents(grepVal, ret.parents);
         [grepAny, grepVal, ret.screens] = parseScreens(grepVal, ret.screens);
-        //[grepAny, grepVal, ret.actions] = parseModifiers(grepVal, ret.actions);
+        [grepAny, grepVal, ret.modifiers] = parseModifiers(grepVal, ret.modifiers);
         [grepAny, grepVal, ret.actions] = parseActions(grepVal, ret.actions);
         //[grepAny, grepVal, ret.actions] = parseEnvironments(grepVal, ret.actions);
         wrapper = wrapper.substr(grepSegment[1]);
-        console.log(['segment', grepSegment[1], grepAny, grepVal, wrapper]);
     }
     console.log(JSON.stringify(ret, null, 1));
 
@@ -537,7 +573,7 @@ const parseWrappers = function (groups, wrapper) {
     wrapper = cleanup(wrapper);
     var originalWrapper = wrapper;
     Object.keys(groups).forEach(function (masterKey) {
-        var grepMain = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^]{1,255})\{(.*?)\}', 'gis');
+        var grepMain = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis');
         while ((grepFound = grepMain.exec(wrapper)) !== null) {
             var grepWrap = grepFound[1];
             var grepClasses = cleanup(grepFound[2]);
@@ -584,7 +620,7 @@ const parseWrappers = function (groups, wrapper) {
 
             grepClasses = grepClasses.trim();
             var grepClassesRemain = grepClasses.split(' ');
-            grepClassesRemain.forEach(function(classFound) {
+            grepClassesRemain.forEach(function (classFound) {
                 if (classFound.length > 0) {
                     var [screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle] = JSON.parse(parentWrappers);
                     var classSingle = parseScreenModifierActionParentReversion("n_0_0_0", classFound, screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle, 1);
