@@ -389,10 +389,12 @@ const parseModifiers = function (val, ret) {
             else if (contains(val, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + val.replace('nth-last-of-type-', '') + ')'; }
         }
     }
-    if (modifier.length > 0) { ret[modifier] = true; }
+    if (modifier.length > 0) {
+        ret[modifier] = true;
+    }
     return [modifier.length > 0, removeHyphens(val), ret];
 };
-const parseScreens = function (val, ret) {
+const parseScreens = function (val, ret, level) {
     var num = 0;
     var origval = val;
     if (val in screenSizes) {
@@ -421,14 +423,16 @@ const parseScreens = function (val, ret) {
                     multiKeep = [];
                     for (var i = 0; i < multiRange.length; i++) {
                         if (multiRange[i] in screenSizes) { multiNum = screenSizes[multiRange[i]][0]; }
-                        else if (!isNaN(multiRange[i])) { multiNum = multiRange[i]; }
+                        else if (level != 2 && !isNaN(multiRange[i])) { multiNum = multiRange[i]; }
                         else { multiNum = -1; }
-                        if (multiNum > -1) {
+                        if (multiNum != -1 && (multiNum > 64 || multiNum < 2)) {
                             if (multiNum <= multiFirst) { multiFirst = multiNum; }
                             if (multiNum >= multiLast) { multiLast = multiNum; }
                         }
                         else { multiKeep.push(multiRange[i]); }
                     }
+
+                    console.log(['screens', level, multiFirst, multiLast, val]);
                     if (multiFirst != 9999 || multiLast != 0) {
                         if (multiFirst == multiLast) { multiLast = 9999; }
                         ret[multiFirst + '?' + multiLast] = true;
@@ -549,8 +553,8 @@ const parseScreenModifierActionParentReversion = function (masterKey, wrapper, s
         grepVal = "" + grepSegment[1];
         [grepAny, grepVal, ret.reversions] = parseReversions(grepVal, ret.reversions);
         [grepAny, grepVal, ret.parents] = parseParents(grepVal, ret.parents);
-        [grepAny, grepVal, ret.screens] = parseScreens(grepVal, ret.screens);
         [grepAny, grepVal, ret.modifiers] = parseModifiers(grepVal, ret.modifiers);
+        [grepAny, grepVal, ret.screens] = parseScreens(grepVal, ret.screens, level);
         [grepAny, grepVal, ret.actions] = parseActions(grepVal, ret.actions);
         //[grepAny, grepVal, ret.actions] = parseEnvironments(grepVal, ret.actions);
         wrapper = wrapper.substr(grepSegment[1]);
@@ -623,7 +627,7 @@ const parseWrappers = function (groups, wrapper) {
             grepClassesRemain.forEach(function (classFound) {
                 if (classFound.length > 0) {
                     var [screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle] = JSON.parse(parentWrappers);
-                    var classSingle = parseScreenModifierActionParentReversion("n_0_0_0", classFound, screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle, 1);
+                    var classSingle = parseScreenModifierActionParentReversion("n_0_0_0", classFound, screensSingle, modifiersSingle, actionsSingle, parentsSingle, reversionsSingle, environmentsSingle, 2);
                 }
             });
 
