@@ -51,9 +51,104 @@ const parseModifiers = function (val, ret) {
     if (modifier.length > 0) { ret[modifier] = true; }
     return [modifier.length > 0, hyphens(val), ret];
 };
+const parseScreens = function (val, ret, level) {
+    var num = 0;
+    if (val in greps.screens) {
+        ret[val] = true;
+        val = '';
+        num++;
+    }
+    else if (!isNaN(val)) {
+        var str = parseInt(val);
+        if (str > 64 || str < 2) {
+            ret[val] = true;
+            val = '';
+            num++;
+        }
+    }
+    else if (level == 3) {
+    }
+    else {
+        var key = null, zB = '', nots = [];
+        var grep = new RegExp(greps.screen, 'gi');
+        while ((key = grep.exec(val)) !== null) {
+            zB = key[1];
+            val = val.replace(zB, '');
+            if (contains(zB, '!')) { notScreens.push(zB.replace(/\!/g, '')); }
+            else { ret[zB] = true; }
+            num++;
+        }
+        if (nots.length > 0) {
+            var x = greps.screens.length, i = 0;
+            while (i < x) {
+                key = greps.screens[i];
+                if (!nots.includes(key)) { ret[key] = true; }
+                i++;
+            }
+        }
+    }
+    return [num > 0, hyphens(val), ret];
+};
+const parseParents = function (val, ret) {
+    var level = 0, key = null;
+    val = val.replace('parent', '^');
+    if (val == '^') {
+        level = 1;
+        val = '';
+    }
+    else if (contains(val, '^')) {
+        key = /\^([0-9]+){1,2}/.exec(val);
+        if (key) {
+            val = val.replace(key[0], '');
+            level = parseInt(key[1]) || 1;
+        }
+        else {
+            val = val.replace('^', '');
+            level = 1;
+        }
+    }
+    if (level && level > 0) { ret[level] = true; }
+    return [level > 0, hyphens(val), ret];
+};
+const parseActions = function (val, ret) {
+    var original = val;
+    var key = '', grep = null, zS = '', zY = false, num = 0;
+    var mA = '*';
+    var mP = mA;
+    var mU = val.indexOf("^") > -1 ? "^" : "";
+    ['>', '~', '+'].forEach(function (symbol) {
+        if (contains(val, symbol)) {
+            mP = val.split(symbol, 2).pop();
+            if (!mP) { mP = mA; }
+            else { mP = symbol + mP; }
+        }
+    });
+    mP = mP.replace(/>/g, ' ');
+
+    var i = 0, x = greps.action.length;
+    while (i < x) {
+        grep = new RegExp(greps.action[i][1], 'gi');
+        zS = greps.action[i][0].replace(mA, mP);
+        while ((key = grep.exec(val)) !== null) {
+            if (zS == ':' && mP != mA) { key[1] += mP; }
+            if (key[1] == val) { zS = greps.action[i][2]; }
+            ret[key[1]] = zS;
+            val = val.replace(key[0], '');
+            num++;
+            zY = true;
+        }
+        i++;
+    }
+
+    if (num == 0 && mU.length > 0) {
+        ret[mU + mD] = "";
+        num++;
+    }
+    return [num > 0, hyphens(val), ret];
+};
 
 
-var buildGroup = function(groups, classes, containers, master) {
+var buildGroup = function (groups, classes, containers, master) {
     // tmp until other parse funcitons are ready which assign at least 1 key
     if (Object.keys(containers.screens).length == 0) { containers.screens["n"] = ""; }
     if (Object.keys(containers.modifiers).length == 0) { containers.modifiers["0"] = ""; }
@@ -61,25 +156,28 @@ var buildGroup = function(groups, classes, containers, master) {
     if (Object.keys(containers.parents).length == 0) { containers.parents["0"] = ""; }
     if (Object.keys(containers.reversions).length == 0) { containers.reversions["0"] = ""; }
 
-    for (var screensKey in containers.screens) {
-        for (var modifiersKey in containers.modifiers) {
-            for (var actionsKey in containers.actions) {
-                for (var parentsKey in containers.parents) {
-                    for (var reverionsKey in containers.reversions) {
-                        var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey + '_' + reverionsKey;
-                        if (masterKeyNew != master) {
-                            if (masterKeyNew in groups) {
-                                if (!contains(groups[masterKeyNew], ' ' + classes)) { groups[masterKeyNew] += ' ' + classes; }
+    var ret = classes;
+    if (classes.length > 0) {
+        for (var screensKey in containers.screens) {
+            for (var modifiersKey in containers.modifiers) {
+                for (var actionsKey in containers.actions) {
+                    for (var parentsKey in containers.parents) {
+                        for (var reverionsKey in containers.reversions) {
+                            var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey + '_' + reverionsKey;
+                            if (masterKeyNew != master) {
+                                if (masterKeyNew in groups) {
+                                    if (!contains(groups[masterKeyNew], ' ' + classes)) { groups[masterKeyNew] += ' ' + classes; }
+                                }
+                                else { groups[masterKeyNew] = classes; }
+                                ret = "";
                             }
-                            else { groups[masterKeyNew] = classes; }
-                            classes = "";
                         }
                     }
                 }
             }
         }
     }
-    return [groups, classes];
+    return [groups, ret];
 };
 
 const knowID = 'know';
@@ -112,7 +210,7 @@ var getdocument = (ctx) => {
 };
 var getvars = (html) => {
     if (contains(html, '$')) {
-        var grep = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), key = '';
+        var grep = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), key = null;
         while ((key = grep.exec(html)) !== null) {
             var val = '';
             if (defined(options.vars) && key[1] in options.vars) { val = options.vars[key[1]].replace('/\\\\/gis', ''); }
@@ -169,49 +267,41 @@ const parser = {
     },
     wrappers: function (attr) {
         attr = cleanup(attr);
-        var master = "n_0_0_0_0", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null;
+        var master = "n_0_0_0_0", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
-            var classes = cleanup(key[2]);
-
-            // TODO - add containers to groups{}
-            var containers = this.containers(key[1], null, 0);
-            var parentcontainer = JSON.stringify(containers);
+            classes = cleanup(key[2]);
+            var toplevel = JSON.stringify(this.containers(key[1], null, 0));
 
             var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
             var subWrap = classes.toString();
             while ((keysecond = grepsecond.exec(subWrap)) !== null) {
                 //var classessecond = cleanup(keysecond[2]);
 
-                var containerssecond = JSON.parse(parentcontainer);
+                var containerssecond = JSON.parse(toplevel);
                 delete containerssecond.screens["n"];
                 delete containerssecond.modifiers["0"];
-                containerssecond.parents = [];
-
-                // TODO - add containers to groups{}
-                var containerssecond = this.containers(keysecond[1], containerssecond, 1);
+                containerssecond.parents = {};
 
                 classes = classes.replace(keysecond[0], '');
+                this.containers(keysecond[1], containerssecond, 1);
             };
 
-            [groups, classes] = buildGroup(groups, cleanup(classes), JSON.parse(parentcontainer), master);
             original = original.replace(key[0], '');
+            [groups, classes] = buildGroup(groups, classes, JSON.parse(toplevel), master);
 
-            var grepClassesRemain = cleanup(classes.trim()).split(' ');
-            grepClassesRemain.forEach((classFound) => {
-                var containersleft = this.containers(classFound, JSON.parse(parentcontainer), 2);
-                [groups, classFound] = buildGroup(groups, classFound, containersleft, "");
+            classes = cleanup(classes).split(' ');
+            classes.forEach((classFound) => {
                 original = original.replace(classFound, '');
+                containers = this.containers(classFound, JSON.parse(toplevel), 2);
+                [groups, classFound] = buildGroup(groups, classFound, containers, "");
             });
         }
 
-        var grepClassesRemain = original.split(' ');
-        grepClassesRemain.forEach((classFound) => {
-            classFound = cleanup(classFound);
-            if (classFound.length > 0) {
-                var containersleft = this.containers(classFound, null, 0);
-                [groups, classFound] = buildGroup(groups, classFound, containersleft, "");
-                original = original.replace(classFound, '');
-            }
+        classes = cleanup(original).split(' ');
+        classes.forEach((classFound) => {
+            original = original.replace(classFound, '');
+            [containers, classFound] = this.containers(classFound, null, 3);
+            [groups, classFound] = buildGroup(groups, classFound, containers, "");
         });
 
         original = cleanup(original);
@@ -223,25 +313,26 @@ const parser = {
             "screens": {},
             "modifiers": {},
             "actions": {},
-            "parents": [],
+            "parents": {},
             "reversions": {},
             "environments": {}
         };
 
         wrapper = this.getvariants(wrapper);
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false;
+        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null;
+        var vals = [];
         while ((key = grep.exec(wrapper)) !== null) {
-            var val = key[1].toString();
+            val = key[1].toString();
             [any, val, ret.reversions] = this.getreversions(val, ret.reversions);
             [any, val, ret.parents] = this.getparents(val, ret.parents);
             [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
             [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
             [any, val, ret.actions] = this.getactions(val, ret.actions);
             [any, val, ret.environments] = this.getenvironments(val, ret.environments);
-            wrapper = wrapper.substr(key[1]);
+            if (val) { vals.push(val); }
         }
-        return ret;
+        return level > 2 ? [ret, vals.join('|')] : ret;
     },
     getvariants: function (ret) {
         // get variables
@@ -252,19 +343,10 @@ const parser = {
         return ret;
     },
     getreversions: function (val, ret) { return parseReversions(val, ret); },
-    getparents: function (val, ret) {
-        var any = false;
-        return [any, val, ret];
-    },
+    getparents: function (val, ret) { return parseParents(val, ret); },
     getmodifiers: function (val, ret) { return parseModifiers(val, ret); },
-    getscreens: function (val, ret) {
-        var any = false;
-        return [any, val, ret];
-    },
-    getactions: function (val, ret) {
-        var any = false;
-        return [any, val, ret];
-    },
+    getscreens: function (val, ret, level) { return parseScreens(val, ret, level); },
+    getactions: function (val, ret) { return parseActions(val, ret); },
     getenvironments: function (val, ret) {
         var any = false;
         return [any, val, ret];
