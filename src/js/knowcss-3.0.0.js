@@ -272,16 +272,14 @@ const parser = {
             classes = cleanup(key[2]);
             var toplevel = JSON.stringify(this.containers(key[1], null, 0));
 
+            var containerssecond = JSON.parse(toplevel);
+            delete containerssecond.screens["n"];
+            delete containerssecond.modifiers["0"];
+            containerssecond.parents = {};
+
             var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
             var subWrap = classes.toString();
             while ((keysecond = grepsecond.exec(subWrap)) !== null) {
-                //var classessecond = cleanup(keysecond[2]);
-
-                var containerssecond = JSON.parse(toplevel);
-                delete containerssecond.screens["n"];
-                delete containerssecond.modifiers["0"];
-                containerssecond.parents = {};
-
                 classes = classes.replace(keysecond[0], '');
                 this.containers(keysecond[1], containerssecond, 1);
             };
@@ -320,19 +318,22 @@ const parser = {
 
         wrapper = this.getvariants(wrapper);
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null;
+        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
         var vals = [];
         while ((key = grep.exec(wrapper)) !== null) {
             val = key[1].toString();
+            len = val.length + 1;
+            keepval = wrapper.substr(offset, len);
+            offset += len;
             [any, val, ret.reversions] = this.getreversions(val, ret.reversions);
             [any, val, ret.parents] = this.getparents(val, ret.parents);
             [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
             [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
             [any, val, ret.actions] = this.getactions(val, ret.actions);
             [any, val, ret.environments] = this.getenvironments(val, ret.environments);
-            if (val) { vals.push(val); }
+            if (val) { vals.push(keepval); }
         }
-        return level > 2 ? [ret, vals.join('|')] : ret;
+        return level > 2 ? [ret, vals.join('')] : ret;
     },
     getvariants: function (ret) {
         // get variables
