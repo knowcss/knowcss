@@ -156,6 +156,7 @@ var buildGroup = function (groups, classes, containers, master) {
     if (Object.keys(containers.parents).length == 0) { containers.parents["0"] = ""; }
     if (Object.keys(containers.reversions).length == 0) { containers.reversions["0"] = ""; }
 
+    classes = cleanup(classes);
     var ret = classes;
     if (classes.length > 0) {
         for (var screensKey in containers.screens) {
@@ -261,38 +262,125 @@ var getgreps = (ctx) => {
     return ctx;
 };
 
-const parser = {
-    execute: function (attr) {
-        return this.wrappers(attr);
+var conditionals = {
+    env: [],
+    user: []
+};
+var environments = {
+    init: function () {
+        var agent = navigator.userAgent;
+        var vendor = navigator.vendor;
+        var platform = navigator.platform;
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var ratio = window.devicePixelRatio;
+
+        var ret = {
+            chrome: /Google Inc/.test(vendor) || /CriOS/.test(agent),
+            safari: /Safari/.test(agent) && !/Chrome/.test(agent),
+            firefox: /Firefox|FxiOS/.test(agent),
+            edge: /Edge|Edg|EdgiOS/.test(agent),
+            opera: /OPR|Opera/.test(agent),
+            cordova: !!window.cordova,
+            ie: /MSIE|Trident/.test(agent),
+            chromium: !!window.chrome && !/Edge/.test(agent),
+            vivaldi: /Vivaldi/.test(agent),
+            yandex: /YaBrowser/.test(agent),
+
+            mac: /Macintosh|MacIntel|MacPPC|Mac68K/.test(platform),
+            win: /Win32|Win64|Windows|WinCE/.test(platform),
+            linux: /Linux/.test(platform),
+            unix: /X11/.test(platform),
+
+            lowres: ratio < 2,
+            hires: ratio >= 2,
+
+            ios: /(iPhone|iPad|iPod)/.test(agent),
+            android: /Android/.test(agent),
+            windows: /IEMobile/.test(agent) || (/Windows/.test(agent) && /Phone/.test(agent)),
+            blackberry: /BlackBerry/.test(agent),
+
+            portrait: h > w,
+            landscape: w > h,
+            square: w == h,
+
+            mobile: navigator.mobile || false,
+            desktop: !(navigator.mobile || false),
+            touch: ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch) || false
+        };
+        for (var key in ret) {
+            if (ret[key]) { conditionals.user.push(key); }
+        }
+        /*
+        if (typeof knowCSSOptions.conditionals !== 'undefined') {
+            for (var key in knowCSSOptions.conditionals) {
+                fixedConditionals[key] = knowCSSOptions.conditionals[key];
+                if (knowCSSOptions.conditionals[key]) { conditionals.user.push(key); }
+            }
+        }
+        */
+        conditionals.env = Object.keys(ret);
+        return ret;
     },
+    apply: function (val, ret) {
+        var any = false, allow = true, reverse = false;
+        var orig = val;
+        if (contains(val, '!')) {
+            reverse = true;
+            val = val.replace('!', '');
+        }
+        if (contains(conditionals.env, val)) {
+            any = true;
+            ret[val] = true;
+            if (!contains(conditionals.user, val)) { allow = false; }
+            if (reverse) { allow = !allow; }
+            val = "";
+        }
+        //console.log(['env apply', orig, any, val, allow]);
+        return [any, val, ret, allow];
+    }
+};
+
+const parser = {
+    execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr) {
         attr = cleanup(attr);
         var master = "n_0_0_0_0", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
-            classes = cleanup(key[2]);
-            var toplevel = JSON.stringify(this.containers(key[1], null, 0));
+            var containersfirst = this.containers(key[1], null, 0);
+            if (containersfirst.allow) {
+                classes = cleanup(key[2]);
+                var toplevel = JSON.stringify(containersfirst);
 
-            var containerssecond = JSON.parse(toplevel);
-            delete containerssecond.screens["n"];
-            delete containerssecond.modifiers["0"];
-            containerssecond.parents = {};
+                var containerssecond = JSON.parse(toplevel);
+                delete containerssecond.screens["n"];
+                delete containerssecond.modifiers["0"];
+                containerssecond.parents = {};
+                var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
+                var subWrap = classes.toString();
+                while ((keysecond = grepsecond.exec(subWrap)) !== null) {
+                    classes = classes.replace(keysecond[0], '');
+                    var classessecond = cleanup(keysecond[2]);
+                    containers = this.containers(keysecond[1], containerssecond, 1);
+                    if (containers.allow) {
+                        [groups, classessecond] = buildGroup(groups, classessecond, containers, master);
+                    }
+                };
 
-            var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
-            var subWrap = classes.toString();
-            while ((keysecond = grepsecond.exec(subWrap)) !== null) {
-                classes = classes.replace(keysecond[0], '');
-                this.containers(keysecond[1], containerssecond, 1);
-            };
+                original = original.replace(key[0], '');
+                [groups, classes] = buildGroup(groups, classes, JSON.parse(toplevel), master);
 
-            original = original.replace(key[0], '');
-            [groups, classes] = buildGroup(groups, classes, JSON.parse(toplevel), master);
-
-            classes = cleanup(classes).split(' ');
-            classes.forEach((classFound) => {
-                original = original.replace(classFound, '');
-                containers = this.containers(classFound, JSON.parse(toplevel), 2);
-                [groups, classFound] = buildGroup(groups, classFound, containers, "");
-            });
+                classes = cleanup(classes).split(' ');
+                classes.forEach((classFound) => {
+                    original = original.replace(classFound, '');
+                    containers = this.containers(classFound, JSON.parse(toplevel), 2);
+                    [groups, classFound] = buildGroup(groups, classFound, containers, "");
+                });
+            }
+            else {
+                original = original.replace(key[0], '');
+                classes = "";
+            }
         }
 
         classes = cleanup(original).split(' ');
@@ -308,6 +396,7 @@ const parser = {
     },
     containers: function (wrapper, ret, level) {
         ret = ret || {
+            "allow": true,
             "screens": {},
             "modifiers": {},
             "actions": {},
@@ -318,20 +407,27 @@ const parser = {
 
         wrapper = this.getvariants(wrapper);
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
+        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0, allow = true;
         var vals = [];
         while ((key = grep.exec(wrapper)) !== null) {
             val = key[1].toString();
             len = val.length + 1;
             keepval = wrapper.substr(offset, len);
             offset += len;
-            [any, val, ret.reversions] = this.getreversions(val, ret.reversions);
-            [any, val, ret.parents] = this.getparents(val, ret.parents);
-            [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
-            [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
-            [any, val, ret.actions] = this.getactions(val, ret.actions);
-            [any, val, ret.environments] = this.getenvironments(val, ret.environments);
-            if (val) { vals.push(keepval); }
+            if (level > 1) { ret.allow = true; }
+            else { [any, val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
+
+            console.log([any, val, ret.environments, ret.allow]);
+
+            if (ret.allow) {
+                [any, val, ret.reversions] = this.getreversions(val, ret.reversions);
+                [any, val, ret.parents] = this.getparents(val, ret.parents);
+                [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
+                [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
+                [any, val, ret.actions] = this.getactions(val, ret.actions);
+                if (val) { vals.push(keepval); }
+            }
+            else { break; }
         }
         return level > 2 ? [ret, vals.join('')] : ret;
     },
@@ -348,21 +444,19 @@ const parser = {
     getmodifiers: function (val, ret) { return parseModifiers(val, ret); },
     getscreens: function (val, ret, level) { return parseScreens(val, ret, level); },
     getactions: function (val, ret) { return parseActions(val, ret); },
-    getenvironments: function (val, ret) {
-        var any = false;
-        return [any, val, ret];
-    }
+    getenvironments: function (val, ret) { return environments.apply(val, ret); }
 };
 
 
 var knowCSS = {
     apply: function () {
+        environments.init();
         var classes, elems = document.querySelectorAll(this.key);
         var i = 0;
         var x = elems.length;
         while (i < x) {
             classes = parser.execute(elems[i].getAttribute(knowID));
-            console.log(classes);
+            if (Object.keys(classes).length > 0) { console.log(classes); }
             i++;
         }
         return this;
