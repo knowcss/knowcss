@@ -171,6 +171,7 @@ var knowHow = {
                             vals += '-' + sV;
                             if (!isNaN(sV)) { sV += 'px'; }
                             sG += '-' + sV;
+                            sO += '-' + sV;
                         }
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
                         if ("alias" in val.reference && !val.reference.alias) { vals = ''; }

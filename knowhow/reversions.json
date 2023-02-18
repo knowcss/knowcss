@@ -58,7 +58,7 @@
         {
             "head": "Normal",
             "list": [
-                ["normal-size-auto margin-normal", "suffix"],
+                ["font-size-normal margin-normal", "suffix"],
                 ["normal-font-size normal-margin", "prefix"],
                 ["normal{font-size margin}", "grouped"]
             ]

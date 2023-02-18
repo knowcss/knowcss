@@ -20,9 +20,72 @@
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
 
-    <div id="root" role="main">
+    <div id="root" role="main" know="p-16">
 
-        <div know="sm:hover:disabled:active:bold">Test</div>
+        <style>
+            /* know="checked~div{before((l-30))" */
+            .toggle-checkbox:checked + div::before {
+                left: 30px;
+            }
+            /* FIX
+            hover-before{} or
+            hover>{before((border-5px/solid/red))} or
+            hover{before((
+                background=linear-gradient(to_bottom,#fff_0%,#fff_100%)
+                box-shadow=0_0_0_1px_rgba(0,0,0,0.5)
+            ))}
+            */
+        </style>
+
+            <!-- simplify to component html - inject input+div+span and original innerHTML as span innerHTML
+                <label know="toggle-c00" data-id="toggleid">
+                    <input type="checkbox">
+                    <div></div>
+                    <span></span>
+                </label>
+            -->
+
+            <label know="inline-block pointer relative">
+                <input class="toggle-checkbox" type="checkbox" know="
+                    absolute hidden w-100% h-100% zi-100
+                    checked+div{bg-c00! before((l-30))}
+                ">
+                <div know="
+                notouch
+                noselect
+                inline-block
+                bg-ccc
+                rad-16
+                w-58
+                h-32
+                relative
+                alignmiddle
+                transition=background_0.25s
+
+                after{content=''}
+
+                before{
+                    content=''
+                    block
+                    background=linear-gradient(to_bottom,#fff_0%,#eee_100%)
+                    rad-50%
+                    box-shadow-0_0_0_1px_rgba(0,0,0,0.25)
+                    w-24
+                    h-24
+                    absolute
+                    t-4
+                    l-4
+                    transition-left_0.25s
+                }
+                "></div>
+                <span know="ml-5 relative t-2 notouch noselect"></span>
+            </label>
+
+        <!--<div know="sm:hover:disabled:active:bold">Test</div>-->
+
+        <div>
+            <div know="^{relative} ^relative parent{relative} hover>div{ sm-lg((12!)) 10 xlup((14!)) 400 #ccc p-4 b-3 absolute trbl-0 }">Test</div>
+        </div>
 
         <!-- JAA grid shorthand TODO -->
         <!-- fill-grid-row fill-grid-cols for variations with cols as default -->
