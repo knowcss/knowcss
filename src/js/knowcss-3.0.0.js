@@ -176,14 +176,6 @@ const parser = {
         }
         return level > 2 ? [ret, vals.join('')] : ret;
     },
-    getvariants: function (ret) {
-        // get variables
-        // get shorthand
-        // get shorterhand
-        // get mixins
-        // get components
-        return ret;
-    },
     getreversions: (val, ret) => {
         var num = 0, grep = '';
         while ((grep = new RegExp(greps.reversion, 'gi').exec(val)) !== null) {
