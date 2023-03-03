@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>KnowCSS, The Revolutionary NoCSS Engine</title>
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
     <link rel="icon" type="image/png" href="favicon.png" />
     <meta name="description" content="KnowCSS, The Revolutionary NoCSS Engine">
     <meta property="og:title" content="KnowCSS, The Revolutionary NoCSS Engine" />
@@ -22,11 +21,23 @@
 
     <div id="root" role="main">
 
+        <div know="container">container</div>
+        <div know="container-fluid">container</div>
+        <div know="row">
+            <div know="12 400">1</div>
+        </div>
+
+        <div know="row">
+            <div know="col-3 offset-1">1</div>
+        </div>
+
         <style>
             /* know="checked~div{before((l-30))" */
+            /*
             .toggle-checkbox:checked + div::before {
                 left: 30px;
             }
+            */
             /* FIX
             hover-before{} or
             hover>{before((border-5px/solid/red))} or
@@ -37,7 +48,7 @@
             */
         </style>
 
-            <!-- simplify to component html - inject input+div+span and original innerHTML as span innerHTML
+        <!-- simplify to component html - inject input+div+span and original innerHTML as span innerHTML
                 <label know="toggle-c00" data-id="toggleid">
                     <input type="checkbox">
                     <div></div>
@@ -45,7 +56,7 @@
                 </label>
             -->
 
-            <!--<label know="inline-block pointer relative">
+        <!--<label know="inline-block pointer relative">
                 <input class="toggle-checkbox" type="checkbox" know="
                     absolute hidden w-100% h-100% zi-100
                     checked+div{bg-c00! before((l-30))}
@@ -82,11 +93,6 @@
             </label>
             -->
 
-        <!--<div know="container">container</div>
-        <div know="container-fluid">container</div>-->
-        <div know="row">
-            <div know="12 400">1</div>
-        </div>
         <!--<div know="sm:hover:disabled:active:bold">Test</div>-->
 
         <!--<div know="sm-md:hover:disabled:active:bold">Test</div>-->

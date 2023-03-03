@@ -12,13 +12,19 @@ Repo: https://github.com/knowcss/knowcss
 
 const knowID = 'know';
 
+var mixins = {
+    "container": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto max-width-100% 1230{max-width-1550} 1200{max-width-1140} 1024{max-width-940} 768{max-width-720}",
+    "container-fluid": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto",
+    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap"
+};
+
 var options = {
     //hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     //shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
     //shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
     //shortHandVariable: typeof shortHandVariable !== 'undefined' && shortHandVariable != null ? shortHandVariable : {},
-    vars: typeof vars !== 'undefined' && vars != null ? vars : {}
-    //mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
+    vars: typeof vars !== 'undefined' && vars != null ? vars : {},
+    mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {}
     //components: typeof components !== 'undefined' && components != null ? components : {},
     //conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
@@ -94,7 +100,8 @@ var environments = () => {
 
 const parser = {
     execute: function (attr) { return this.wrappers(attr); },
-    wrappers: function (attr) {
+    wrappers: function (attr, level) {
+        level = level || 0;
         attr = cleanup(attr);
         var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
@@ -138,12 +145,54 @@ const parser = {
         classes.forEach((classFound) => {
             original = original.replace(classFound, '');
             [containers, classFound] = this.containers(classFound, null, 3);
-            [groups, classFound] = this.group(groups, classFound, containers, "");
+
+            if (level < 1) {
+                var any = false;
+                [any, classFound] = this.getmixins(any, classFound);
+                [any, classFound] = this.getgrid(any, classFound);
+                if (any) {
+                    var wrappersMore = this.wrappers(classFound, 1);
+                    for (var key in wrappersMore) {
+                        if (key in groups === false) { groups[key] = wrappersMore[key]; }
+                        else { groups[key] += ' ' + wrappersMore[key]; }
+                    }
+                    classFound = "";
+                }
+            }
+            if (classFound.length > 0) { [groups, classFound] = this.group(groups, classFound, containers, ""); }
         });
 
         original = cleanup(original);
         if (original) { groups[master] = original; }
         return groups;
+    },
+
+    getgrid: (any, val) => {
+        if (begins(val, 'col-')) {
+            var whichCol = val.replace(/^col-/, '');
+            var alignCol = whichCol;
+            if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
+            if (['left', 'right', 'center'].includes(alignCol)) { classesFound.push('justify-content-' + alignCol); }
+            if (whichCol.length == 0) { whichCol = 12; }
+            var whichPct = (parseInt(whichCol) / 12) * 100;
+            val = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + val, "position-relative"].join(' ');
+            any = true;
+        }
+        else if (begins(val, 'offset-')) {
+            var whichOffset = val.replace(/^offset-/, '');
+            if (whichOffset.length == 0) { whichOffset = 12; }
+            var whichPct = (parseInt(whichOffset) / 12) * 100;
+            val = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
+            any = true;
+        }
+        return [any, val];
+    },
+    getmixins: (any, val) => {
+        if (val in options.mixins) {
+            val = options.mixins[val];
+            any = true;
+        }
+        return [any, val];
     },
     containers: function (wrapper, ret, level) {
         ret = ret || {
@@ -155,8 +204,16 @@ const parser = {
             "reversions": {},
             "environments": {}
         };
+
         var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0, allow = true;
-        var vals = [];
+        var vals = [], parts = [], retain = "";
+        if (level == 3) {
+            parts = wrapper.split(wrapper.indexOf('=') > -1 ? '=' : '-');
+            if (parts.length > 1) {
+                retain = '=' + parts.pop();
+                wrapper = parts.join('-');
+            }
+        }
         while ((key = grep.exec(wrapper)) !== null) {
             val = key[1].toString();
             len = val.length + 1;
@@ -170,7 +227,7 @@ const parser = {
                 [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
                 [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
                 [any, val, ret.actions] = this.getactions(val, ret.actions);
-                if (val) { vals.push(keepval); }
+                if (val) { vals.push(keepval + retain); }
             }
             else { break; }
         }
@@ -332,7 +389,6 @@ const parser = {
         greps.group.forEach(key => {
             if (Object.keys(containers[key]).length == 0) { containers[key]["n"] = ""; }
         });
-
         classes = cleanup(classes);
         var ret = classes;
         if (classes.length > 0) {
@@ -343,10 +399,8 @@ const parser = {
                             for (var reverionsKey in containers.reversions) {
                                 var masterKeyNew = screensKey + '_' + modifiersKey + '_' + actionsKey + '_' + parentsKey + '_' + reverionsKey;
                                 if (masterKeyNew != master) {
-                                    if (masterKeyNew in groups) {
-                                        if (!contains(groups[masterKeyNew], ' ' + classes)) { groups[masterKeyNew] += ' ' + classes; }
-                                    }
-                                    else { groups[masterKeyNew] = classes; }
+                                    if (masterKeyNew in groups === false) { groups[masterKeyNew] = classes; }
+                                    else if (!contains(groups[masterKeyNew], ' ' + classes)) { groups[masterKeyNew] += ' ' + classes; }
                                     ret = "";
                                 }
                             }
@@ -369,7 +423,7 @@ var knowCSS = {
             groups = parser.execute(elems[i].getAttribute(knowID));
             if (Object.keys(groups).length > 0) {
                 for (var key in groups) {
-                    console.log(['know', i, key, this.getclasses(groups[key])]);
+                    console.log(['know', i, key, JSON.stringify(this.getclasses(groups[key]))]);
                 }
             }
             i++;
@@ -456,9 +510,6 @@ var knowCSS = {
                 key = ret[i];
                 if (key in shortHand) { key = shortHand[key]; }
                 else if (!isNaN(key)) { key = this.getfontweight(key); }
-                else {
-                    key = this.getgrid(key);
-                }
 
                 // shorterHand
                 // globalMixins
@@ -472,33 +523,6 @@ var knowCSS = {
         return ret;
     },
 
-    getgrid: (val) => {
-        if (val == 'container') {
-            val = ["width-100%", "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto", "max-width-100%", "1230{max-width-1550}", "1200{max-width-1140}", "1024{max-width-940}", "768{max-width-720}"].join(" ");
-        }
-        else if (val == 'container-fluid') {
-            val = ["width-100%", "padding-right-15px", "padding-left-15px", "margin-right-auto", "margin-left-auto"].join(' ');
-        }
-        else if (val == "row") {
-            val = ["width-100%", "display=-webkit-box", "display=-ms-flexbox", "display-flex", "-ms-flex-wrap-wrap", "flex-wrap-wrap"].join(' ');
-        }
-        else if (begins(val, 'col-')) {
-            var whichCol = val.replace(/^col-/, '');
-            var alignCol = whichCol;
-            if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
-            if (['left', 'right', 'center'].includes(alignCol)) { classesFound.push('justify-content-' + alignCol); }
-            if (whichCol.length == 0) { whichCol = 12; }
-            var whichPct = (parseInt(whichCol) / 12) * 100;
-            val = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + val, "position-relative"].join(' ');
-        }
-        else if (begins(val, 'offset-')) {
-            var whichOffset = val.replace(/^offset-/, '');
-            if (whichOffset.length == 0) { whichOffset = 12; }
-            var whichPct = (parseInt(whichOffset) / 12) * 100;
-            val = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
-        }
-        return val;
-    },
     getfontweight: (val) => (val > 0 && (val % 100) == 0) ? 'font-weight-' + parseFloat(val) : "font-size-" + parseFloat(val) + "px",
 
     init: function () { return this.document().render(); },
