@@ -12,6 +12,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
+    <script src="../src/knowcss-colors.js"></script>
     <script src="../src/knowcss-shorthand.js"></script>
     <script src="../knowhow/components.js"></script>
     <script src="../src/js/knowcss-3.0.0.js"></script>
@@ -21,15 +22,18 @@
 
     <div id="root" role="main">
 
+        <div know="red blue green yellow orange color-red@10 color-blue~20 color-green@30~10"></div>
+        <!--
         <div know="container">container</div>
         <div know="container-fluid">container</div>
         <div know="row">
-            <div know="12 400">1</div>
+            <div know="12 400 font-size-12px! !important{padding-10px}">1</div>
         </div>
 
         <div know="row">
             <div know="col-3 offset-1">1</div>
         </div>
+        -->
 
         <style>
             /* know="checked~div{before((l-30))" */

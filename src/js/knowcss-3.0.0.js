@@ -19,7 +19,7 @@ var mixins = {
 };
 
 var options = {
-    //hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
+    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
     //shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
     //shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
     //shortHandVariable: typeof shortHandVariable !== 'undefined' && shortHandVariable != null ? shortHandVariable : {},
@@ -37,6 +37,14 @@ var begins = (val, vals) => val.indexOf(vals) == 0;
 var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;;
 var layer = (val) => document.getElementById(val);
 var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
+var containsAny = function (val, vals) {
+    var x = vals.length, i = 0;
+    while (i < x) {
+        if (val.indexOf(vals[i]) > -1) { return true; }
+        i++;
+    }
+    return false;
+};
 
 var conditionals = {
     env: [],
@@ -87,10 +95,10 @@ var environments = () => {
         if (ret[key]) { conditionals.user.push(key); }
     }
     /*
-    if (typeof knowCSSOptions.conditionals !== 'undefined') {
-        for (var key in knowCSSOptions.conditionals) {
-            fixedConditionals[key] = knowCSSOptions.conditionals[key];
-            if (knowCSSOptions.conditionals[key]) { conditionals.user.push(key); }
+    if (typeof options.conditionals !== 'undefined') {
+        for (var key in options.conditionals) {
+            fixedConditionals[key] = options.conditionals[key];
+            if (options.conditionals[key]) { conditionals.user.push(key); }
         }
     }
     */
@@ -208,9 +216,10 @@ const parser = {
         var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0, allow = true;
         var vals = [], parts = [], retain = "";
         if (level == 3) {
-            parts = wrapper.split(wrapper.indexOf('=') > -1 ? '=' : '-');
+            var equal = wrapper.indexOf('=') > -1 ? '=' : '-';
+            parts = wrapper.split(equal);
             if (parts.length > 1) {
-                retain = '=' + parts.pop();
+                retain = equal + parts.pop();
                 wrapper = parts.join('-');
             }
         }
@@ -235,10 +244,16 @@ const parser = {
     },
     getreversions: (val, ret) => {
         var num = 0, grep = '';
-        while ((grep = new RegExp(greps.reversion, 'gi').exec(val)) !== null) {
-            ret[grep[1]] = true;
-            val = val.replace(grep[1], '');
-            num++;
+        if (containsAny(val, ['!', 'important'])) {
+            val = val.replace('important', '').replace(/\!/g, '').replace(/\-{1,16}$/, '').replace(/^\-{1,16}/, '');
+            ret["!"] = true;
+        }
+        if (val.length > 0) {
+            while ((grep = new RegExp(greps.reversion, 'gi').exec(val)) !== null) {
+                ret[grep[1]] = true;
+                val = val.replace(grep[1], '');
+                num++;
+            }
         }
         return [num > 0, hyphens(val), ret];
     },
@@ -349,7 +364,7 @@ const parser = {
         });
         mP = mP.replace(/>/g, ' ');
 
-        var i = 0, x = greps.action.length;
+        var x = greps.action.length, i = 0;
         while (i < x) {
             grep = new RegExp(greps.action[i][1], 'gi');
             zS = greps.action[i][0].replace(mA, mP);
@@ -413,22 +428,291 @@ const parser = {
     }
 };
 
+const property = {
+    parse: function (value) {
+        var extras = [], prop = "", any = false;
+        [prop, value] = this.getpropvalue(value);
+        if (!any) { [any, prop, value] = this.color(prop, this.getvalue(value)); }
+        if (!any) { [any, prop, value] = this.px(prop, value); }
+        if (!any) { [any, prop, value] = this.family(prop, value); }
+        extras = this.rem(prop, value, extras);
+        return [prop, value, extras];
+    },
+    getpropvalue: (val) => {
+        var prop = "", value = "";
+        if (contains(val, ':')) { [prop, value] = val.split(':', 2); }
+        else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
+        else if (contains(val, '-')) {
+            var parts = val.split('-');
+            //if (classParts[0] in options.shorterHand) {
+            //    prop = options.shorterHand[classParts[0]];
+            //    classParts.shift();
+            //    value = classParts.join('-');
+            //}
+            //else {
+            value = parts.pop();
+            prop = parts.join('-');
+            //}
+        }
+        else { prop = val; }
+        if (value.length == 0 && contains(prop, '#')) {
+            value = prop.replace('#', '');
+            prop = 'color';
+        }
+        //else if (prop in options.shortHand) { prop = options.shortHand[prop]; }
+        return [prop, value];
+    },
+    getvalue: (val) => {
+        val = val.replace(/;/g, '');
+        var hexes = defined(options.hexColors);
+        if (containsAny(val, ['/', '|', '_'])) {
+            val = val.replace(/[\/|\||\_]/g, ' ');
+            var vals = val.split(' ');
+            if (vals.length > 2) {
+                if (hexes && vals[2] in options.hexColors) {
+                    vals[2] = '#' + colors.shorter(options.hexColors[vals[2]]);
+                    val = vals.join(' ');
+                }
+            }
+        }
+        else if (hexes && val in options.hexColors) { val = '#' + colors.shorter(options.hexColors[val]); }
+        else if (begins(val, 'calc')) { val = val.replace('-', ' - ').trim(); }
+        return val;
+    },
+    px: (prop, value) => {
+        var any = false;
+        if (value === "") {
+            prop = parseInt(prop);
+            if (prop > 0 && (prop % 100) == 0) {
+                value = parseFloat(prop).toString();
+                prop = 'font-weight';
+            }
+            else {
+                value = parseFloat(prop) + "px";
+                prop = "font-size";
+            }
+            any = true;
+        }
+        else if (!isNaN(value) && parseInt(value).toString() === value && value !== '0') {
+            if (['top', 'bottom', 'left', 'right'].includes(prop)) { any = true; }
+            else if (containsAny(prop, ["font-size", "-width", "-height"])) { any = true; }
+            else if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(prop.substring(0, 5))) { any = true; }
+            if (any) { value += 'px'; }
+        }
+        return [any, prop, value];
+    },
+    color: (prop, value) => colors.parse(prop, value),
+    family: (prop, value) => {
+        var any = false;
+        if (contains(prop, 'family')) {
+            prop = 'font-family';
+            any = true;
+            if (contains(value, ',')) {
+                var fonts = [];
+                value.split(',').forEach((val) => { fonts.push(contains(val, ' ') ? '"' + val + '"' : val); });
+                value = hS.join(',');
+            }
+        }
+        return [any, prop, value];
+    },
+    rem: (prop, value, extras) => {
+        if ((contains(value, 'px') || !isNaN(value))) {
+            var any = false;
+            var multiplier = 16;
+            if (['font-size', 'line-height', 'width', 'height', 'top', 'bottom', 'left', 'right'].includes(prop)) { any = true; }
+            else if (['margin', 'paddin', 'spacin'].includes(prop.substring(0, 6))) { any = true; }
+            else if (prop.indexOf('-') > 0 && ['top', 'bottom', 'left', 'right', 'width', 'height'].includes(prop.split('-').pop())) { any = true; }
+            if (any) {
+                value = value.replace('px', '');
+                var important = "";
+                if (value.indexOf('!') > -1) {
+                    value = value.replace('!', '');
+                    important = "!";
+                }
+                if (!isNaN(value) && parseInt(value) > 0) {
+                    var rem = parseInt(value) / (multiplier || 16);
+                    if (!isNaN(rem) && rem > 0) { extras.push(prop + '=' + rem + 'rem' + important); }
+                }
+            }
+        }
+        return extras;
+    }
+}
+
+const colors = {
+    parse: function (prop, value) {
+        var orig = [prop, value];
+        [prop, value] = this.color(prop, value);
+        return [orig[0] !== prop || orig[1] !== value, prop, value];
+    },
+    color: function (prop, value) {
+        var reverse = false;
+        var hexes = defined(options.hexColors);
+        if (hexes) {
+            var sep = "";
+            if (contains(prop, '@')) { sep = "@"; }
+            else if (contains(prop, '~')) { sep = "~"; }
+            if (sep.length > 0) {
+                var [val1, val2] = value.split(sep, 2);
+                var val3 = "";
+                if (contains(val1, '~')) {
+                    [val1, val3] = val1.split("~", 2);
+                    val3 = '~' + val3;
+                }
+                if (val1 in options.hexColors) {
+                    value = options.hexColors[val1].trim() + sep + val2 + val3;
+                    prop = "color";
+                }
+            }
+            else if (value in options.hexColors) {
+                value = options.hexColors[value].trim();
+                prop = "color";
+                reverse = true;
+            }
+            else if (prop in options.hexColors) {
+                value = options.hexColors[prop].trim();
+                prop = "color";
+            }
+        }
+        if (reverse || containsAny(prop, ['background', 'color'])) {
+            if (!contains(value, '(')) {
+                var key = [];
+                var vals = [false, 100, 100];
+                var variants = [
+                    [new RegExp('^(.*)@(.*)~(.*)$', 'i'), 1, 2],
+                    [new RegExp('^(.*)~(.*)@(.*)$', 'i'), 2, 1],
+                    [new RegExp('^(.*)@(.*)$', 'i'), 1, 1],
+                    [new RegExp('^(.*)~(.*)$', 'i'), 2, 2]
+                ];
+                var x = variants.length, i = 0;
+                while (i < x) {
+                    while ((key = variants[i][0].exec(value)) !== null) {
+                        if (key.length > 1) {
+                            vals[0] = true;
+                            value = key[1];
+                            if (key.length >= 3) { vals[variants[i][1]] = parseInt(key[2]); }
+                            if (key.length >= 4) { vals[variants[i][2]] = parseInt(key[3]); }
+                            break;
+                        }
+                    }
+                    if (vals[0]) { break; }
+                    i++;
+                }
+                var base = value.replace('#', '');
+                if (hexes && base in options.hexColors) { base = options.hexColors[base].trim(); }
+                if (new RegExp('^([0-9a-f]{1,6})$', 'i').test(base)) {
+                    base = this.shade(this.rgb(base), vals[1] / 100);
+                    if (vals[2] != 100) { value = this.opacity(this.rgb(base), vals[2]); }
+                    else if (base.length > 6) { value = base; }
+                    else { value = '#' + this.hex(base); }
+                }
+                else if (base.length > 6) { value = base; }
+                else { value = (value.length > 0 ? '#' : '') + base; }
+            }
+        }
+        else if (['color', 'bgcolor', 'alink', 'vlink', 'link'].includes(prop)) {
+            if (new RegExp('^([0-9a-f]{1,6})$', 'i').test(value)) { value = '#' + this.hex(value); }
+        }
+        else if (['text'].includes(value)) {
+            if (new RegExp('^([0-9a-f]{1,6})$', 'i').test(prop)) { prop = '#' + this.hex(prop); }
+        }
+        return reverse ? [value, prop] : [prop, value];
+    },
+    hex: function (value) {
+        var key = value.toString(16);
+        return this.shorter((key.length == 1) ? '0' + key : key);
+    },
+    opacity: function (vals, percent) {
+        return vals.length == 0 ? value : "rgba(" + vals[0] + "," + vals[1] + "," + vals[2] + "," + (percent / 100) + ")";
+    },
+    shade: function (vals, percent) {
+        return vals.length == 0 ? value : this.hex(Math.ceil(vals[0] * percent)) + this.hex(Math.ceil(vals[1] * percent)) + this.hex(Math.ceil(vals[2] * percent));
+    },
+    rgb: (value) => {
+        var key = null;
+        if (value.length == 1) { return [parseInt(value + value, 16), parseInt(value + value, 16), parseInt(value + value, 16)]; }
+        else if (value.length == 2) { return [parseInt(value, 16), parseInt(value, 16), parseInt(value, 16)]; }
+        else if (value.length == 3) {
+            key = /^#?([a-f\d]{1})([a-f\d]{1})([a-f\d]{1})$/i.exec(value);
+            return [parseInt(key[1] + key[1], 16), parseInt(key[2] + key[2], 16), parseInt(key[3] + key[3], 16)];
+        }
+        else if (value.length == 6) {
+            key = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(value);
+            return [parseInt(key[1], 16), parseInt(key[2], 16), parseInt(key[3], 16)];
+        }
+        else { return value; }
+    },
+    shorter: (value) => {
+        var key = [], vals = [], val = value.toString(), regexp = new RegExp('^([a-fA-F0-9]{6})$', 'i');
+        while ((key = regexp.exec(val)) !== null) {
+            vals = key[1].split('');
+            if ((vals[0] == vals[1]) && (vals[2] == vals[3]) && (vals[4] == vals[5])) { value = vals[0] + vals[2] + vals[4]; }
+            break;
+        }
+        return value;
+    }
+};
+
 var knowCSS = {
     apply: function () {
         environments();
         var groups = {}, elems = document.querySelectorAll(this.key);
-        var i = 0;
-        var x = elems.length;
+        var x = elems.length, i = 0;
         while (i < x) {
             groups = parser.execute(elems[i].getAttribute(knowID));
             if (Object.keys(groups).length > 0) {
                 for (var key in groups) {
-                    console.log(['know', i, key, JSON.stringify(this.getclasses(groups[key]))]);
+                    this.splitclasses(i, key, groups[key]);
+                    //console.log(['know', i, key, JSON.stringify(this.getclasses(groups[key]))]);
                 }
             }
             i++;
         }
         return this;
+    },
+    splitclasses: function (elem, key, vals) {
+        var classes = vals.split(' ');
+        var [screen, modifier, action, parent, reversion] = key.split('_', 5);
+        var x = classes.length, i = 0, prop = "", value = "", extras = [];
+        while (i < x) {
+            [prop, value, extras] = property.parse(classes[i]);
+            console.log(['split class', elem, screen, modifier, action, parent, reversion, prop, value, extras]);
+            i++;
+        }
+    },
+    px: function (prop, value) {
+        var any = false;
+        if (value === "") {
+            prop = parseInt(prop);
+            if (prop > 0 && (prop % 100) == 0) {
+                value = parseFloat(prop).toString();
+                prop = 'font-weight';
+            }
+            else {
+                value = parseFloat(prop) + "px";
+                prop = "font-size";
+            }
+            any = true;
+        }
+        else if (!isNaN(value) && parseInt(value).toString() === value && value !== '0') {
+            if (['top', 'bottom', 'left', 'right'].includes(prop)) { any = true; }
+            else if (containsAny(prop, ["font-size", "-width", "-height"])) { any = true; }
+            else if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(prop.substring(0, 5))) { any = true; }
+            if (any) { value += 'px'; }
+        }
+        return [any, prop, value];
+    },
+    color: function (prop, value) {
+        var any = false;
+        return [any, prop, value];
+    },
+    family: function (prop, value) {
+        var any = false;
+        return [any, prop, value];
+    },
+    rem: function (prop, value) {
+        var any = false;
+        return [any, prop, value];
     },
     greps: function () {
         if (!greps) {
@@ -500,8 +784,9 @@ var knowCSS = {
             }
         }
         var ret = classes.split(/(\s+)/).filter(e => e.trim().length > 0);
-        var opt = {};
-        return this.getvariants(ret, opt);
+        //var opt = {};
+        return ret;
+        //return this.getvariants(ret, opt);
     },
     getvariants: function (ret, opt) {
         if (ret.length > 0) {
@@ -509,7 +794,6 @@ var knowCSS = {
             while (i < x) {
                 key = ret[i];
                 if (key in shortHand) { key = shortHand[key]; }
-                else if (!isNaN(key)) { key = this.getfontweight(key); }
 
                 // shorterHand
                 // globalMixins
@@ -522,9 +806,6 @@ var knowCSS = {
         }
         return ret;
     },
-
-    getfontweight: (val) => (val > 0 && (val % 100) == 0) ? 'font-weight-' + parseFloat(val) : "font-size-" + parseFloat(val) + "px",
-
     init: function () { return this.document().render(); },
     constructor: knowCSSProto
 };
