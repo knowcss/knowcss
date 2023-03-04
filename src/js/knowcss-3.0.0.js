@@ -153,7 +153,6 @@ const parser = {
         classes.forEach((classFound) => {
             original = original.replace(classFound, '');
             [containers, classFound] = this.containers(classFound, null, 3);
-
             if (level < 1) {
                 var any = false;
                 [any, classFound] = this.getmixins(any, classFound);
@@ -431,6 +430,7 @@ const parser = {
 const property = {
     parse: function (value) {
         var extras = [], prop = "", any = false;
+        [value, extras] = this.components(value, extras);
         [prop, value] = this.getpropvalue(value);
         if (!any) { [any, prop, value] = this.color(prop, this.getvalue(value)); }
         if (!any) { [any, prop, value] = this.px(prop, value); }
@@ -444,10 +444,10 @@ const property = {
         else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
         else if (contains(val, '-')) {
             var parts = val.split('-');
-            //if (classParts[0] in options.shorterHand) {
-            //    prop = options.shorterHand[classParts[0]];
-            //    classParts.shift();
-            //    value = classParts.join('-');
+            //if (parts[0] in options.shorterHand) {
+            //    prop = options.shorterHand[parts[0]];
+            //    parts.shift();
+            //    value = parts.join('-');
             //}
             //else {
             value = parts.pop();
@@ -479,9 +479,20 @@ const property = {
         else if (begins(val, 'calc')) { val = val.replace('-', ' - ').trim(); }
         return val;
     },
+    components: (value, extras) => {
+        var wByH = contains(value, 'x') && RegExp('^(|max-|min-)([0-9]{1,10})x([0-9]{1,10})$', 'i').exec(value);
+        if (wByH) {
+            var [full, pre, width, height] = wByH;
+            if (!isNaN(width) && width !== '0') { width += 'px'; }
+            if (!isNaN(height) && height !== '0') { height += 'px'; }
+            value = pre + 'width' + '-' + width;
+            extras.push(pre + 'height-' + height);
+        }
+        return [value, extras];
+    },
     px: (prop, value) => {
         var any = false;
-        if (value === "") {
+        if (value === "" && !isNaN(prop)) {
             prop = parseInt(prop);
             if (prop > 0 && (prop % 100) == 0) {
                 value = parseFloat(prop).toString();
@@ -656,29 +667,36 @@ const colors = {
 var knowCSS = {
     apply: function () {
         environments();
-        var groups = {}, elems = document.querySelectorAll(this.key);
+        var groups = {}, elems = document.querySelectorAll(this.key), smart = {};
         var x = elems.length, i = 0;
         while (i < x) {
             groups = parser.execute(elems[i].getAttribute(knowID));
             if (Object.keys(groups).length > 0) {
                 for (var key in groups) {
-                    this.splitclasses(i, key, groups[key]);
+                    smart = this.splitclasses(i, key, groups[key], smart);
                     //console.log(['know', i, key, JSON.stringify(this.getclasses(groups[key]))]);
                 }
             }
             i++;
         }
+        for (var key in smart) {
+            console.log(['smart', key, smart[key]]);
+        }
         return this;
     },
-    splitclasses: function (elem, key, vals) {
+    splitclasses: function (elem, key, vals, smart) {
         var classes = vals.split(' ');
         var [screen, modifier, action, parent, reversion] = key.split('_', 5);
-        var x = classes.length, i = 0, prop = "", value = "", extras = [];
-        while (i < x) {
-            [prop, value, extras] = property.parse(classes[i]);
-            console.log(['split class', elem, screen, modifier, action, parent, reversion, prop, value, extras]);
-            i++;
+        var x = classes.length, i = 0, prop = "", value = "", extras = [], smartkey = "";
+        while (classes.length > 0) {
+            [prop, value, extras] = property.parse(classes.shift());
+            smartkey = key + '__' + prop + '=' + value;
+            if (smartkey in smart === false) { smart[smartkey] = []; }
+            smart[smartkey].push(elem);
+            if (extras.length > 0) { extras.forEach(extra => { classes.push(extra); }); }
+            //console.log(['split class', classes.length, elem, screen, modifier, action, parent, reversion, prop, value, extras]);
         }
+        return smart;
     },
     px: function (prop, value) {
         var any = false;
@@ -783,28 +801,7 @@ var knowCSS = {
                 classes = classes.replace(key[0], key[1] + "=" + key[2].replace(/\s/g, '\/'));
             }
         }
-        var ret = classes.split(/(\s+)/).filter(e => e.trim().length > 0);
-        //var opt = {};
-        return ret;
-        //return this.getvariants(ret, opt);
-    },
-    getvariants: function (ret, opt) {
-        if (ret.length > 0) {
-            var x = ret.length, i = 0, key;
-            while (i < x) {
-                key = ret[i];
-                if (key in shortHand) { key = shortHand[key]; }
-
-                // shorterHand
-                // globalMixins
-                // shortHandVariable
-                // components
-
-                ret[i] = key;
-                i++;
-            }
-        }
-        return ret;
+        return classes.split(/(\s+)/).filter(e => e.trim().length > 0);
     },
     init: function () { return this.document().render(); },
     constructor: knowCSSProto
