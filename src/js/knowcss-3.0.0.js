@@ -34,7 +34,7 @@ var greps = null;
 var defined = (val) => typeof val !== 'undefined' && val != null;
 var contains = (val, vals) => val.indexOf(vals) > -1;
 var begins = (val, vals) => val.indexOf(vals) == 0;
-var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;;
+var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
 var layer = (val) => document.getElementById(val);
 var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
 var containsAny = function (val, vals) {
@@ -212,7 +212,7 @@ const parser = {
             "environments": {}
         };
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0, allow = true;
+        var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
         var vals = [], parts = [], retain = "";
         if (level == 3) {
             var equal = wrapper.indexOf('=') > -1 ? '=' : '-';
@@ -230,7 +230,7 @@ const parser = {
             if (level > 1) { ret.allow = true; }
             else { [any, val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
             if (ret.allow) {
-                [any, val, ret.reversions] = this.getreversions(val, ret.reversions);
+                [any, val, retain, ret.reversions] = this.getreversions(val, retain, ret.reversions);
                 [any, val, ret.parents] = this.getparents(val, ret.parents);
                 [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
                 [any, val, ret.screens] = this.getscreens(val, ret.screens, level);
@@ -241,10 +241,14 @@ const parser = {
         }
         return level > 2 ? [ret, vals.join('')] : ret;
     },
-    getreversions: (val, ret) => {
+    getreversions: (val, retain, ret) => {
         var num = 0, grep = '';
-        if (containsAny(val, ['!', 'important'])) {
-            val = val.replace('important', '').replace(/\!/g, '').replace(/\-{1,16}$/, '').replace(/^\-{1,16}/, '');
+        if (val && containsAny(val, ['!', 'important'])) {
+            val = val.replace('important', '').replace(/\!/g, '');
+            ret["!"] = true;
+        }
+        if (retain && containsAny(retain, ['!', 'important'])) {
+            retain = retain.replace('important', '').replace(/\!/g, '');
             ret["!"] = true;
         }
         if (val.length > 0) {
@@ -254,7 +258,7 @@ const parser = {
                 num++;
             }
         }
-        return [num > 0, hyphens(val), ret];
+        return [num > 0, hyphens(val), retain, ret];
     },
     getparents: (val, ret) => {
         var level = 0, key = null;
@@ -558,13 +562,15 @@ const colors = {
     },
     color: function (prop, value) {
         var reverse = false;
+
+        var orig = [prop, value];
         var hexes = defined(options.hexColors);
         if (hexes) {
             var sep = "";
             if (contains(prop, '@')) { sep = "@"; }
             else if (contains(prop, '~')) { sep = "~"; }
             if (sep.length > 0) {
-                var [val1, val2] = value.split(sep, 2);
+                var [val1, val2] = prop.split(sep, 2);
                 var val3 = "";
                 if (contains(val1, '~')) {
                     [val1, val3] = val1.split("~", 2);
@@ -667,70 +673,42 @@ const colors = {
 var knowCSS = {
     apply: function () {
         environments();
-        var groups = {}, elems = document.querySelectorAll(this.key), smart = {};
+        var start = new Date().getTime();
+        var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
         var x = elems.length, i = 0;
         while (i < x) {
             groups = parser.execute(elems[i].getAttribute(knowID));
             if (Object.keys(groups).length > 0) {
-                for (var key in groups) {
-                    smart = this.splitclasses(i, key, groups[key], smart);
-                    //console.log(['know', i, key, JSON.stringify(this.getclasses(groups[key]))]);
-                }
+                for (var key in groups) { smart = this.splitclasses(i, key, groups[key], smart); }
             }
             i++;
         }
         for (var key in smart) {
-            console.log(['smart', key, smart[key]]);
+            val = smart[key].join("_");
+            if (val in flat === false) { flat[val] = []; }
+            flat[val].push(key);
         }
+        for (var key in flat) {
+            console.log(['flat', key, JSON.stringify(flat[key])]);
+        }
+
+        //var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
+
+        var end = new Date().getTime();
+        console.log('compiled in: ' + (end - start) + 'ms');
         return this;
     },
     splitclasses: function (elem, key, vals, smart) {
         var classes = vals.split(' ');
-        var [screen, modifier, action, parent, reversion] = key.split('_', 5);
         var x = classes.length, i = 0, prop = "", value = "", extras = [], smartkey = "";
         while (classes.length > 0) {
             [prop, value, extras] = property.parse(classes.shift());
-            smartkey = key + '__' + prop + '=' + value;
+            smartkey = key + '_' + prop + '=' + value;
             if (smartkey in smart === false) { smart[smartkey] = []; }
             smart[smartkey].push(elem);
             if (extras.length > 0) { extras.forEach(extra => { classes.push(extra); }); }
-            //console.log(['split class', classes.length, elem, screen, modifier, action, parent, reversion, prop, value, extras]);
         }
         return smart;
-    },
-    px: function (prop, value) {
-        var any = false;
-        if (value === "") {
-            prop = parseInt(prop);
-            if (prop > 0 && (prop % 100) == 0) {
-                value = parseFloat(prop).toString();
-                prop = 'font-weight';
-            }
-            else {
-                value = parseFloat(prop) + "px";
-                prop = "font-size";
-            }
-            any = true;
-        }
-        else if (!isNaN(value) && parseInt(value).toString() === value && value !== '0') {
-            if (['top', 'bottom', 'left', 'right'].includes(prop)) { any = true; }
-            else if (containsAny(prop, ["font-size", "-width", "-height"])) { any = true; }
-            else if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(prop.substring(0, 5))) { any = true; }
-            if (any) { value += 'px'; }
-        }
-        return [any, prop, value];
-    },
-    color: function (prop, value) {
-        var any = false;
-        return [any, prop, value];
-    },
-    family: function (prop, value) {
-        var any = false;
-        return [any, prop, value];
-    },
-    rem: function (prop, value) {
-        var any = false;
-        return [any, prop, value];
     },
     greps: function () {
         if (!greps) {
@@ -783,7 +761,7 @@ var knowCSS = {
         }
         return this;
     },
-    getvars: function (html) {
+    getvars: (html) => {
         if (contains(html, '$')) {
             var grep = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), key = null;
             while ((key = grep.exec(html)) !== null) {
@@ -794,7 +772,7 @@ var knowCSS = {
         }
         return html;
     },
-    getclasses: function (classes) {
+    getclasses: (classes) => {
         var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis'), key = [], original = classes;
         while ((key = grep.exec(original)) !== null) {
             if (['var', 'invert', 'translate', 'translateY', 'translateX'].includes(key[1]) === false) {
