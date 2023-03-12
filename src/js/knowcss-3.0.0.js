@@ -19,13 +19,15 @@ var mixins = {
 };
 
 var options = {
-    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
-    //shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
-    //shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
-    //shortHandVariable: typeof shortHandVariable !== 'undefined' && shortHandVariable != null ? shortHandVariable : {},
     vars: typeof vars !== 'undefined' && vars != null ? vars : {},
-    mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {}
-    //components: typeof components !== 'undefined' && components != null ? components : {},
+    mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
+    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
+    shortProp: typeof shortProp !== 'undefined' && shortProp != null ? shortProp : {},
+    shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
+    shortPropVariable: typeof shortPropVariable !== 'undefined' && shortPropVariable != null ? shortPropVariable : {},
+    components: typeof components !== 'undefined' && components != null ? components : {}
+
+    //shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
     //conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
 };
 
@@ -106,6 +108,18 @@ var environments = () => {
     return ret;
 };
 
+const parseComponent = (component, val) => {
+    var vals = contains(val, '/') ? val.split('/') : [val];
+    var j = vals.length;
+    var i = 1, x = j + 10;
+    while (i <= x) {
+        component = component.replace(eval("/\\$" + i + "/g"), j >= i ? vals[i - 1] : j == 1 ? vals[0] : '');
+        if (!contains(component, '$')) { break; }
+        i++;
+    }
+    return component;
+};
+
 const parser = {
     execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr, level) {
@@ -155,7 +169,7 @@ const parser = {
             [containers, classFound] = this.containers(classFound, null, 3);
             if (level < 1) {
                 var any = false;
-                [any, classFound] = this.getmixins(any, classFound);
+                [any, classFound] = this.getmixins(any, classFound, this);
                 [any, classFound] = this.getgrid(any, classFound);
                 if (any) {
                     var wrappersMore = this.wrappers(classFound, 1);
@@ -194,10 +208,42 @@ const parser = {
         }
         return [any, val];
     },
-    getmixins: (any, val) => {
+    getcomponent: (component, val) => {
+        var vals = contains(val, '/') ? val.split('/') : [val];
+        var j = vals.length;
+        var i = 1, x = j + 10;
+        while (i <= x) {
+            component = component.replace(eval("/\\$" + i + "/g"), j >= i ? vals[i - 1] : j == 1 ? vals[0] : '');
+            if (!contains(component, '$')) { break; }
+            i++;
+        }
+        return component;
+    },
+    getmixins: (any, val, ctx) => {
         if (val in options.mixins) {
             val = options.mixins[val];
             any = true;
+        }
+        else if (val in options.shortHand) {
+            val = options.shortHand[val];
+            if (val.indexOf(' ') > -1) {
+                var vals = [];
+                val.split(' ').forEach(value => { vals.push(ctx.getmixins(any, value, ctx)[1]); });
+                val = vals.join(' ');
+            }
+            any = true;
+        }
+        else if (val.indexOf('-') > -1) {
+            var parts = val.split('-');
+            var key = parts.shift();
+            if (key in options.components) {
+                var component = options.components[key];
+                if (typeof component !== 'string') {
+                    component = component.join(' ');
+                    options.components[key] = component;
+                }
+                val = parseComponent(component, parts.join('-'));
+            }
         }
         return [any, val];
     },
@@ -436,11 +482,20 @@ const property = {
         var extras = [], prop = "", any = false;
         [value, extras] = this.components(value, extras);
         [prop, value] = this.getpropvalue(value);
+        [prop, value] = this.getpropvariable(prop, value);
         if (!any) { [any, prop, value] = this.color(prop, this.getvalue(value)); }
         if (!any) { [any, prop, value] = this.px(prop, value); }
         if (!any) { [any, prop, value] = this.family(prop, value); }
         extras = this.rem(prop, value, extras);
         return [prop, value, extras];
+    },
+    getpropvariable: (prop, value) => {
+        if (prop in options.shortPropVariable) {
+            var parts = options.shortPropVariable[prop].split("=", 2);
+            value = parseComponent(parts.pop(), value);
+            prop = parts.shift();
+        }
+        return [prop, value];
     },
     getpropvalue: (val) => {
         var prop = "", value = "";
@@ -448,22 +503,23 @@ const property = {
         else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
         else if (contains(val, '-')) {
             var parts = val.split('-');
-            //if (parts[0] in options.shorterHand) {
-            //    prop = options.shorterHand[parts[0]];
-            //    parts.shift();
-            //    value = parts.join('-');
-            //}
-            //else {
-            value = parts.pop();
-            prop = parts.join('-');
-            //}
+            if (parts[0] in options.shortProp) {
+                prop = options.shortProp[parts[0]];
+                parts.shift();
+                value = parts.join('-');
+            }
+            else {
+                value = parts.pop();
+                prop = parts.join('-');
+            }
         }
         else { prop = val; }
+
         if (value.length == 0 && contains(prop, '#')) {
             value = prop.replace('#', '');
             prop = 'color';
         }
-        //else if (prop in options.shortHand) { prop = options.shortHand[prop]; }
+        else if (prop in options.shortProp) { prop = options.shortProp[prop]; }
         return [prop, value];
     },
     getvalue: (val) => {
@@ -689,7 +745,8 @@ var knowCSS = {
             flat[val].push(key);
         }
         for (var key in flat) {
-            console.log(['flat', key, JSON.stringify(flat[key])]);
+            console.log(['flat', key]);
+            console.log(JSON.stringify(flat[key], null, 2));
         }
 
         //var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
