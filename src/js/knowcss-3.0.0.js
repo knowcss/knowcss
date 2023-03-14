@@ -9,37 +9,29 @@ Repo: https://github.com/knowcss/knowcss
 */
 
 
-
 const knowID = 'know';
 
-var mixins = {
-    "container": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto max-width-100% 1230{max-width-1550} 1200{max-width-1140} 1024{max-width-940} 768{max-width-720}",
-    "container-fluid": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto",
-    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap"
-};
-
-var options = {
-    vars: typeof vars !== 'undefined' && vars != null ? vars : {},
-    mixins: typeof mixins !== 'undefined' && mixins != null ? mixins : {},
-    hexColors: typeof hexColors !== 'undefined' && hexColors != null ? hexColors : {},
-    shortProp: typeof shortProp !== 'undefined' && shortProp != null ? shortProp : {},
-    shortHand: typeof shortHand !== 'undefined' && shortHand != null ? shortHand : {},
-    shortPropVariable: typeof shortPropVariable !== 'undefined' && shortPropVariable != null ? shortPropVariable : {},
-    components: typeof components !== 'undefined' && components != null ? components : {}
-
-    //shorterHand: typeof shorterHand !== 'undefined' && shorterHand != null ? shorterHand : {},
-    //conditionals: typeof conditionals !== 'undefined' && conditionals != null ? conditionals : {}
+var config = {
+    vars: typeof knowVars !== 'undefined' && knowVars != null ? knowVars : {},
+    mixins: typeof knowMixins !== 'undefined' && knowMixins != null ? knowMixins : {},
+    colors: typeof knowColors !== 'undefined' && knowColors != null ? knowColors : {},
+    prop: typeof knowProp !== 'undefined' && knowProp != null ? knowProp : {},
+    short: typeof knowShort !== 'undefined' && knowShort != null ? knowShort : {},
+    variable: typeof knowVariable !== 'undefined' && knowVariable != null ? knowVariable : {},
+    components: typeof knowComponents !== 'undefined' && knowComponents != null ? knowComponents : {},
+    brackets: typeof knowBrackets !== 'undefined' && knowBrackets != null ? knowBrackets : {},
+    conditionals: typeof knowConditionals !== 'undefined' && knowConditionals != null ? knowConditionals : {}
 };
 
 var greps = null;
+var letter = "";
 
 var defined = (val) => typeof val !== 'undefined' && val != null;
 var contains = (val, vals) => val.indexOf(vals) > -1;
 var begins = (val, vals) => val.indexOf(vals) == 0;
 var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
-var layer = (val) => document.getElementById(val);
 var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
-var containsAny = function (val, vals) {
+var containsAny = (val, vals) => {
     var x = vals.length, i = 0;
     while (i < x) {
         if (val.indexOf(vals[i]) > -1) { return true; }
@@ -97,10 +89,10 @@ var environments = () => {
         if (ret[key]) { conditionals.user.push(key); }
     }
     /*
-    if (typeof options.conditionals !== 'undefined') {
-        for (var key in options.conditionals) {
-            fixedConditionals[key] = options.conditionals[key];
-            if (options.conditionals[key]) { conditionals.user.push(key); }
+    if (typeof config.conditionals !== 'undefined') {
+        for (var key in config.conditionals) {
+            fixedConditionals[key] = config.conditionals[key];
+            if (config.conditionals[key]) { conditionals.user.push(key); }
         }
     }
     */
@@ -124,7 +116,7 @@ const parser = {
     execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr, level) {
         level = level || 0;
-        attr = cleanup(attr);
+        attr = this.getvars(cleanup(attr));
         var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
             var containersfirst = this.containers(key[1], null, 0);
@@ -163,6 +155,7 @@ const parser = {
             }
         }
 
+        original = this.getbrackets(original);
         classes = cleanup(original).split(' ');
         classes.forEach((classFound) => {
             original = original.replace(classFound, '');
@@ -188,6 +181,12 @@ const parser = {
         return groups;
     },
 
+    getvars: (html) => {
+        if (contains(html, "$")) {
+            html = html.replace(/\$\{([^\}]+)\}/g, (val, key) => key in config.vars ? config.vars[key] : '');
+        }
+        return html;
+    },
     getgrid: (any, val) => {
         if (begins(val, 'col-')) {
             var whichCol = val.replace(/^col-/, '');
@@ -219,13 +218,28 @@ const parser = {
         }
         return component;
     },
+    getbrackets: (val) => {
+        if (contains(val, '[')) {
+            var grep = new RegExp('\\[(.*?)\\]', 'i'), key = "", any = [], extra = "";
+            while ((key = grep.exec(val)) !== null) {
+                if (key[1] in config.brackets) { extra += config.brackets[key[1]]; }
+                else { any.push(key[1]); }
+                val = val.replace(key[0], '');
+            }
+            if (any.length > 0) {
+                any.forEach(key => { config.brackets[key] = val; });
+            }
+            val += extra;
+        }
+        return val;
+    },
     getmixins: (any, val, ctx) => {
-        if (val in options.mixins) {
-            val = options.mixins[val];
+        if (val in config.mixins) {
+            val = config.mixins[val];
             any = true;
         }
-        else if (val in options.shortHand) {
-            val = options.shortHand[val];
+        else if (val in config.short) {
+            val = config.short[val];
             if (val.indexOf(' ') > -1) {
                 var vals = [];
                 val.split(' ').forEach(value => { vals.push(ctx.getmixins(any, value, ctx)[1]); });
@@ -236,11 +250,11 @@ const parser = {
         else if (val.indexOf('-') > -1) {
             var parts = val.split('-');
             var key = parts.shift();
-            if (key in options.components) {
-                var component = options.components[key];
+            if (key in config.components) {
+                var component = config.components[key];
                 if (typeof component !== 'string') {
                     component = component.join(' ');
-                    options.components[key] = component;
+                    config.components[key] = component;
                 }
                 val = parseComponent(component, parts.join('-'));
             }
@@ -490,8 +504,8 @@ const property = {
         return [prop, value, extras];
     },
     getpropvariable: (prop, value) => {
-        if (prop in options.shortPropVariable) {
-            var parts = options.shortPropVariable[prop].split("=", 2);
+        if (prop in config.variable) {
+            var parts = config.variable[prop].split("=", 2);
             value = parseComponent(parts.pop(), value);
             prop = parts.shift();
         }
@@ -503,8 +517,8 @@ const property = {
         else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
         else if (contains(val, '-')) {
             var parts = val.split('-');
-            if (parts[0] in options.shortProp) {
-                prop = options.shortProp[parts[0]];
+            if (parts[0] in config.prop) {
+                prop = config.prop[parts[0]];
                 parts.shift();
                 value = parts.join('-');
             }
@@ -519,23 +533,23 @@ const property = {
             value = prop.replace('#', '');
             prop = 'color';
         }
-        else if (prop in options.shortProp) { prop = options.shortProp[prop]; }
+        else if (prop in config.prop) { prop = config.prop[prop]; }
         return [prop, value];
     },
     getvalue: (val) => {
         val = val.replace(/;/g, '');
-        var hexes = defined(options.hexColors);
+        var hexes = defined(config.colors);
         if (containsAny(val, ['/', '|', '_'])) {
             val = val.replace(/[\/|\||\_]/g, ' ');
             var vals = val.split(' ');
             if (vals.length > 2) {
-                if (hexes && vals[2] in options.hexColors) {
-                    vals[2] = '#' + colors.shorter(options.hexColors[vals[2]]);
+                if (hexes && vals[2] in config.colors) {
+                    vals[2] = '#' + colors.shorter(config.colors[vals[2]]);
                     val = vals.join(' ');
                 }
             }
         }
-        else if (hexes && val in options.hexColors) { val = '#' + colors.shorter(options.hexColors[val]); }
+        else if (hexes && val in config.colors) { val = '#' + colors.shorter(config.colors[val]); }
         else if (begins(val, 'calc')) { val = val.replace('-', ' - ').trim(); }
         return val;
     },
@@ -618,9 +632,7 @@ const colors = {
     },
     color: function (prop, value) {
         var reverse = false;
-
-        var orig = [prop, value];
-        var hexes = defined(options.hexColors);
+        var hexes = defined(config.colors);
         if (hexes) {
             var sep = "";
             if (contains(prop, '@')) { sep = "@"; }
@@ -632,18 +644,18 @@ const colors = {
                     [val1, val3] = val1.split("~", 2);
                     val3 = '~' + val3;
                 }
-                if (val1 in options.hexColors) {
-                    value = options.hexColors[val1].trim() + sep + val2 + val3;
+                if (val1 in config.colors) {
+                    value = config.colors[val1].trim() + sep + val2 + val3;
                     prop = "color";
                 }
             }
-            else if (value in options.hexColors) {
-                value = options.hexColors[value].trim();
+            else if (value in config.colors) {
+                value = config.colors[value].trim();
                 prop = "color";
                 reverse = true;
             }
-            else if (prop in options.hexColors) {
-                value = options.hexColors[prop].trim();
+            else if (prop in config.colors) {
+                value = config.colors[prop].trim();
                 prop = "color";
             }
         }
@@ -672,7 +684,7 @@ const colors = {
                     i++;
                 }
                 var base = value.replace('#', '');
-                if (hexes && base in options.hexColors) { base = options.hexColors[base].trim(); }
+                if (hexes && base in config.colors) { base = config.colors[base].trim(); }
                 if (new RegExp('^([0-9a-f]{1,6})$', 'i').test(base)) {
                     base = this.shade(this.rgb(base), vals[1] / 100);
                     if (vals[2] != 100) { value = this.opacity(this.rgb(base), vals[2]); }
@@ -695,11 +707,11 @@ const colors = {
         var key = value.toString(16);
         return this.shorter((key.length == 1) ? '0' + key : key);
     },
-    opacity: function (vals, percent) {
-        return vals.length == 0 ? value : "rgba(" + vals[0] + "," + vals[1] + "," + vals[2] + "," + (percent / 100) + ")";
-    },
     shade: function (vals, percent) {
         return vals.length == 0 ? value : this.hex(Math.ceil(vals[0] * percent)) + this.hex(Math.ceil(vals[1] * percent)) + this.hex(Math.ceil(vals[2] * percent));
+    },
+    opacity: (vals, percent) => {
+        return vals.length == 0 ? value : "rgba(" + vals[0] + "," + vals[1] + "," + vals[2] + "," + (percent / 100) + ")";
     },
     rgb: (value) => {
         var key = null;
@@ -731,11 +743,15 @@ var knowCSS = {
         environments();
         var start = new Date().getTime();
         var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
-        var x = elems.length, i = 0;
+        var x = elems.length, i = 0, letters = {};
         while (i < x) {
+            letter = this.getletter(letter);
+            letters[letter] = i;
             groups = parser.execute(elems[i].getAttribute(knowID));
+            elems[i].classList.add(letter);
+            elems[i].removeAttribute(knowID);
             if (Object.keys(groups).length > 0) {
-                for (var key in groups) { smart = this.splitclasses(i, key, groups[key], smart); }
+                for (var key in groups) { smart = this.splitclasses(letter, key, groups[key], smart); }
             }
             i++;
         }
@@ -747,17 +763,22 @@ var knowCSS = {
         for (var key in flat) {
             console.log(['flat', key]);
             console.log(JSON.stringify(flat[key], null, 2));
-        }
+            /*
+                var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
 
-        //var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
+                for each flat[key] find the screen+parent to group stylesheet media/classes together..
+                    and apply styles for classes based considering modifer+action+reversion..
+                    with prop{value} from style
+            */
+        }
 
         var end = new Date().getTime();
         console.log('compiled in: ' + (end - start) + 'ms');
         return this;
     },
-    splitclasses: function (elem, key, vals, smart) {
+    splitclasses: (elem, key, vals, smart) => {
         var classes = vals.split(' ');
-        var x = classes.length, i = 0, prop = "", value = "", extras = [], smartkey = "";
+        var prop = "", value = "", extras = [], smartkey = "";
         while (classes.length > 0) {
             [prop, value, extras] = property.parse(classes.shift());
             smartkey = key + '_' + prop + '=' + value;
@@ -811,24 +832,6 @@ var knowCSS = {
         return this;
     },
     render: function () { return this.greps().apply(); },
-    document: function () {
-        if (defined(options.vars)) {
-            var root = layer('root');
-            if (root && contains(root.innerHTML, '$')) { root.innerHTML = this.getvars(root.innerHTML); }
-        }
-        return this;
-    },
-    getvars: (html) => {
-        if (contains(html, '$')) {
-            var grep = new RegExp('\\{\\{\\$(.*?)\\}\\}', 'gi'), key = null;
-            while ((key = grep.exec(html)) !== null) {
-                var val = '';
-                if (defined(options.vars) && key[1] in options.vars) { val = options.vars[key[1]].replace('/\\\\/gis', ''); }
-                while (contains(html, key[0])) { html = html.replace(key[0], val); }
-            }
-        }
-        return html;
-    },
     getclasses: (classes) => {
         var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis'), key = [], original = classes;
         while ((key = grep.exec(original)) !== null) {
@@ -838,7 +841,26 @@ var knowCSS = {
         }
         return classes.split(/(\s+)/).filter(e => e.trim().length > 0);
     },
-    init: function () { return this.document().render(); },
+    getletter: (val) => {
+        if (val.length == 0) { val = "a"; }
+        else {
+            var i = val.length - 1, chr = val.charCodeAt(i), z = "z".charCodeAt(), chr = "", vals = [];
+            do {
+                chr = val.charCodeAt(i);
+                vals = val.split("");
+                if (vals[i] == "z") {
+                    vals[i] = "a";
+                    if (i == 0) { vals.unshift("a"); }
+                }
+                else { vals[i] = String.fromCharCode(chr + 1); }
+                val = vals.join("");
+                i--;
+            }
+            while (chr == z);
+        }
+        return val;
+    },
+    init: function () { return this.render(); },
     constructor: knowCSSProto
 };
 
