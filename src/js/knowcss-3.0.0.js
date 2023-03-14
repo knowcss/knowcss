@@ -134,20 +134,27 @@ const parser = {
                     classes = classes.replace(keysecond[0], '');
                     var classessecond = cleanup(keysecond[2]);
                     containers = this.containers(keysecond[1], containerssecond, 1);
-                    if (containers.allow) {
-                        [groups, classessecond] = this.group(groups, classessecond, containers, master);
-                    }
+                    if (containers.allow) { [groups, classessecond] = this.group(groups, classessecond, containers, master); }
                 };
 
                 original = original.replace(key[0], '');
-                [groups, classes] = this.group(groups, classes, JSON.parse(toplevel), master);
+                var subClasses = [];
+                classes = cleanup(classes).split(' ');
+                classes.forEach((classFound) => {
+                    [groups, classFound] = this.getsubclasses(groups, classFound, this, false);
+                    subClasses.push(classFound);
+                });
+                classes = subClasses.join(' ');
 
+                [groups, classes] = this.group(groups, classes, JSON.parse(toplevel), master);
+                /*
                 classes = cleanup(classes).split(' ');
                 classes.forEach((classFound) => {
                     original = original.replace(classFound, '');
                     containers = this.containers(classFound, JSON.parse(toplevel), 2);
                     [groups, classFound] = this.group(groups, classFound, containers, "");
                 });
+                */
             }
             else {
                 original = original.replace(key[0], '');
@@ -160,25 +167,28 @@ const parser = {
         classes.forEach((classFound) => {
             original = original.replace(classFound, '');
             [containers, classFound] = this.containers(classFound, null, 3);
-            if (level < 1) {
-                var any = false;
-                [any, classFound] = this.getmixins(any, classFound, this);
-                [any, classFound] = this.getgrid(any, classFound);
-                if (any) {
-                    var wrappersMore = this.wrappers(classFound, 1);
-                    for (var key in wrappersMore) {
-                        if (key in groups === false) { groups[key] = wrappersMore[key]; }
-                        else { groups[key] += ' ' + wrappersMore[key]; }
-                    }
-                    classFound = "";
-                }
-            }
+            if (level < 1) { [groups, classFound] = this.getsubclasses(groups, classFound, this, true); }
             if (classFound.length > 0) { [groups, classFound] = this.group(groups, classFound, containers, ""); }
         });
 
         original = cleanup(original);
         if (original) { groups[master] = original; }
         return groups;
+    },
+
+    getsubclasses: (groups, classFound, ctx, applyMore) => {
+        var any = false;
+        [any, classFound] = ctx.getmixins(any, classFound, ctx);
+        [any, classFound] = ctx.getgrid(any, classFound);
+        if (applyMore && any) {
+            var wrappersMore = ctx.wrappers(classFound, 1);
+            for (var key in wrappersMore) {
+                if (key in groups === false) { groups[key] = wrappersMore[key]; }
+                else { groups[key] += ' ' + wrappersMore[key]; }
+            }
+            classFound = "";
+        }
+        return [groups, classFound];
     },
 
     getvars: (html) => {
@@ -565,9 +575,9 @@ const property = {
         return [value, extras];
     },
     px: (prop, value) => {
-        var any = false;
-        if (value === "" && !isNaN(prop)) {
-            prop = parseInt(prop);
+        var any = false, px = prop.replace("px", "");
+        if (value === "" && !isNaN(px)) {
+            prop = parseInt(px);
             if (prop > 0 && (prop % 100) == 0) {
                 value = parseFloat(prop).toString();
                 prop = 'font-weight';
@@ -741,7 +751,7 @@ const colors = {
 var knowCSS = {
     apply: function () {
         environments();
-        var start = new Date().getTime();
+        var startTime = new Date().getTime();
         var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
         var x = elems.length, i = 0, letters = {};
         while (i < x) {
@@ -760,9 +770,30 @@ var knowCSS = {
             if (val in flat === false) { flat[val] = []; }
             flat[val].push(key);
         }
+
+        const forThis = this;
+        var css = {};
         for (var key in flat) {
-            console.log(['flat', key]);
-            console.log(JSON.stringify(flat[key], null, 2));
+            //console.log(['flat', key]);
+            //console.log(JSON.stringify(flat[key], null, 2));
+            var keys = key.split('_');
+            flat[key].forEach(val => {
+                var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
+                var segment = forThis.getsegment(modifier, parent);
+                keys.forEach(classNew => {
+                    if (modifier == 'n') { modifier = ''; }
+                    if (screen in css === false) { css[screen] = {}; }
+                    if (action in css[screen] === false) { css[screen][action] = {}; }
+                    if (segment in css[screen][action] === false) { css[screen][action][segment] = {}; }
+                    style = style.split('=', 2).join(":");
+                    if (style in css[screen][action][segment] === false) { css[screen][action][segment][style] = []; }
+                    if (!contains(css[screen][action][segment][style], classNew + modifier)) {
+                        css[screen][action][segment][style].push(classNew + modifier);
+                    }
+                    else { css[screen][action][segment][style] = [classNew + modifier]; }
+                });
+            });
+
             /*
                 var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
 
@@ -772,8 +803,39 @@ var knowCSS = {
             */
         }
 
-        var end = new Date().getTime();
-        console.log('compiled in: ' + (end - start) + 'ms');
+        var cssGroup = {};
+        var styles = [], start = "", end = "", tab = "", masterLine = "\n";
+        for (var screen in css) {
+            [start, end, tab] = getWrapper(screen);
+            styles.push(masterLine + start);
+            for (var action in css[screen]) {
+                cssGroup = {};
+                for (var segment in css[screen][action]) {
+                    for (var style in css[screen][action][segment]) {
+                        var classJoin = "." + css[screen][action][segment][style].join(', .');
+                        var groupKey = screen + '_' + action + '_' + segment;
+                        if (groupKey in cssGroup === false) { cssGroup[groupKey] = {}; }
+                        if (classJoin in cssGroup[groupKey] === false) { cssGroup[groupKey][classJoin] = []; }
+                        cssGroup[groupKey][classJoin].push(style);
+                    }
+                }
+                for (var cssgroup in cssGroup) {
+                    for (var stylegroup in cssGroup[cssgroup]) {
+                        styles.push(tab + stylegroup + '{' + cssGroup[cssgroup][stylegroup].join('; ') + '}' + masterLine);
+                    }
+                }
+            }
+            styles.push(end);
+            delete css[screen];
+        }
+        //console.log(styles.join(''));
+
+        var cssTag = document.createElement('style');
+        cssTag.innerHTML = styles.join('');
+        document.getElementsByTagName('head')[0].appendChild(cssTag);
+
+        var endTime = new Date().getTime();
+        console.log('compiled in: ' + (endTime - startTime) + 'ms');
         return this;
     },
     splitclasses: (elem, key, vals, smart) => {
@@ -823,6 +885,7 @@ var knowCSS = {
                 webkit: "^" + getLists.webkit.join("|").replace('/-/gi', '\\-'),
                 action: [[" *::", "(" + getLists.modifiers.join("|").replace('/-/gi', '\\-') + ")", '::'], [" *:", "(" + getLists.selectors.join("|").replace('/-/gi', '\\-') + ")", ':'], [":", "(" + getLists.actions.join("|").replace('/-/gi', '\\-') + ")", ':']],
                 screens: screens,
+                screenTypes: getLists.screens,
                 screen: "^(" + getLists.screens.join("|").replace('/-/gi', '\\-') + ")$",
                 reversion: "(" + getLists.reversions.join("|").replace('/-/gi', '\\-') + ")",
                 rules: getLists.at,
@@ -860,9 +923,66 @@ var knowCSS = {
         }
         return val;
     },
+
+    getsegment: (modifier, parent) => {
+        return (modifier + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
+    },
     init: function () { return this.render(); },
     constructor: knowCSSProto
 };
+
+function getWrapper(xZ) {
+    var start = [], end = '}', tab = "\t", line = "\n";
+    if (greps.rules.includes(xZ)) { start.push('@' + xZ + ' {'); }
+    else if (contains(xZ, 'media-')) {
+        var xC = {
+            'media': 'media',
+            "not": "not all and",
+            "!": "not all and",
+            "only": "only"
+        };
+        var xP = "";
+        for (var xK in xC) {
+            if (contains(xZ, xK)) {
+                xP += xC[xK] + ' ';
+                xZ = xZ.replace(xK + '-', '').replace(xK, '');
+            }
+        }
+        var xY = getMediaQuery(xZ);
+        if (xY) {
+            xZ = xY[1];
+            xY[2] = xY[2].replace(/-/g, '').replace(/\//g, ' ');
+            if (xY[2].length > 0) { xZ += ':' + xY[2]; }
+        }
+        start.push('@' + xP + '(' + xZ + ') {');
+    }
+    else if (xZ in greps.screens) {
+        start.push('@media screen and (');
+        if (contains(xZ, 'down')) { start.push('max-width:' + greps.screens[xZ][1] + 'px'); }
+        else if (contains(xZ, 'up')) { start.push('min-width:' + greps.screens[xZ][0] + 'px'); }
+        else { start.push('min-width:' + greps.screens[xZ][0] + 'px) and (max-width:' + greps.screens[xZ][1] + 'px'); }
+        start.push(') {');
+    }
+    else if (contains(xZ, '?')) {
+        var kE = xZ.split('?', 2);
+        start.push('@media screen and (min-width:' + kE[0] + 'px) and (max-width:' + kE[1] + 'px) {');
+    }
+    else if (greps.screenTypes.includes(xZ)) {
+        start.push('@media ');
+        if (begins(xZ, 'not')) { start.push('not ' + xZ.replace('not', '')); }
+        else if (begins(xZ, '!')) { start.push('not ' + xZ.replace('!', '')); }
+        else if (begins(xZ, 'only')) { start.push('only ' + xZ.replace('only', '')); }
+        else { start.push(xZ); }
+        start.push(' {');
+    }
+    else if (!isNaN(xZ)) { start.push('@media screen and (min-width:' + parseFloat(xZ) + 'px) {'); }
+    else {
+        end = '';
+        tab = '';
+        line = '';
+    }
+    return [start.join('') + line, end, tab];
+}
 
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
