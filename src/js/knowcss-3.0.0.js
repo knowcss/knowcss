@@ -272,6 +272,7 @@ const parser = {
                 retain = equal + parts.pop();
                 wrapper = parts.join('-');
             }
+            else if (new RegExp('([0-9a-f]{1,32})\~([0-9]{1,3})$', '').test(wrapper)) { return [ret, wrapper]; }
         }
         while ((key = grep.exec(wrapper)) !== null) {
             val = key[1].toString();
@@ -440,12 +441,13 @@ const parser = {
     },
     getenvironments: (val, ret) => {
         var allow = true, reverse = false;
+        var env = val;
         if (contains(val, '!')) {
             reverse = true;
-            val = val.replace('!', '');
+            env = env.replace('!', '');
         }
-        if (contains(conditionals.env, val)) {
-            ret[val] = true;
+        if (contains(conditionals.env, env)) {
+            ret[env] = true;
             if (reverse) { allow = !allow; }
             val = "0";
         }
@@ -480,8 +482,9 @@ const parser = {
 };
 
 const property = {
-    parse: function (value) {
+    parse: function (value, key) {
         var extras = [], prop = "", any = false;
+        value = this.reversion(value, key);
         [value, extras] = this.components(value, extras);
         [value, extras] = this.getfinalmixin(value, extras, parser);
         [prop, value] = this.getpropvalue(value);
@@ -566,6 +569,11 @@ const property = {
             extras.push(pre + 'height-' + height);
         }
         return [value, extras];
+    },
+    reversion: (value, key) => {
+        var reversion = key.split('_', 6)[4];
+        if (["", "!", "n"].includes(reversion) === false) { value += '-' + reversion; }
+        return value;
     },
     px: (prop, value) => {
         var any = false, px = prop.replace("px", "");
@@ -764,24 +772,24 @@ var knowCSS = {
         const forThis = this;
         var css = {};
         for (var key in flat) {
-            console.log(JSON.stringify(flat[key], null, 2));
+            //console.log(JSON.stringify(flat[key], null, 2));
             var keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
                 var segment = forThis.getsegment(modifier, parent);
-
-                // JAA TODO apply reversions to value here
-                if (contains(reversion, '!')) { style += '!important'; }
+                style = forThis.getstyle(style, reversion);
 
                 var parentLevel = 0;
                 if (parent != "n") { parentLevel = parseInt(parent); }
-                keys.forEach(i => {
-                    var ref = i, elem = null;
+
+                var x = keys.length, i = 0, j = 0;
+                while (i < x) {
+                    j = keys[i];
+                    var ref = j, elem = elems[j];
                     if (parentLevel > 0) {
-                        ref = i + "__" + parentLevel;
-                        elem = forThis.getparent(elems[i], parentLevel);
+                        ref = j + "__" + parentLevel;
+                        elem = forThis.getparent(elem, parentLevel);
                     }
-                    else { elem = elems[i]; }
                     if (ref in letters == false) {
                         letter = this.getletter(letter);
                         elem.classList.add(letter);
@@ -792,13 +800,13 @@ var knowCSS = {
                     if (screen in css === false) { css[screen] = {}; }
                     if (action in css[screen] === false) { css[screen][action] = {}; }
                     if (segment in css[screen][action] === false) { css[screen][action][segment] = {}; }
-                    style = style.split('=', 2).join(":");
                     if (style in css[screen][action][segment] === false) { css[screen][action][segment][style] = []; }
                     if (!contains(css[screen][action][segment][style], classNew + modifier)) {
                         css[screen][action][segment][style].push(classNew + modifier);
                     }
                     else { css[screen][action][segment][style] = [classNew + modifier]; }
-                });
+                    i++;
+                }
             });
         }
 
@@ -840,7 +848,7 @@ var knowCSS = {
         var classes = vals.split(' ');
         var prop = "", value = "", extras = [], smartkey = "";
         while (classes.length > 0) {
-            [prop, value, extras] = property.parse(classes.shift());
+            [prop, value, extras] = property.parse(classes.shift(), key);
             smartkey = key + '_' + prop + '=' + value;
             if (smartkey in smart === false) { smart[smartkey] = []; }
             smart[smartkey].push(elem);
@@ -921,7 +929,7 @@ var knowCSS = {
         }
         return val;
     },
-
+    getstyle: (style, reversion) => style.split('=', 2).join(":") + (contains(reversion, '!') ? '!important': ''),
     getsegment: (modifier, parent) => {
         return (modifier + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
     },

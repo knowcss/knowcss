@@ -179,10 +179,13 @@ const knowShort = {
     "alignbottom": "vertical-align-bottom",
 
     /* width % */
-    "full": "width-100% height-auto",
+    "full": "width-100%",
     "half": "width-50%",
     "third": "width-33.3333%",
     "quarter": "width-25%",
+    "sixth": "width-16.6666%",
+    "eight": "width-12.5%",
+    "tenth": "width-10%",
 
     /* display */
     "div": "display=block",
