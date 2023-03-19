@@ -85,17 +85,7 @@ var environments = () => {
         desktop: !(navigator.mobile || false),
         touch: ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch) || false
     };
-    for (var key in ret) {
-        if (ret[key]) { conditionals.user.push(key); }
-    }
-    /*
-    if (typeof config.conditionals !== 'undefined') {
-        for (var key in config.conditionals) {
-            fixedConditionals[key] = config.conditionals[key];
-            if (config.conditionals[key]) { conditionals.user.push(key); }
-        }
-    }
-    */
+
     conditionals.env = Object.keys(ret);
     return ret;
 };
@@ -145,23 +135,13 @@ const parser = {
                     subClasses.push(classFound);
                 });
                 classes = subClasses.join(' ');
-
                 [groups, classes] = this.group(groups, classes, JSON.parse(toplevel), master);
-                /*
-                classes = cleanup(classes).split(' ');
-                classes.forEach((classFound) => {
-                    original = original.replace(classFound, '');
-                    containers = this.containers(classFound, JSON.parse(toplevel), 2);
-                    [groups, classFound] = this.group(groups, classFound, containers, "");
-                });
-                */
             }
             else {
                 original = original.replace(key[0], '');
                 classes = "";
             }
         }
-
         original = this.getbrackets(original);
         classes = cleanup(original).split(' ');
         classes.forEach((classFound) => {
@@ -244,6 +224,7 @@ const parser = {
         return val;
     },
     getmixins: (any, val, ctx) => {
+        //var checkVal = val.replace(/\^/g, '');
         if (val in config.mixins) {
             val = config.mixins[val];
             any = true;
@@ -298,7 +279,7 @@ const parser = {
             keepval = wrapper.substr(offset, len);
             offset += len;
             if (level > 1) { ret.allow = true; }
-            else { [any, val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
+            else { [val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
             if (ret.allow) {
                 [any, val, retain, ret.reversions] = this.getreversions(val, retain, ret.reversions);
                 [any, val, ret.parents] = this.getparents(val, ret.parents);
@@ -307,7 +288,6 @@ const parser = {
                 [any, val, ret.actions] = this.getactions(val, ret.actions);
                 if (val) { vals.push(keepval + retain); }
             }
-            else { break; }
         }
         return level > 2 ? [ret, vals.join('')] : ret;
     },
@@ -459,19 +439,17 @@ const parser = {
         return [num > 0, hyphens(val), ret];
     },
     getenvironments: (val, ret) => {
-        var any = false, allow = true, reverse = false;
+        var allow = true, reverse = false;
         if (contains(val, '!')) {
             reverse = true;
             val = val.replace('!', '');
         }
         if (contains(conditionals.env, val)) {
-            any = true;
             ret[val] = true;
-            if (!contains(conditionals.user, val)) { allow = false; }
             if (reverse) { allow = !allow; }
-            val = "";
+            val = "0";
         }
-        return [any, val, ret, allow];
+        return [val, ret, allow];
     },
     group: (groups, classes, containers, master) => {
         greps.group.forEach(key => {
@@ -505,6 +483,7 @@ const property = {
     parse: function (value) {
         var extras = [], prop = "", any = false;
         [value, extras] = this.components(value, extras);
+        [value, extras] = this.getfinalmixin(value, extras, parser);
         [prop, value] = this.getpropvalue(value);
         [prop, value] = this.getpropvariable(prop, value);
         if (!any) { [any, prop, value] = this.color(prop, this.getvalue(value)); }
@@ -512,6 +491,19 @@ const property = {
         if (!any) { [any, prop, value] = this.family(prop, value); }
         extras = this.rem(prop, value, extras);
         return [prop, value, extras];
+    },
+    getfinalmixin: (value, extras, ctx) => {
+        var retain = '';
+        if (contains(value, '!')) {
+            value = value.replace(/\!/g, '');
+            retain = '!';
+        }
+        var values = ctx.getmixins(false, value.replace(/\^/g, ''), ctx)[1].split(' ');
+        value = values.shift();
+        if (values.length > 0) {
+            values.forEach(val => { extras.push(val + retain); });
+        }
+        return [value, extras];
     },
     getpropvariable: (prop, value) => {
         if (prop in config.variable) {
@@ -544,6 +536,7 @@ const property = {
             prop = 'color';
         }
         else if (prop in config.prop) { prop = config.prop[prop]; }
+        if (contains(value, '!')) { value = value.replace(/\!/g, '') + '!important'; }
         return [prop, value];
     },
     getvalue: (val) => {
@@ -621,7 +614,7 @@ const property = {
                 value = value.replace('px', '');
                 var important = "";
                 if (value.indexOf('!') > -1) {
-                    value = value.replace('!', '');
+                    value = value.replace(/\!/g, '');
                     important = "!";
                 }
                 if (!isNaN(value) && parseInt(value) > 0) {
@@ -755,13 +748,10 @@ var knowCSS = {
         var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
         var x = elems.length, i = 0, letters = {};
         while (i < x) {
-            letter = this.getletter(letter);
-            letters[letter] = i;
             groups = parser.execute(elems[i].getAttribute(knowID));
-            elems[i].classList.add(letter);
             elems[i].removeAttribute(knowID);
             if (Object.keys(groups).length > 0) {
-                for (var key in groups) { smart = this.splitclasses(letter, key, groups[key], smart); }
+                for (var key in groups) { smart = this.splitclasses(i, key, groups[key], smart); }
             }
             i++;
         }
@@ -774,13 +764,30 @@ var knowCSS = {
         const forThis = this;
         var css = {};
         for (var key in flat) {
-            //console.log(['flat', key]);
-            //console.log(JSON.stringify(flat[key], null, 2));
+            console.log(JSON.stringify(flat[key], null, 2));
             var keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
                 var segment = forThis.getsegment(modifier, parent);
-                keys.forEach(classNew => {
+
+                // JAA TODO apply reversions to value here
+                if (contains(reversion, '!')) { style += '!important'; }
+
+                var parentLevel = 0;
+                if (parent != "n") { parentLevel = parseInt(parent); }
+                keys.forEach(i => {
+                    var ref = i, elem = null;
+                    if (parentLevel > 0) {
+                        ref = i + "__" + parentLevel;
+                        elem = forThis.getparent(elems[i], parentLevel);
+                    }
+                    else { elem = elems[i]; }
+                    if (ref in letters == false) {
+                        letter = this.getletter(letter);
+                        elem.classList.add(letter);
+                        letters[ref] = letter;
+                    }
+                    var classNew = letters[ref];
                     if (modifier == 'n') { modifier = ''; }
                     if (screen in css === false) { css[screen] = {}; }
                     if (action in css[screen] === false) { css[screen][action] = {}; }
@@ -793,14 +800,6 @@ var knowCSS = {
                     else { css[screen][action][segment][style] = [classNew + modifier]; }
                 });
             });
-
-            /*
-                var [screen, modifier, action, parent, reversion, style] = key.split('_', 6);
-
-                for each flat[key] find the screen+parent to group stylesheet media/classes together..
-                    and apply styles for classes based considering modifer+action+reversion..
-                    with prop{value} from style
-            */
         }
 
         var cssGroup = {};
@@ -828,7 +827,6 @@ var knowCSS = {
             styles.push(end);
             delete css[screen];
         }
-        //console.log(styles.join(''));
 
         var cssTag = document.createElement('style');
         cssTag.innerHTML = styles.join('');
@@ -926,6 +924,14 @@ var knowCSS = {
 
     getsegment: (modifier, parent) => {
         return (modifier + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
+    },
+    getparent: (elem, level) => {
+        var ret = elem;
+        while (level > 0) {
+            if (ret && "parentNode" in ret && "classList" in ret.parentNode) { ret = ret.parentNode; }
+            level--;
+        }
+        return ret;
     },
     init: function () { return this.render(); },
     constructor: knowCSSProto
