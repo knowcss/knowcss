@@ -1,5 +1,16 @@
 const knowVars = {
-    "one": "border-top-1px"
+    "one": "border-top-1px",
+
+    "box": "box-sizing=border-box",
+    "red": "color-933",
+    "orange": "color-B65B0C",
+    "pink": "color-C83B82",
+    "blue": "color-384EF4",
+    "black": "color-000",
+    "family": "font-family-Helvetica", //font-display-auto font-display-swap
+    "css": '<span know="[go]">CSS</span>',
+    "html": '<span know="[go]">HTML</span>',
+    "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nr]">KnowCSS</span></a>'
 };
 
 const knowMixins = {
@@ -99,7 +110,6 @@ const knowShort = {
     "h4": "h16 font-size-calc(1.275rem/+/0.3vw)",
     "h5": "h16 font-size-1.25rem",
     "h6": "h16 font-size-1rem",
-
 
     /* viewport */
     "100vh": "height-100vh",
@@ -278,7 +288,34 @@ const knowShort = {
     "auto": "overflow-auto"
 };
 
-const knowBrackets = {};
+const knowBrackets = {
+    "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+    "nr": "color-2D862D font-weight-400",
+    "nt": "color-2D862D font-weight-400",
+    "go": "color-339 font-weight-400",
+    "hd": "font-size-32px aligncenter normal-important",
+    "mi": "margin-10px/auto/10px/auto margin-top-10px!",
+    "mx": "center",
+    "ft": "font-size-16px aligncenter",
+    "hr": "border-top-3px/solid/#f3f3f3 center",
+    "bx": "padding-15px/5px {{$box}}",
+    "hx": "margin-20px/auto/10px/auto padding-0",
+    "ic": "padding-5px/5px all{color-666}",
+    "na": "hover>a{color-933}",
+    "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
+    "nv": "color-666 font-size-18px nounderline",
+    "ys": "aligncenter center",
+    "ml": "padding-left-20px",
+    "mm": "padding-left-40px",
+    "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+    "ct": "table center aligncenter margin-top-10px max-width-96%",
+    "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
+    "blue": "{{$blue}}",
+    "orange": "{{$orange}}",
+    "pink": "{{$pink}}",
+    "red": "{{$red}}",
+    "black": "{{$black}}"
+};
 
 const knowConditionals = {};
 
