@@ -11,6 +11,9 @@ Repo: https://github.com/knowcss/knowcss
 
 const knowID = 'know';
 
+var greps = null;
+var letter = "";
+var conditionals = [];
 var config = {
     vars: typeof knowVars !== 'undefined' && knowVars != null ? knowVars : {},
     mixins: typeof knowMixins !== 'undefined' && knowMixins != null ? knowMixins : {},
@@ -23,8 +26,23 @@ var config = {
     conditionals: typeof knowConditionals !== 'undefined' && knowConditionals != null ? knowConditionals : {}
 };
 
-var greps = null;
-var letter = "";
+/*
+const library = {
+    defined: (val) => typeof val !== 'undefined' && val != null,
+    contains: (val, vals) => val.indexOf(vals) > -1,
+    begins: (val, vals) => val.indexOf(vals) == 0,
+    hyphens: (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str,
+    cleanup: (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim(),
+    containsAny: (val, vals) => {
+        var x = vals.length, i = 0;
+        while (i < x) {
+            if (val.indexOf(vals[i]) > -1) { return true; }
+            i++;
+        }
+        return false;
+    }
+}
+*/
 
 var defined = (val) => typeof val !== 'undefined' && val != null;
 var contains = (val, vals) => val.indexOf(vals) > -1;
@@ -40,7 +58,6 @@ var containsAny = (val, vals) => {
     return false;
 };
 
-var conditionals = [];
 const configuration = {
     init: function () { this.greps().environments().brackets(); },
     mixins: function (val) {
@@ -110,7 +127,7 @@ const configuration = {
                 "modifiers": ["webkit-scrollbar", "after", "backdrop", "before", "cue", "cue-region", "file-selector-button", "first-letter", "first-line", "grammar-error", "marker", "placeholder", "placeholder-shown", "selection", "spelling-error", "target-text"],
                 "selectors": ["last-child", "first-child", "only-child", "first-of-type", "last-of-type", "only-of-type", "nth-last-child", "nth-last-of-type"],
                 "actions": ["current", "past", "future", "playing", "paused", "active", "checked", "disabled", "empty", "enabled", "focus-visible", "focus-within", "focus", "hover", "in-range", "invalid", "link", "optional", "out-of-range", "read-only", "read-write", "required", "root", "target", "valid", "visited"],
-                "webkit": ["align-content", "align-items", "align-self", "alt", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "animation-trigger", "animation", "app-region", "appearance", "aspect-ratio", "backdrop-filter", "backface-visibility", "background-clip", "background-composite", "background-origin", "background-size", "border-after-color", "border-after-style", "border-after-width", "border-after", "border-before-color", "border-before-style", "border-before-width", "border-before", "border-bottom-left-radius", "border-bottom-right-radius", "border-end-color", "border-end-style", "border-end-width", "border-end", "border-fit", "border-horizontal-spacing", "border-image", "border-radius", "border-start-color", "border-start-style", "border-start-width", "border-start", "border-top-left-radius", "border-top-right-radius", "border-vertical-spacing", "box-align", "box-decoration-break", "box-direction", "box-flex-group", "box-flex", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "clip-path", "color-correction", "column-axis", "column-break-after", "column-break-before", "column-break-inside", "column-count", "column-fill", "column-gap", "column-progression", "column-rule", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "columns", "cursor-visibility", "dashboard-region", "device-pixel-ratio", "filter", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "flex", "flow-from", "flow-into", "font-feature-settings", "font-kerning", "font-size-delta", "font-smoothing", "font-variant-ligatures", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap", "grid-column-start", "grid-gap", "grid-row-end", "grid-row-gap", "grid-row-start", "grid-row", "grid-template-areas", "grid-template-columns", "grid-template-rows", "grid-template", "grid", "highlight", "hyphenate-character", "hyphenate-charset", "hyphenate-limit-after", "hyphenate-limit-before", "hyphenate-limit-lines", "hyphens", "initial-letter", "justify-content", "justify-items", "justify-self", "line-align", "line-box-contain", "line-break", "line-clamp", "line-grid", "line-snap", "locale", "logical-height", "logical-width", "margin-after-collapse", "margin-after", "margin-before-collapse", "margin-before", "margin-bottom-collapse", "margin-collapse", "margin-end", "margin-start", "margin-top-collapse", "marquee-direction", "marquee-increment", "marquee-repetition", "marquee-speed", "marquee-style", "marquee", "mask-attachment", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position-x", "mask-position-y", "mask-position", "mask-repeat-x", "mask-repeat-y", "mask-repeat", "mask-size", "mask-source-type", "mask", "match-nearest-mail-blockquote-color", "max-logical-height", "max-logical-width", "media-text-track-container", "min-logical-height", "min-logical-width", "nbsp-mode", "opacity", "order", "overflow-scrolling", "padding-after", "padding-before", "padding-end", "padding-start", "perspective-origin", "perspective-origin-x", "perspective-origin-y", "perspective", "print-color-adjust", "region-break-after", "region-break-before", "region-break-inside", "region-fragment", "rtl-ordering", "ruby-position", "scroll-snap-type", "shape-image-threshold", "shape-inside", "shape-margin", "shape-outside", "svg-shadow", "tap-highlight-color", "text-color-decoration", "text-combine", "text-decoration-line", "text-decoration-skip", "text-decoration-style", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-emphasis", "text-fill-color", "text-justify", "text-orientation", "text-security", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-stroke", "text-underline-position", "text-zoom", "transform-2d", "transform-3d", "transform-origin-x", "transform-origin-y", "transform-origin-z", "transform-origin", "transform-style", "transform", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "transition", "user-drag", "user-modify", "user-select", "touch-callout", "animating-full-screen-transition", "any-link", "autofill", "autofill-strong-password", "drag", "full-page-media", "full-screen-ancestor", "full-screen-controls-hidden", "full-screen-document", "full-screen", "file-upload-button", "inner-spin-button", "input-placeholder", "media-controls-current-time-display", "media-controls-enclosure", "media-controls-fullscreen-button", "media-controls-mute-button", "media-controls-overlay-enclosure", "media-controls-panel", "media-controls-play-button", "media-controls-time-remaining-display", "media-controls-timeline", "media-controls-toggle-closed-captions-button", "media-controls-volume-control-container", "media-controls-volume-control-hover-background", "media-controls-volume-slider", "media-controls", "meter-bar", "meter-even-less-good-value", "meter-inner-element", "meter-optimum-value", "meter-suboptimum-value", "outer-spin-button", "progress-bar", "progress-inner-element", "progress-value", "search-cancel-button", "search-results-button", "slider-runnable-track", "slider-thumb"],
+                "webkit": ["color", "font-size", "align-content", "align-items", "align-self", "alt", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "animation-trigger", "animation", "app-region", "appearance", "aspect-ratio", "backdrop-filter", "backface-visibility", "background-clip", "background-composite", "background-origin", "background-size", "border-after-color", "border-after-style", "border-after-width", "border-after", "border-before-color", "border-before-style", "border-before-width", "border-before", "border-bottom-left-radius", "border-bottom-right-radius", "border-end-color", "border-end-style", "border-end-width", "border-end", "border-fit", "border-horizontal-spacing", "border-image", "border-radius", "border-start-color", "border-start-style", "border-start-width", "border-start", "border-top-left-radius", "border-top-right-radius", "border-vertical-spacing", "box-align", "box-decoration-break", "box-direction", "box-flex-group", "box-flex", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "clip-path", "color-correction", "column-axis", "column-break-after", "column-break-before", "column-break-inside", "column-count", "column-fill", "column-gap", "column-progression", "column-rule", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "columns", "cursor-visibility", "dashboard-region", "device-pixel-ratio", "filter", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "flex", "flow-from", "flow-into", "font-feature-settings", "font-kerning", "font-size-delta", "font-smoothing", "font-variant-ligatures", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap", "grid-column-start", "grid-gap", "grid-row-end", "grid-row-gap", "grid-row-start", "grid-row", "grid-template-areas", "grid-template-columns", "grid-template-rows", "grid-template", "grid", "highlight", "hyphenate-character", "hyphenate-charset", "hyphenate-limit-after", "hyphenate-limit-before", "hyphenate-limit-lines", "hyphens", "initial-letter", "justify-content", "justify-items", "justify-self", "line-align", "line-box-contain", "line-break", "line-clamp", "line-grid", "line-snap", "locale", "logical-height", "logical-width", "margin-after-collapse", "margin-after", "margin-before-collapse", "margin-before", "margin-bottom-collapse", "margin-collapse", "margin-end", "margin-start", "margin-top-collapse", "marquee-direction", "marquee-increment", "marquee-repetition", "marquee-speed", "marquee-style", "marquee", "mask-attachment", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position-x", "mask-position-y", "mask-position", "mask-repeat-x", "mask-repeat-y", "mask-repeat", "mask-size", "mask-source-type", "mask", "match-nearest-mail-blockquote-color", "max-logical-height", "max-logical-width", "media-text-track-container", "min-logical-height", "min-logical-width", "nbsp-mode", "opacity", "order", "overflow-scrolling", "padding-after", "padding-before", "padding-end", "padding-start", "perspective-origin", "perspective-origin-x", "perspective-origin-y", "perspective", "print-color-adjust", "region-break-after", "region-break-before", "region-break-inside", "region-fragment", "rtl-ordering", "ruby-position", "scroll-snap-type", "shape-image-threshold", "shape-inside", "shape-margin", "shape-outside", "svg-shadow", "tap-highlight-color", "text-color-decoration", "text-combine", "text-decoration-line", "text-decoration-skip", "text-decoration-style", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-emphasis", "text-fill-color", "text-justify", "text-orientation", "text-security", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-stroke", "text-underline-position", "text-zoom", "transform-2d", "transform-3d", "transform-origin-x", "transform-origin-y", "transform-origin-z", "transform-origin", "transform-style", "transform", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "transition", "user-drag", "user-modify", "user-select", "touch-callout", "animating-full-screen-transition", "any-link", "autofill", "autofill-strong-password", "drag", "full-page-media", "full-screen-ancestor", "full-screen-controls-hidden", "full-screen-document", "full-screen", "file-upload-button", "inner-spin-button", "input-placeholder", "media-controls-current-time-display", "media-controls-enclosure", "media-controls-fullscreen-button", "media-controls-mute-button", "media-controls-overlay-enclosure", "media-controls-panel", "media-controls-play-button", "media-controls-time-remaining-display", "media-controls-timeline", "media-controls-toggle-closed-captions-button", "media-controls-volume-control-container", "media-controls-volume-control-hover-background", "media-controls-volume-slider", "media-controls", "meter-bar", "meter-even-less-good-value", "meter-inner-element", "meter-optimum-value", "meter-suboptimum-value", "outer-spin-button", "progress-bar", "progress-inner-element", "progress-value", "search-cancel-button", "search-results-button", "slider-runnable-track", "slider-thumb"],
                 "screens": ["media", "print", "screen", "speech", "!print", "!screen", "!speech", "notprint", "notscreen", "notspeech", "onlyprint", "onlyscreen", "onlyspeech"],
                 "breakpoints": { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 }
             };
@@ -145,24 +162,11 @@ const configuration = {
     }
 };
 
-const parseComponent = (component, val) => {
-    var vals = contains(val, '/') ? val.split('/') : [val];
-    var j = vals.length;
-    var i = 1, x = j + 10;
-    while (i <= x) {
-        component = component.replace(eval("/\\$" + i + "/g"), j >= i ? vals[i - 1] : j == 1 ? vals[0] : '');
-        if (!contains(component, '$')) { break; }
-        i++;
-    }
-    return component;
-};
-
 const parser = {
     execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr, level) {
         level = level || 0;
-        attr = this.getvars(cleanup(attr));
-        attr = this.getbrackets(attr);
+        attr = this.getbrackets(this.getvars(cleanup(attr)));
         var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
             var containersfirst = this.containers(key[1], null, 0);
@@ -210,7 +214,58 @@ const parser = {
         if (original) { groups[master] = original; }
         return groups;
     },
-
+    getwrapper: (val) => {
+        var ret = [], end = '}', tab = "\t", line = "\n";
+        if (greps.rules.includes(val)) { ret.push('@' + val + ' {'); }
+        else if (contains(val, 'media-')) {
+            var medias = {
+                'media': 'media',
+                "not": "not all and",
+                "!": "not all and",
+                "only": "only"
+            };
+            var media = "";
+            for (var key in medias) {
+                if (contains(val, key)) {
+                    media += medias[key] + ' ';
+                    val = val.replace(key + '-', '').replace(key, '');
+                }
+            }
+            var media = new RegExp(greps.media).exec(val);
+            if (media) {
+                val = media[1];
+                media[2] = media[2].replace(/-/g, '').replace(/\//g, ' ');
+                if (media[2].length > 0) { val += ':' + media[2]; }
+            }
+            ret.push('@' + media + '(' + val + ') {');
+        }
+        else if (val in greps.screens) {
+            ret.push('@media screen and (');
+            if (contains(val, 'down')) { ret.push('max-width:' + greps.screens[val][1] + 'px'); }
+            else if (contains(val, 'up')) { ret.push('min-width:' + greps.screens[val][0] + 'px'); }
+            else { ret.push('min-width:' + greps.screens[val][0] + 'px) and (max-width:' + greps.screens[val][1] + 'px'); }
+            ret.push(') {');
+        }
+        else if (contains(val, '?')) {
+            var parts = val.split('?', 2);
+            ret.push('@media screen and (min-width:' + parts[0] + 'px) and (max-width:' + parts[1] + 'px) {');
+        }
+        else if (greps.screenTypes.includes(val)) {
+            ret.push('@media ');
+            if (begins(val, 'not')) { ret.push('not ' + val.replace('not', '')); }
+            else if (begins(val, '!')) { ret.push('not ' + val.replace('!', '')); }
+            else if (begins(val, 'only')) { ret.push('only ' + val.replace('only', '')); }
+            else { ret.push(val); }
+            ret.push(' {');
+        }
+        else if (!isNaN(val)) { ret.push('@media screen and (min-width:' + parseFloat(val) + 'px) {'); }
+        else {
+            end = '';
+            tab = '';
+            line = '';
+        }
+        return [ret.join('') + line, end, tab];
+    },
     getsubclasses: (groups, classFound, ctx, applyMore) => {
         var any = false;
         [any, classFound] = ctx.getmixins(any, classFound, ctx);
@@ -264,17 +319,26 @@ const parser = {
         }
         return component;
     },
+    getcomponents: (component, val) => {
+        var vals = contains(val, '/') ? val.split('/') : [val];
+        var j = vals.length;
+        var i = 1, x = j + 10;
+        while (i <= x) {
+            component = component.replace(eval("/\\$" + i + "/g"), j >= i ? vals[i - 1] : j == 1 ? vals[0] : '');
+            if (!contains(component, '$')) { break; }
+            i++;
+        }
+        return component;
+    },
     getbrackets: (val) => {
         if (contains(val, '[')) {
             var grep = new RegExp('\\[(.*?)\\]', 'i'), key = "", any = [], extra = "";
             while ((key = grep.exec(val)) !== null) {
-                if (key[1] in config.brackets) { extra += ' ' + config.brackets[key[1]] + ' '; }
+                if (key[1] in config.brackets) { extra += ' ' + config.brackets[key[1]]; }
                 else { any.push(key[1]); }
                 val = val.replace(key[0], '');
             }
-            if (any.length > 0) {
-                any.forEach(key => { config.brackets[key] = ' ' + val + ' '; });
-            }
+            if (any.length > 0) { any.forEach(key => { config.brackets[key] = val; }); }
             val += extra;
         }
         return val;
@@ -302,7 +366,7 @@ const parser = {
                     component = component.join(' ');
                     config.components[key] = component;
                 }
-                val = parseComponent(component, parts.join('-'));
+                val = ctx.getcomponents(component, parts.join('-'));
             }
         }
         return [any, val];
@@ -555,7 +619,7 @@ const property = {
         if (!any) { [any, prop, value] = this.color(prop, this.getvalue(value)); }
         if (!any) { [any, prop, value] = this.px(prop, value); }
         if (!any) { [any, prop, value] = this.family(prop, value); }
-        extras = this.rem(prop, value, extras);
+        [value, extras] = this.rem(prop, value, extras);
         return [prop, value, extras];
     },
     getfinalmixin: (value, extras, ctx) => {
@@ -574,7 +638,7 @@ const property = {
     getpropvariable: (prop, value) => {
         if (prop in config.variable) {
             var parts = config.variable[prop].split("=", 2);
-            value = parseComponent(parts.pop(), value);
+            value = parser.getcomponents(parts.pop(), value);
             prop = parts.shift();
         }
         return [prop, value];
@@ -682,19 +746,20 @@ const property = {
             else if (['margin', 'paddin', 'spacin'].includes(prop.substring(0, 6))) { any = true; }
             else if (prop.indexOf('-') > 0 && ['top', 'bottom', 'left', 'right', 'width', 'height'].includes(prop.split('-').pop())) { any = true; }
             if (any) {
-                value = value.replace('px', '');
+                var val = value.replace('px', '');
                 var important = "";
-                if (value.indexOf('!') > -1) {
-                    value = value.replace(/\!/g, '');
+                if (val.indexOf('!') > -1) {
+                    val = val.replace(/\!/g, '');
                     important = "!";
                 }
-                if (!isNaN(value) && parseInt(value) > 0) {
-                    var rem = parseInt(value) / (multiplier || 16);
+                if (!isNaN(val) && parseInt(val) > 0) {
+                    var rem = parseInt(val) / (multiplier || 16);
                     if (!isNaN(rem) && rem > 0) { extras.push(prop + '=' + rem + 'rem' + important); }
                 }
             }
+            if (value === '0px') { value = '0'; }
         }
-        return extras;
+        return [value, extras];
     }
 }
 
@@ -812,14 +877,19 @@ const colors = {
     }
 };
 
-var knowCSS = {
-    apply: function () {
+const knowCSS = {
+    render: function () {
+        const ctx = parser;
+        const forThis = this;
+
+        this.scan();
+
         configuration.init();
         var startTime = new Date().getTime();
         var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
         var x = elems.length, i = 0, letters = {};
         while (i < x) {
-            groups = parser.execute(elems[i].getAttribute(knowID));
+            groups = ctx.execute(elems[i].getAttribute(knowID));
             elems[i].removeAttribute(knowID);
             if (Object.keys(groups).length > 0) {
                 for (var key in groups) { smart = this.splitclasses(i, key, groups[key], smart); }
@@ -832,7 +902,6 @@ var knowCSS = {
             flat[val].push(key);
         }
 
-        const forThis = this;
         var css = {};
         for (var key in flat) {
             //console.log(JSON.stringify(flat[key], null, 2));
@@ -876,7 +945,7 @@ var knowCSS = {
         var cssGroup = {};
         var styles = [], start = "", end = "", tab = "", masterLine = "\n";
         for (var screen in css) {
-            [start, end, tab] = getWrapper(screen);
+            [start, end, tab] = ctx.getwrapper(screen);
             styles.push(masterLine + start);
             for (var action in css[screen]) {
                 cssGroup = {};
@@ -887,15 +956,6 @@ var knowCSS = {
                         var groupKey = screen + '_' + action + '_' + segment;
                         if (groupKey in cssGroup === false) { cssGroup[groupKey] = {}; }
                         if (classJoin in cssGroup[groupKey] === false) { cssGroup[groupKey][classJoin] = []; }
-
-                        // JAA TODO - insert webkit alternative prop:value into style here
-                        /*
-                        if (classWebKit || (uX.autoprefix && getWebKit(className))) {
-                            stylesWebKit = [' -webkit-' + stylesHere, ' -moz-' + stylesHere, ' -ms-' + stylesHere, ' -o-' + stylesHere];
-                            stylesHere += stylesWebKit.join('');
-                        }
-                        */
-
                         cssGroup[groupKey][classJoin].push(style);
                     }
                 }
@@ -917,6 +977,9 @@ var knowCSS = {
         console.log('compiled in: ' + (endTime - startTime) + 'ms');
         return this;
     },
+    scan: () => {
+        if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
+    },
     splitclasses: (elem, key, vals, smart) => {
         var classes = vals.split(' ');
         var prop = "", value = "", extras = [], smartkey = "";
@@ -929,7 +992,6 @@ var knowCSS = {
         }
         return smart;
     },
-    render: function () { return this.apply(); },
     getclasses: (classes) => {
         var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis'), key = [], original = classes;
         while ((key = grep.exec(original)) !== null) {
@@ -958,7 +1020,12 @@ var knowCSS = {
         }
         return val;
     },
-    getstyle: (style, reversion) => style.split('=', 2).join(":") + (contains(reversion, '!') ? '!important' : ''),
+    getstyle: (style, reversion) => {
+        var parts = style.split('=', 2);
+        var style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
+        if (new RegExp(greps.webkit).test(parts[0]) === true) { style += ['; -webkit-' + style, '; -moz-' + style, '; -ms-' + style, '; -o-' + style].join(''); }
+        return style;
+    },
     getsegment: (modifier, parent) => {
         return (modifier + '_' + parent.toString()).toLowerCase().replace(/[\s\n\r]/gi, '-');
     },
@@ -973,66 +1040,6 @@ var knowCSS = {
     init: function () { return this.render(); },
     constructor: knowCSSProto
 };
-
-function getMediaQuery(mS) {
-    return new RegExp(greps.media).exec(mS);
-}
-function getWebKit(wS) {
-    return new RegExp(greps.webkit).test(wS);
-}
-
-function getWrapper(xZ) {
-    var start = [], end = '}', tab = "\t", line = "\n";
-    if (greps.rules.includes(xZ)) { start.push('@' + xZ + ' {'); }
-    else if (contains(xZ, 'media-')) {
-        var xC = {
-            'media': 'media',
-            "not": "not all and",
-            "!": "not all and",
-            "only": "only"
-        };
-        var xP = "";
-        for (var xK in xC) {
-            if (contains(xZ, xK)) {
-                xP += xC[xK] + ' ';
-                xZ = xZ.replace(xK + '-', '').replace(xK, '');
-            }
-        }
-        var xY = getMediaQuery(xZ);
-        if (xY) {
-            xZ = xY[1];
-            xY[2] = xY[2].replace(/-/g, '').replace(/\//g, ' ');
-            if (xY[2].length > 0) { xZ += ':' + xY[2]; }
-        }
-        start.push('@' + xP + '(' + xZ + ') {');
-    }
-    else if (xZ in greps.screens) {
-        start.push('@media screen and (');
-        if (contains(xZ, 'down')) { start.push('max-width:' + greps.screens[xZ][1] + 'px'); }
-        else if (contains(xZ, 'up')) { start.push('min-width:' + greps.screens[xZ][0] + 'px'); }
-        else { start.push('min-width:' + greps.screens[xZ][0] + 'px) and (max-width:' + greps.screens[xZ][1] + 'px'); }
-        start.push(') {');
-    }
-    else if (contains(xZ, '?')) {
-        var kE = xZ.split('?', 2);
-        start.push('@media screen and (min-width:' + kE[0] + 'px) and (max-width:' + kE[1] + 'px) {');
-    }
-    else if (greps.screenTypes.includes(xZ)) {
-        start.push('@media ');
-        if (begins(xZ, 'not')) { start.push('not ' + xZ.replace('not', '')); }
-        else if (begins(xZ, '!')) { start.push('not ' + xZ.replace('!', '')); }
-        else if (begins(xZ, 'only')) { start.push('only ' + xZ.replace('only', '')); }
-        else { start.push(xZ); }
-        start.push(' {');
-    }
-    else if (!isNaN(xZ)) { start.push('@media screen and (min-width:' + parseFloat(xZ) + 'px) {'); }
-    else {
-        end = '';
-        tab = '';
-        line = '';
-    }
-    return [start.join('') + line, end, tab];
-}
 
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };

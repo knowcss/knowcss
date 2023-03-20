@@ -1,6 +1,5 @@
 const knowVars = {
     "one": "border-top-1px",
-
     "box": "box-sizing=border-box",
     "red": "color-933",
     "orange": "color-B65B0C",
