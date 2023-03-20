@@ -1,0 +1,67 @@
+{
+    "initial": [
+        {
+            "head": "Initial",
+            "list": [
+                ["font-size-initial margin-initial", "suffix"],
+                ["initial-font-size initial-margin", "prefix"],
+                ["initial{font-size margin}", "grouped"]
+            ]
+        }
+    ],
+
+    "inherit": [
+        {
+            "head": "Inherit",
+            "list": [
+                ["font-size-inherit margin-inherit", "suffix"],
+                ["inherit-font-size inherit-margin", "prefix"],
+                ["inherit{font-size margin}", "grouped"]
+            ]
+        }
+    ],
+
+    "revert": [
+        {
+            "head": "Revert",
+            "list": [
+                ["font-size-revert margin-revert", "suffix"],
+                ["revert-font-size revert-margin", "prefix"],
+                ["revert{font-size margin}", "grouped"]
+            ]
+        }
+    ],
+
+    "unset": [
+        {
+            "head": "Unset",
+            "list": [
+                ["font-size-unset margin-unset", "suffix"],
+                ["unset-font-size unset-margin", "prefix"],
+                ["unset{font-size margin}", "grouped"]
+            ]
+        }
+    ],
+
+    "auto": [
+        {
+            "head": "Auto",
+            "list": [
+                ["font-size-auto margin-auto", "suffix"],
+                ["auto-font-size auto-margin", "prefix"],
+                ["auto{font-size margin}", "grouped"]
+            ]
+        }
+    ],
+
+    "normal": [
+        {
+            "head": "Normal",
+            "list": [
+                ["font-size-normal margin-normal", "suffix"],
+                ["normal-font-size normal-margin", "prefix"],
+                ["normal{font-size margin}", "grouped"]
+            ]
+        }
+    ]
+}

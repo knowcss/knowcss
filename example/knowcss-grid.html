@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>KnowCSS, The Revolutionary NoCSS Engine</title>
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
     <link rel="icon" type="image/png" href="favicon.png" />
     <meta name="description" content="KnowCSS, The Revolutionary NoCSS Engine">
     <meta property="og:title" content="KnowCSS, The Revolutionary NoCSS Engine" />
@@ -13,19 +12,199 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
-    <script src="../src/knowcss-shorthand.js"></script>
-    <script src="../src/js/knowcss.js"></script>
+    <script src="../src/knowcss-shortprop.js"></script>
+    <script src="../src/js/knowcss-3.0.0.js"></script>
 </head>
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
 
     <div id="root" role="main">
 
+        <!--<div know="chrome{12 full} hires{margin-top-10px} desktop{margin-left-11px} mac{margin-right-12px} !chrome{margin-bottom-13px}">AA</div>-->
+
+        <div know="xxsm-border=2px/solid/#000">xxsm</div>
+
+        <!--<section know="^full! inherit-auto{font-size} !{12 400}"></section>-->
+        <!---
+        <div know="sm{100x200}">a</div>
+        <div know="max-150x200">b</div>
+        <div know="container">c</div>
+        <div know="container-fluid red~98 red@97~96">d</div>
+        <div know="row">
+            <div know="13 400 font-size-12px! !important{padding-10px}">f</div>
+        </div>
+
+        <div know="row">
+            <div know="col-3 offset-1 red">h</div>
+        </div>
+
+        <div know="red">i</div>
+        <div know="red@99">j</div>
+        <div know="red~98">k</div>
+        <div know="red@97~96">l</div>
+        <div know="red~95@94">m</div>
+
+        <div know="translateY-10px">n</div>
+
+        <div know="pre sticky p-10 m-12 t-1 l-2 r-3 b-4 translateY-10px">o</div>
+        <div know="md{red full}">p</div>
+        -->
+
+        <!-- JAA TODO: fix 12px (not working) class vs 12 (working)-->
+        <!--<div know="[one] 12 red full">q</div>
+        <div know="[one] ${one}">r</div>-->
+
+        <style>
+            /* know="checked~div{before((l-30))" */
+             /*
+            .toggle-checkbox:checked + div::before {
+                left: 30px;
+            }
+            */
+            /* FIX
+            hover-before{} or
+            hover>{before((border-5px/solid/red))} or
+            hover{before((
+                background=linear-gradient(to_bottom,#fff_0%,#fff_100%)
+                box-shadow=0_0_0_1px_rgba(0,0,0,0.5)
+            ))}
+            */
+        </style>
+
+        <!-- simplify to component html - inject input+div+span and original innerHTML as span innerHTML
+                <label know="toggle-c00" data-id="toggleid">
+                    <input type="checkbox">
+                    <div></div>
+                    <span></span>
+                </label>
+            -->
+
+        <!--<label know="inline-block pointer relative">
+                <input class="toggle-checkbox" type="checkbox" know="
+                    absolute hidden w-100% h-100% zi-100
+                    checked+div{bg-c00! before((l-30))}
+                ">
+                <div know="
+                notouch
+                noselect
+                inline-block
+                bg-ccc
+                rad-16
+                w-58
+                h-32
+                relative
+                alignmiddle
+                transition=background_0.25s
+
+                after{content=''}
+
+                before{
+                    content=''
+                    block
+                    background=linear-gradient(to_bottom,#fff_0%,#eee_100%)
+                    rad-50%
+                    box-shadow-0_0_0_1px_rgba(0,0,0,0.25)
+                    w-24
+                    h-24
+                    absolute
+                    t-4
+                    l-4
+                    transition-left_0.25s
+                }
+                "></div>
+                <span know="ml-5 relative t-2 notouch noselect"></span>
+            </label>
+            -->
+
+        <!--<div know="sm:hover:disabled:active:bold">Test</div>-->
+
+        <!--<div know="sm-md:hover:disabled:active:bold">Test</div>-->
+
+        <!--<div know="sm-md-lg|nth-child-2{border-red normal((width))}"></div>-->
+
+        <!--<div know="chrome{font-size-10px bold heavy ok}"></div>
+        <div know="safari{font-size-11px}"></div>
+        <div know="desktop{font-size-12px}"></div>
+        <div know="mobile{font-size-13px}"></div>-->
+
+        <!--<div know="sm{desktop((font-size-13px)) chrome((font-size-14px)) mobile((font-size-10px))}"></div>-->
+
+        <!--<div know="all{font-size-100}"></div>
+        <div know="auto{width height}"></div>
+        <div know="sm:hover:disabled:active:bold">Test</div>
+
+
+        <div know="^2-hover{ 18 }"></div>
+        <div know="^-hover{ 19 }"></div>
+        <div know="^hover{ 20 }"></div>
+        <child know="grid-column-span_2">fill-grid</child>
+        <define know="w-200 h-200 b-1px/solid/red"></define>-->
+
+        <!-- <div know="none"><define know="w-200 h-200 b-1px/solid/red"></define></div>-->
+
+        <!--
+            <div know="sm:hover:disabled:active:bold">Test</div>
+            <child know="grid-column-span_2">fill-grid</child>
+        -->
+
+        <!-- NOT WORKING hover{ parent((x)) } -->
+        <!--<div know="
+            hover{
+                xsm((12 300 full))
+                md((b-2))
+                sm((14))
+                lg((15))
+                padding-top-10px
+                parent((18))
+                parent2((19))
+                parent3((20))
+            }
+            active{13 400}
+            xl{16}
+            color-red
+        ">test</div>-->
+
+        <!-- JAA grid shorthand TODO -->
+        <!-- fill-grid-row fill-grid-cols for variations with cols as default -->
+        <!-- fill-grid-2x1 is 2 cols per 1 row -->
+        <!-- fill-grid-3x1 is 3 cols per 1 row -->
+        <!-- fill-grid-2x2 is 2 cols per 2 row -->
+        <!--<div know="fill-grid grid-template-rows-repeat(2,1fr) grid-gap-20px">
+            <child know="grid-column-span_2">fill-grid</child>
+            <child>fill-grid</child>
+            <child>fill-grid</child>
+            <child know="grid-column-span_2">fill-grid</child>
+            <child>fill-grid</child>
+            <child>fill-grid</child>
+            <child know="grid-column-span_2">fill-grid</child>
+        </div>-->
+
+        <!--
+        <div know="sm-inherit-auto-revert{font-size}">Test</div>
+
+        <div know="inherit{font-size} initial{width} unset{padding} revert{font-weight} normal{line-height} auto{margin}">reversions</div>
+        <div know="inherit-font-size! initial-width! unset-padding! revert-font-weight! normal-line-height! auto-margin!">reversions 2</div>
+
+        <div know="none"><define know="[out] w-200 h-200 b-1px/solid/red"></define></div>
+
+        <div know="table >div{cell aligntop p-10}">
+            <div><div know="fill-block [out]"><child>fill-block</child></div></div>
+            <div><div know="fill-cols [out]"><child>fill-cols</child><child>fill-cols</child></div></div>
+            <div><div know="fill-rows [out]"><child>fill-rows</child><child>fill-rows</child></div></div>
+        </div>
+        <div know="table >div{cell aligntop p-10}">
+            <div><div know="fill-grid [out]"><child>fill-grid</child><child>fill-grid</child></div></div>
+            <div><div know="fill-table [out]"><child>fill-table</child><child>fill-table</child></div></div>
+            <div><div know="fill-inline [out]"><child>fill-inline</child></div></div>
+        </div>
+        -->
+
         <!--
             Dynamic: <div know="padding-24px/0 width-100% font-size-12px color-red md{font-size-14px}">Dynamic</div>
             Shorthand: <div know="p-24/0 w-100% px-12 red md{px-14}">Shorthand</div>
             Minified: <div know="p-24/0 full 12 red md{14}">Minified</div>
         -->
+        <!--
         <div know="center padding-5px all{font-weight-300 box-sizing=border-box font-family-Helvetica}">
             <div know="container-fluid">
                 <div
@@ -35,6 +214,7 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
 
 </body>

@@ -51,10 +51,12 @@
 
     <div know="[xt] [ft] mt-24px!">
         <div>And the following visual. With KnowCSS, the child element now has the power to control its parent element!</div>
-        <div know="[xt] border-1px/solid/green margin-0 padding-0">
-            <div know="^{border-1px/solid/red!} ^margin-10! parent-padding-20! 24!">
-               the parent selector
+        <div know="[xt]">
+            <div know="border-1px/solid/green margin-0 padding-0">
+                <div know="^{border-1px/solid/red!} ^margin-10! parent-padding-20! 24!">
+                    the parent selector
+                </div>
             </div>
-         </div>
+        </div>
     </div>
 </div>

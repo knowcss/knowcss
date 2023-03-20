@@ -12,114 +12,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
-    <script>
-        const cssVars = {
-            "box": "box-sizing=border-box",
-            "red": "color-933",
-            "orange": "color-B65B0C",
-            "pink": "color-C83B82",
-            "blue": "color-384EF4",
-            "black": "color-000",
-            "family": "font-family-Helvetica", //font-display-auto font-display-swap
-            "css": '<span know="[go]">CSS</span>',
-            "html": '<span know="[go]">HTML</span>',
-            "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nr]">KnowCSS</span></a>'
-        };
-        const mixins = {
-            "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-            "nr": "color-2D862D font-weight-400",
-            "nt": "color-2D862D font-weight-400",
-            "go": "color-339 font-weight-400",
-            "hd": "font-size-32px aligncenter normal-important",
-            "mi": "margin-10px/auto/10px/auto margin-top-10px-!",
-            "mx": "center",
-            "ft": "font-size-16px aligncenter",
-            "hr": "border-top-3px/solid/#f3f3f3 center",
-            "bx": "padding-15px/5px {{$box}}",
-            "hx": "margin-20px/auto/10px/auto padding-0",
-            "ic": "padding-5px/5px all{color-666}",
-            "na": "hover>a{color-933}",
-            "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
-            "nv": "color-666 font-size-18px nounderline",
-            "ys": "aligncenter center",
-            "ml": "padding-left-20px",
-            "mm": "padding-left-40px",
-            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-            "ct": "table center aligncenter margin-top-10px max-width-96%",
-            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
-            "blue": "{{$blue}}",
-            "orange": "{{$orange}}",
-            "pink": "{{$pink}}",
-            "red": "{{$red}}",
-            "black": "{{$black}}"
-        };
-    </script>
-    <!--<script src="../src/knowcss-colors.js"></script>-->
-    <script src="../src/knowcss-shorthand.js"></script>
-    <script src="../src/js/knowcss.js"></script>
-    <script>
-        var addEvents = ['mousemove', 'touchstart', 'click', 'resize', 'keydown', 'wheel'];
-        var addedEvents = false;
-        addEvents.forEach(function (val) { window.addEventListener(val, addEvent); });
-        function gtag() { window.dataLayer.push(arguments); }
-        function KwLy(eA) { return document.getElementById(eA); }
-        function addEvent() {
-            if (!addedEvents) {
-                addedEvents = true;
-                addEvents.forEach(function (val) { window.removeEventListener(val, addEvent); });
-                var s = document.createElement('link');
-                s.rel = 'stylesheet';
-                s.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css';
-                s.type = 'text/css';
-                var g = document.getElementsByTagName('link')[0];
-                g.parentNode.insertBefore(s, g);
-            }
-        }
-    </script>
+    <script src="../src/knowcss-shortprop.js"></script>
+    <script src="../src/js/knowcss-3.0.0.js"></script>
 </head>
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
-    <style>
-        .noshift i {
-            display: inline-block;
-            margin-top: 1px;
-            width: 18px;
-            height: 18px;
-            max-height: 18px;
-        }
-
-        .noshift i:before {
-            width: 18px;
-            height: 18px;
-        }
-
-        .noshift2 i {
-            display: inline-block;
-            margin-top: 1px;
-            width: 48px;
-            height: 48px;
-            max-height: 15px;
-        }
-
-        .noshift2 i::before {
-            width: 48px;
-            height: 48px;
-        }
-
-        .noshift3 i {
-            display: inline-block;
-            margin-top: 1px;
-            width: 14px;
-            height: 15px;
-            max-height: 15px;
-        }
-
-        .noshift3 i::before {
-            width: 14px;
-            height: 15px;
-        }
-    </style>
-    <div id="root" role="main">
+    <div id="root" role="main" class="knowvars">
 
         <!--
             <div know="h1">h1</div>
@@ -265,7 +163,7 @@
                     <br>With <span know="[go]">KnowCSS Now</span>, the power to develop layouts fast and efficiently is
                     at your fingertips.
                     <br>
-                    <br><span know="color-fff bg-color-933 border-radius-4px padding-1px/4px/1px/4px font-size-24px-!" onClick="this.blur(); $know().now('root'); return false;">Try It Now</span>
+                    <br><span know="color-fff bg-933 border-radius-4px padding-1px/4px/1px/4px font-size-24px!" onClick="this.blur(); $know().now('root'); return false;">Try It Now</span>
                 </div>
             </div>
             <div know="[bx] [hr]">

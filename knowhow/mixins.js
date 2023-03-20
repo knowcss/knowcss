@@ -4,32 +4,17 @@ const cssVars = {
     "orange": "color-B65B0C",
     "pink": "color-C83B82",
     "blue": "color-384EF4",
+    "green": "color-2d862d",
     "black": "color-000",
     "family": "font-family-Helvetica",
     "css": '<span know="[go]">CSS</span>',
     "html": '<span know="[go]">HTML</span>',
     "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nr]">KnowCSS</span></a>'
 };
-const components = {
-    "hamburger": [
-        "none hidden position-relative xsmdown{visible block}",
-        "center aligncenter w-32px h-32px overflow-hidden pt-3px",
-        "pointer nohighlight",
-        "hover>span{bg-933}",
-        ">input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
-        ">span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
-        "first-child>span{origin-0%/0%}",
-        "last-child>span{origin-0%/100%}"
-    ],
-    "toggle-hamburger": [
-        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative background-933 origin=66.6666%/0}",
-        "checked~span-nth-last-child-2{opacity-0}",
-        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative background-933 origin=66.6666%/0%}",
-    ]
-}
 const mixins = {
     "cx": "bg-f3f3f3 border-1px/solid/#ddd!",
     "sm": "block font-size-12px color-999",
+    "sh": "16 color-b65b0c",
     "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
     "nr": "color-2D862D font-weight-400",
     "nt": "color-000 font-weight-400 line-height-20px",
@@ -37,7 +22,7 @@ const mixins = {
     "hd": "font-size-32px normal!", //aligncenter
     "xt": "margin-10px/0 margin-top-10px-! full",
     "mx": "center",
-    "ft": "font-size-16px",
+    "ft": "font-size-16px line-height-19px",
     "hr": "border-top-3px/solid/#f3f3f3 center",
     "hb": "border-bottom-3px/solid/#f3f3f3 center",
     "bx": "padding-15px/5px {{$box}}",

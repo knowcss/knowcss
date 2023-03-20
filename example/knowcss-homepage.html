@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KnowCSS, The Revolutionary NoCSS Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimum-scale=1, user-scalable=1">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <meta name="description" content="KnowCSS, The Revolutionary NoCSS Engine">
+    <meta property="og:title" content="KnowCSS, The Revolutionary NoCSS Engine" />
+    <meta property="og:image" content="https://www.knowcss.com/i/og.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
+    <meta property="og:url" content="https://www.knowcss.com/" />
+    <script>
+        const cssVars = {
+            "box": "box-sizing=border-box",
+            "red": "color-933",
+            "orange": "color-B65B0C",
+            "pink": "color-C83B82",
+            "blue": "color-384EF4",
+            "black": "color-000",
+            "green": "color-2d862d",
+            "family": "font-family-Helvetica", //font-display-auto font-display-swap
+            "css": '<span know="[go]">CSS</span>',
+            "html": '<span know="[go]">HTML</span>',
+            "knowcss": '<a href="https://github.com/knowcss/knowcss" rel="noreferrer" target="_blank" know="nounderline"><span know="[nr]">KnowCSS</span></a>'
+        };
+        const mixins = {
+            "bi": "font-size-24px color-333 all{color-333} width-24px hover>i{color-933} m-4",
+
+            "nr": "color-2D862D font-weight-400",
+            "nt": "color-2D862D font-weight-400",
+            "go": "color-339 font-weight-400",
+            "hd": "font-size-32px aligncenter normal-important",
+            "mx": "margin-10px/auto center",
+            "ft": "font-size-16px aligncenter",
+            "hr": "border-top-3px/solid/#f3f3f3 center",
+            "bx": "padding-15px/5px {{$box}}",
+            "hx": "margin-20px/auto/10px/auto padding-0",
+            "ic": "padding-5px/5px all{color-666}",
+            "na": "hover>a{color-933}",
+
+            "nv": "color-666 font-size-18px nounderline",
+            "ys": "aligncenter center",
+            "ml": "padding-left-20px",
+            "mm": "padding-left-40px",
+            "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+            "ct": "table center aligncenter margin-top-10px max-width-96%",
+            "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
+            "blue": "{{$blue}}",
+            "orange": "{{$orange}}",
+            "pink": "{{$pink}}",
+            "red": "{{$red}}",
+            "black": "{{$black}}",
+            "green": "{{$green}}"
+        };
+    </script>
+    <script src="../src/knowcss-colors.js"></script>
+    <script src="../src/knowcss-shorthand.js"></script>
+    <script src="../src/knowmotion-core.js"></script>
+    <script src="../knowhow/components.js"></script>
+    <script src="../src/js/knowcss.js"></script>
+    <script>
+        var addEvents = ['load', 'DOMContentLoaded', 'mousemove', 'touchstart', 'click', 'resize', 'keydown', 'wheel'];
+        var addedEvents = false;
+        addEvents.forEach(function (val) { window.addEventListener(val, addEvent); });
+        function gtag() { window.dataLayer.push(arguments); }
+        function KwLy(eA) { return document.getElementById(eA); }
+        function addEvent() {
+            if (!addedEvents) {
+                addedEvents = true;
+                addEvents.forEach(function (val) { window.removeEventListener(val, addEvent); });
+                var s = document.createElement('link');
+                s.rel = 'stylesheet';
+                s.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css';
+                s.type = 'text/css';
+                var g = document.getElementsByTagName('link')[0];
+                g.parentNode.insertBefore(s, g);
+            }
+        }
+    </script>
+</head>
+
+<body know="tight body-fff/333/000099/000099/000099">
+    <div id="root" role="main">
+
+
+        <!--
+        <div know="pointer full something">test</div>
+
+        <div know="sm~lg{9}">9</div>
+        <div know="sm+lg{10}">10</div>
+        <div know="sm|lg{11}">11</div>
+        <div know="sm_lg{12}">12</div>
+        <div know="sm/lg{13}">13</div>
+        <div know="sm-lg{14}">14</div>
+        <div know="sm-lg/xl-xxl{15}">15</div>
+
+        <div know="xxm-sm{16}">16</div>
+        <div know="md-lg{17}">17</div>
+        <div know="xl-xxl{18}">18</div>
+
+        <div know="1-100{19}">19</div>
+        <div know="101-200{20}">20</div>
+        <div know="201-300{21}">21</div>
+        -->
+
+        <!--<div know="480{10} ^640-hover{13} 999-border=1px hover-padding-10 14 full active{test} last-child{border}"></div>-->
+
+        <!--<div know="border-1px/solid/green p-32">
+            <div know="border-1px/solid/red p-32 ^hover{border-1px/solid/blue}">hover here</div>
+        </div>-->
+
+        <div know="#666 full center all{font-weight-300 {{$box}} {{$family}}}">
+            <div know="row full overflow-hidden background-color-f6f6f6 border-bottom-4px/solid/#cfcfcf p-4 all{color-633 font-size-14px {{$family}}}">
+                <div know="col-6-left hover>a{color-933}"><a href="https://github.com/knowcss" rel="noreferrer" target="_blank" know="nounderline">Nov 12, 2022 - v2.0 Released! <i class="bi-download"></i></a></div>
+                <div know="col-6-right">
+		            <a href="https://github.com/knowcss" target="_blank" rel="noreferrer" title="Github" know="[ni]"><i know="[bi]" class="bi-github"></i></a>
+	                <a href="https://www.npmjs.com/package/knowcss" target="_blank" rel="noreferrer" title="NPM" know="[ni]"><i know="[bi]" class="bi-box-seam"></i></a>
+        	    	<a href="https://twitter.com/knowcss" target="_blank" rel="noreferrer" title="Twitter" know="[ni]"><i know="[bi]" class="bi-twitter"></i></a>
+        		    <!--<a href="https://www.linkedin.com/company/knowcss/" target="_blank" rel="noreferrer" title="Linkedin" know="[ni]"><i know="[bi]" class="bi-linkedin"></i></a>-->
+    	        	<a href="mailto:&#106;&#101;&#114;&#101;&#109;&#121;&#064;&#107;&#110;&#111;&#119;&#099;&#115;&#115;&#046;&#099;&#111;&#109;" know="[ni]"><i class="bi-mailbox2" know="[bi]" title="Contact"></i></a>
+	            </div>
+            </div>
+        </div>
+
+        <div know="center all{font-weight-300 {{$box}} {{$family}}} padding-5px">
+            <div know="[mx] center aligncenter"><a href="/"><img src="logo-700.png" alt="KnowCSS, The NoCSS Engine" width="350" height="63" know="margin-top-0px width-100% max-width-350px height-auto"></a></div>
+            <h1 know="[hx] [bx] font-size-40px aligncenter color-333 nounderline">Introducing <span know="[red]">KnowCSS,</span> the revolutionary NoCSS&nbsp;Engine</h1>
+
+            <div know="[bx] font-size-24px aligncenter margin-5px">
+                <div>Create responsive, modern, optimized, dynamic, cross-compatible layouts as you type in-browser with
+                    real-time preview.</div>
+                <div know="[mx] [red]">No pre-processing or post-processing required!</div>
+                <div know="[mx]" class="noshift">
+                    <a href="../knowhow/#installation" know="nounderline"><span know="[bn] background-333 color-ccc"><i know="[biw]" class="bi-file-text"></i> Install</span></a>
+                    <a href="https://github.com/knowcss" target="_blank" rel="noreferrer" know="nounderline"><span know="[bn] background-ccc color-333"><i class="bi-cloud-arrow-down" know="[biw]"></i>
+                            Download</span></a>
+                    <a href="../knowhow/" know="nounderline"><span know="[bn] background-993333 color-fff"><i know="[biw]" class="bi-file-earmark-code"></i> Docs</span></a>
+                </div>
+            </div>
+
+            <div know="[bx] [hr]">
+                <div know="[hd]">Stop Doing This:</div>
+                <div know="[mx] [ft]">
+                    <div know="[nt] text-align-left">
+                        <div know="[mx] [ct]">
+                            <div know="[cd]">
+                                <span know="[blue]">&lt;style&gt;
+                                    <br><span know="[orange]">&nbsp;&nbsp;&nbsp;.page { padding: 24px 0; width: 100%;
+                                        font-size: 12px; color: #f00; }</span>
+                                    <br><span know="[orange]">&nbsp;&nbsp;&nbsp;@media and (min-width: 768px) {
+                                        font-size: 14px; }</span>
+                                    <br>&lt;/style&gt;
+                                    <br>&lt;div <span know="[orange]">class=</span><span know="[pink]">&quot;page&quot;</span>&gt;&lt;/div&gt;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div know="[hd]">Start Doing This:</div>
+                <div know="[mx] [ft]">
+                    <div know="[nt] text-align-left">
+                        <div know="[mx] [ct] full">
+                            <div know="[cd] h-42 mh-42 of-hidden fill-slide">
+                                <div knowmotion="ticker 5s d0.5s 1">
+                                    <span know="[green]">Dynamic:</span> <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;padding-24px/0 width-100% font-size-12px color-red md{font-size-14px}&quot;</span>&gt;&lt;/div&gt;</span>
+                                </div>
+                                <div knowmotion="ticker 5s d5.0s 1">
+                                    <span know="[green]">Shorthand:</span> <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;p-24/0 w-100% px-12 red md{px-14}&quot;</span>&gt;&lt;/div&gt;</span>
+                                </div>
+                                <div knowmotion="ticker 5s d9.5s 1 last-85 fwd">
+                                    <span know="[green]">Minified:</span> <span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;p-24/0 full 12 red md{14}&quot;</span>&gt;&lt;/div&gt;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- allow shorthand here. ex: b-1px/solid/blue for border-x -->
+            <!--<div knowmotion="bounce border-1px/solid/blue smdown{5s border=1px/solid/red} lgdown{10s b=1px/solid/green}">bounce</div>-->
+
+            <!--
+            <div know="p-32 relative >{border=1px/solid/red of-hidden absolute top-50% left-50%}">
+                <div knowmotion="ticker">ticker</div>
+                <div knowmotion="bounce">bounce</div>
+                <div knowmotion="flash">flash</div>
+                <div knowmotion="pulse">pulse</div>
+                <div knowmotion="rubberBand">rubberBand</div>
+                <div knowmotion="shakeX">shakeX</div>
+                <div knowmotion="shakeY">shakeY</div>
+                <div knowmotion="headShake">headShake</div>
+                <div knowmotion="swing">swing</div>
+                <div knowmotion="tada">tada</div>
+                <div knowmotion="wobble">wobble</div>
+                <div knowmotion="jello">jello</div>
+                <div knowmotion="heartBeat">heartBeat</div>
+                <div knowmotion="backInDown">backInDown</div>
+                <div knowmotion="backInLeft">backInLeft</div>
+                <div knowmotion="backInRight">backInRight</div>
+                <div knowmotion="backInUp">backInUp</div>
+                <div knowmotion="backOutDown">backOutDown</div>
+                <div knowmotion="backOutLeft">backOutLeft</div>
+                <div knowmotion="backOutRight">backOutRight</div>
+                <div knowmotion="backOutUp">backOutUp</div>
+                <div knowmotion="bounceIn">bounceIn</div>
+                <div knowmotion="bounceInDown">bounceInDown</div>
+                <div knowmotion="bounceInLeft">bounceInLeft</div>
+                <div knowmotion="bounceInRight">bounceInRight</div>
+                <div knowmotion="bounceInUp">bounceInUp</div>
+                <div knowmotion="bounceOut">bounceOut</div>
+                <div knowmotion="bounceOutDown">bounceOutDown</div>
+                <div knowmotion="bounceOutLeft">bounceOutLeft</div>
+                <div knowmotion="bounceOutRight">bounceOutRight</div>
+                <div knowmotion="bounceOutUp">bounceOutUp</div>
+                <div knowmotion="fadeIn">fadeIn</div>
+                <div knowmotion="fadeInDown">fadeInDown</div>
+                <div knowmotion="fadeInDownBig">fadeInDownBig</div>
+                <div knowmotion="fadeInLeft">fadeInLeft</div>
+                <div knowmotion="fadeInLeftBig">fadeInLeftBig</div>
+                <div knowmotion="fadeInRight">fadeInRight</div>
+                <div knowmotion="fadeInRightBig">fadeInRightBig</div>
+                <div knowmotion="fadeInUp">fadeInUp</div>
+                <div knowmotion="fadeInUpBig">fadeInUpBig</div>
+                <div knowmotion="fadeInTopLeft">fadeInTopLeft</div>
+                <div knowmotion="fadeInTopRight">fadeInTopRight</div>
+                <div knowmotion="fadeInBottomLeft">fadeInBottomLeft</div>
+                <div knowmotion="fadeInBottomRight">fadeInBottomRight</div>
+                <div knowmotion="fadeOut">fadeOut</div>
+                <div knowmotion="fadeOutDown">fadeOutDown</div>
+                <div knowmotion="fadeOutDownBig">fadeOutDownBig</div>
+                <div knowmotion="fadeOutLeft">fadeOutLeft</div>
+                <div knowmotion="fadeOutLeftBig">fadeOutLeftBig</div>
+                <div knowmotion="fadeOutRight">fadeOutRight</div>
+                <div knowmotion="fadeOutRightBig">fadeOutRightBig</div>
+                <div knowmotion="fadeOutUp">fadeOutUp</div>
+                <div knowmotion="fadeOutUpBig">fadeOutUpBig</div>
+                <div knowmotion="fadeOutTopLeft">fadeOutTopLeft</div>
+                <div knowmotion="fadeOutTopRight">fadeOutTopRight</div>
+                <div knowmotion="fadeOutBottomRight">fadeOutBottomRight</div>
+                <div knowmotion="fadeOutBottomLeft">fadeOutBottomLeft</div>
+                <div knowmotion="flip">flip</div>
+                <div knowmotion="flipInX">flipInX</div>
+                <div knowmotion="flipInY">flipInY</div>
+                <div knowmotion="flipOutX">flipOutX</div>
+                <div knowmotion="flipOutY">flipOutY</div>
+                <div knowmotion="lightSpeedInRight">lightSpeedInRight</div>
+                <div knowmotion="lightSpeedInLeft">lightSpeedInLeft</div>
+                <div knowmotion="lightSpeedOutRight">lightSpeedOutRight</div>
+                <div knowmotion="lightSpeedOutLeft">lightSpeedOutLeft</div>
+                <div knowmotion="rotateIn">rotateIn</div>
+                <div knowmotion="rotateInDownLeft">rotateInDownLeft</div>
+                <div knowmotion="rotateInDownRight">rotateInDownRight</div>
+                <div knowmotion="rotateInUpLeft">rotateInUpLeft</div>
+                <div knowmotion="rotateInUpRight">rotateInUpRight</div>
+                <div knowmotion="rotateOut">rotateOut</div>
+                <div knowmotion="rotateOutDownLeft">rotateOutDownLeft</div>
+                <div knowmotion="rotateOutDownRight">rotateOutDownRight</div>
+                <div knowmotion="rotateOutUpLeft">rotateOutUpLeft</div>
+                <div knowmotion="rotateOutUpRight">rotateOutUpRight</div>
+                <div knowmotion="hinge">hinge</div>
+                <div knowmotion="jackInTheBox">jackInTheBox</div>
+                <div knowmotion="rollIn">rollIn</div>
+                <div knowmotion="rollOut">rollOut</div>
+                <div knowmotion="zoomIn">zoomIn</div>
+                <div knowmotion="zoomInDown">zoomInDown</div>
+                <div knowmotion="zoomInLeft">zoomInLeft</div>
+                <div knowmotion="zoomInRight">zoomInRight</div>
+                <div knowmotion="zoomInUp">zoomInUp</div>
+                <div knowmotion="zoomOut">zoomOut</div>
+                <div knowmotion="zoomOutDown">zoomOutDown</div>
+                <div knowmotion="zoomOutLeft">zoomOutLeft</div>
+                <div knowmotion="zoomOutRight">zoomOutRight</div>
+                <div knowmotion="zoomOutUp">zoomOutUp</div>
+                <div knowmotion="slideInDown">slideInDown</div>
+                <div knowmotion="slideInLeft">slideInLeft</div>
+                <div knowmotion="slideInRight">slideInRight</div>
+                <div knowmotion="slideInUp">slideInUp</div>
+                <div knowmotion="slideOutDown">slideOutDown</div>
+                <div knowmotion="slideOutLeft">slideOutLeft</div>
+                <div knowmotion="slideOutRight">slideOutRight</div>
+                <div knowmotion="slideOutUp">slideOutUp</div>
+            </div>
+            -->
+
+            <div know="[bx] [hr] padding-top-10px margin-bottom-10px">
+                <div know="aligncenter"><a href="http://www.jaydoublay.com/" rel="noreferrer" target="_blank" know="font-size-12px color-707070 nounderline">&copy; 2021 Jay Doublay</a></div>
+                <div know="aligncenter"><span know="color-333 font-size-14px normal">{ knowcss }</span> <span know="color-933 font-size-12px normal">&lt;The-NoCSS-Engine/&gt;</span></div>
+                <div know="aligncenter"><span know="color-707070 font-size-12px normal" id="render"></span></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -32,8 +32,8 @@ var knowHow = {
                     this.reveal('root');
                 }
                 if (knowHardCache) { knowCache[key + '__html'] = knowElem(this.key).innerHTML; }
-                if (dataNav.length > 4) { dataNav[4].apply(this, []); }
             }
+            if (dataNav.length > 4) { dataNav[4].apply(this, []); }
             if (window.innerWidth < 768) {
                 knowElem('toggle-hamburger').checked = false;
                 this.toggle();
@@ -82,12 +82,13 @@ var knowHow = {
             elem = document.createElement('div');
             elem.id = elemPre + key;
             elem.setAttribute('know', 'cursor-pointer' + (elemVals.length > 2 && elemVals[2] ? ' border-top-2px/solid/#f3f3f3' : ''));
-            elem.innerHTML = '<span know="notouch">' + elemVals[0] + '</span>' + (elemVals.length > 1 ? ' <span know="[sm] notouch">' + elemVals[1] + '</span>' : '');
+            elem.innerHTML = '<div know="[sh] notouch">' + elemVals[0] + '</div>' + (elemVals.length > 1 ? '<div know="[sm] notouch">' + elemVals[1] + '</div>' : '');
             elem.onclick = (event) => { this.switch(event.target.id.replace(elemPre, '')); };
             nav.appendChild(elem);
         }
         var hamburger = knowElem('hamburger');
         hamburger.onclick = (event) => { $knowhow().toggle(); };
+        setTimeout(function() { knowElem('navwrap').style.visibility = 'visible'; }, 10);
         return this;
     },
     render: function (keys, id) {
@@ -114,7 +115,7 @@ var knowHow = {
                 html.push('<div know="[bx]">');
                 if ("head" in val && val.head) { html.push('<div know="[hd]">' + val.head + '</div>'); }
                 html.push('<div know="[xt] [ft]">');
-                if ("desc" in val && val.desc) { html.push('<div>' + val.desc + '</div>'); useBreak = true; }
+                if ("desc" in val && val.desc) { html.push('<div>' + (typeof val.desc === 'string' ? val.desc : val.desc.join('<br><br>')) + '</div>'); useBreak = true; }
                 if ("more" in val && val.more) { html.push('<div know="[xt]">' + val.more + '</div>'); useBreak = true; }
                 if ("list" in val && val.list) {
                     useBreak = true;
@@ -170,10 +171,12 @@ var knowHow = {
                             vals += '-' + sV;
                             if (!isNaN(sV)) { sV += 'px'; }
                             sG += '-' + sV;
+                            sO += '-' + sV;
                         }
                         else if ("short" in val.reference) { sH = ' ' + sD.replace(key + '-', val.reference.short + '-'); }
                         if ("alias" in val.reference && !val.reference.alias) { vals = ''; }
                         else if (vals == sO) { sO = ''; }
+                        if ("extra" in val.reference) { sH += " " + sG.replace(val.reference.extra, ""); }
                         var sA = val.reference.apply ? ' know="' + vals + '"' : '';
                         html.push('<div know="[space]"><span know="[blue]">&lt;div <span know="[orange]">know=</span><span know="[pink]">&quot;' + (sO + ' ' + vals + sH).trim() + '&quot;</span>&gt;</span><span' + sA + '>{' + cssValue(sG) + '}</span><span know="[blue]">&lt;/div&gt;</span></div>');
                     };

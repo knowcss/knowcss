@@ -14,7 +14,7 @@
         {
             "head": "Font Size",
             "desc": "For font-size values, you may set a raw integer/number/float value which will automatically be convered to the expected px and rem sizes.",
-            "more": "The 3 variations below will generate: {font-size: 16px; font-size: 1rem!important}",
+            "more": "The 3 variations below will generate: {font-size: 16px; font-size: 1rem;}",
             "list": [
                 ["font-size-16px", "explicit"],
                 ["px-16px", "alias"],
@@ -29,12 +29,14 @@
             "list": [
                 ["font-weight-300", "explicit"],
                 ["light", "alias"],
-                ["fw-300", "shorthand"]
+                ["fw-300", "shorthand"],
+                ["300", "numeric"]
             ],
             "reference": {
                 "head": "Variations:",
                 "short": "fw",
                 "apply": true,
+                "extra": "font-weight-",
                 "list": {
                     "thin": "font-weight-100",
                     "extralight": "font-weight-200",

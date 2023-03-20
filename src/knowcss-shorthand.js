@@ -23,6 +23,13 @@ const globalMixins = {
     "h16": "margin-top-0 margin-bottom-0.5rem font-weight-500 line-height-1.2"
 };
 
+const shortHandVariable = {
+    /* transform translate */
+    "translateY": "transform=translateY($1)",
+    "translateX": "transform=translateX($1)",
+    "translateXY": "transform=translate($1,$2)"
+};
+
 const shortHand = {
     "h1": "h16 font-size-calc(1.375rem/+/1.5vw)",
     "h2": "h16 font-size-calc(1.325rem/+/0.9vw)",
@@ -33,6 +40,8 @@ const shortHand = {
 
     "w": "width",
     "h": "height",
+
+    "tight": "m-0 p-0",
 
     "100vh": 'height-100vh',
     "100vw": 'width-100vw',
@@ -82,6 +91,13 @@ const shortHand = {
 
     /* transform */
     "origin": "transform-origin",
+
+    /* text-transform */
+    "capitalize": "text-transform=capitalize",
+    "uppercase": "text-transform=uppercase",
+    "lowercase": "text-transform=lowercase",
+    "full-width": "text-transform=full-width",
+    "full-size-kana": "text-transform=full-size-kana",
 
     /* text style */
     "italic": "font-style-italic",

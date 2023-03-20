@@ -1,0 +1,28 @@
+<html>
+
+<head>
+</head>
+<script>
+    window.$knowedExtend = {
+        "console": function () {
+            console.log(this.nodes);
+            return this;
+        }
+    };
+</script>
+<script defer src="knowed.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        $knowed('div').console();
+    });
+</script>
+
+<body>
+    <div id="test">test</div>
+    <div id="test2">test2</div>
+    <div id="test3">test3</div>
+    <div id="test4">test4</div>
+    <div id="test5">test5</div>
+</body>
+
+</html>
