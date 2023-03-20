@@ -8,11 +8,276 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
+const knowMotionID = 'knowmotion';
+var knowMotionLetter = '';
+
+const knowMotion = {
+    init: function (styles) {
+        var classes = {}, line = '\n';
+        var elems = document.querySelectorAll("[" + knowMotionID + "]");
+        var i = 0, x = elems.length;
+        var setAnimation = function (elem, delay) {
+            setInterval(function () {
+                elem.style.animation = "n";
+                setTimeout(function () { elem.style.animation = ""; }, 10);
+            }, delay);
+        };
+        while (i < x) {
+            classes = this.render(elems[i].getAttribute(knowMotionID));
+            if (classes.found) {
+                var keys = {};
+                for (var key in classes.keys) {
+                    keys = classes.keys[key];
+                    if (keys.keyframes.length > 0) {
+                        console.log(keys.keyframes);
+                        styles.push(line + keys.keyframes);
+                    }
+                    if (keys.values.length > 0) {
+                        console.log(keys.values);
+                        styles.push(line + keys.values);
+                    }
+                    elems[i].classList.add(keys.class);
+                }
+                elems[i].removeAttribute(knowMotionID);
+                if (classes.restart > 0) { setAnimation(elems[i], classes.restart); }
+            }
+            i++;
+        }
+        return styles;
+    },
+    render: (knowMotion) => {
+        var ret = {
+            "found": false,
+            "keys": {},
+            "restart": ""
+        };
+
+        if (knowMotion) {
+            var foundMotions = typeof knowMotions !== 'undefined';
+            var ctx = parser;
+            var ctxprop = property;
+
+            var zA = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
+            var zN = null, aM = [], aN = [], aF = false, kF = "", kS = "", kP = [], val = "", i = 0, x = 0;
+            var classListCheck = [], grepTag = '', keyFrames = {}, runningTag = '';
+            var classList = { 'n_n_n_': knowMotion };
+            var keyFramesCSS = [], keyFrameValues = [];
+            var classValues = [], runningTags = [];
+            var animationRef = "", animationID = "", animationVals = {}, animationKeys = [], animationInitial = [], animationPossible = [], animationLast = "", animationReplay = 0;
+            var container = "", screen = "", modifier = "", action = "", reversion = "";
+            var screens = [], actions = [];
+            var keyNew = "", previousAnimation = "", animationLetter = "", screenPrefix = "";
+
+            var animationPrefix = 'animation-';
+            var animationShortHand = {
+                "fwd": ["fill-mode", "forwards"],
+                "bwd": ["fill-mode", "backwards"],
+                "rev": ["direction", "reverse"],
+                "alt": ["direction", "alternate"],
+                "altrev": ["direction", "alternate-reverse"],
+                "in": ["timing-function", "ease-in"],
+                "out": ["timing-function", "ease-out"],
+                "in-out": ["timing-function", "ease-in-out"],
+                "once": ["iteration-count", "1"],
+                "twice": ["titeration-count", "2"]
+            };
+
+            for (var key in classList) { classListCheck.push(key); }
+            while (classListCheck.length > 0) {
+                key = classListCheck.pop();
+
+                if (foundMotions) {
+                    runningTags = [];
+                    classValues = classList[key].split(' ');
+                    i = 0;
+                    x = classValues.length;
+                    while (i < x) {
+                        val = classValues[i];
+                        if (val in knowMotions) { runningTags.push(knowMotions[val].join(' ')); }
+                        else { runningTags.push(val); }
+                        i++;
+                    }
+                    grepTag = runningTags.join(' ');
+                }
+                else { grepTag = classList[key]; }
+                runningTag = grepTag;
+
+                keyFrames = {};
+                [screen, modifier, action, previousAnimation] = key.split('_', 4);
+
+                if (previousAnimation.length > 0) { animationLetter = previousAnimation; }
+                else {
+                    knowMotionLetter = parser.getletter(knowMotionLetter);
+                    animationLetter = knowMotionLetter;
+                }
+                animationID = "km" + animationLetter;
+
+                if (key in ret.keys == false) {
+                    ret.keys[key] = {
+                        class: animationID,
+                        values: "",
+                        keyframes: ""
+                    };
+                }
+
+                animationVals = {
+                    "name": animationID,
+                    "duration": "3s", //timing - [0-9]s
+                    "delay": "0s", // delay - d[0-9]s
+                    "iteration-count": "infinite", // count - [0-9] or [infinte|once|twice]
+                    "direction": "", // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
+                    "timing-function": "", // curve - cubic-bezier - cb(a,b,c,d) or [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
+                    "fill-mode": "" // mode - [fwd|bwd|both|forwards|backwards]
+                };
+                animationInitial = [];
+                animationPossible = [];
+                animationReplay = 0;
+
+                while ((aM = zA.exec(grepTag)) !== null) {
+                    container = aM[1];
+                    zN = new RegExp(/^([a-z0-9\/\-\,\%]{1,255})$/, 'gis');
+                    aN = zN.exec(aM[1]);
+                    aF = true;
+                    if (aN) {
+                        kF = aN[1];
+                        kS = "";
+                        if (contains(kF, '-')) { kS = "-"; }
+                        else if (contains(kF, '/')) { kS = "/"; }
+                        else if (contains(kF, ',')) { kS = ","; }
+                        kP = kS.length > 0 ? kF.split(kS) : [kF];
+                        kP.forEach(function (val) {
+                            if (val == "from") { keyFrames["0"] = aM[2]; }
+                            else if (val == "to") { keyFrames["100"] = aM[2]; }
+                            else if (containsAny(val, ['%', '/', ',', '-'])) { keyFrames[val.replace("%", "")] = aM[2]; }
+                            else if (!isNaN(val)) { keyFrames[val] = aM[2]; }
+                            else if (val in screenSizes) { aF = false; }
+                            else { aF = false; }
+                        });
+                    }
+                    else { aF = false; }
+
+                    if (!aF) {
+                        actions = getActions(container, action);
+                        [screens, reversion] = getScreens(container, screen);
+                        for (var screenKey in screens) {
+                            actions.forEach(function (actionSet) {
+                                for (var actionKey in actionSet) {
+                                    keyNew = screenKey + '_' + modifier + '_' + actionKey + '_' + animationLetter;
+                                    if (key !== keyNew) {
+                                        if (keyNew in classList) { classList[keyNew] += ' ' + aM[2] + reversion; }
+                                        else { classList[keyNew] = aM[2] + reversion; }
+                                        if (classListCheck.indexOf(keyNew) == -1) { classListCheck.push(keyNew); }
+                                    }
+                                }
+                            });
+                        }
+
+                        // loop through attributes to determine events and add listeners
+                        // play-state = [pause|play|stop|restart]
+
+                    }
+                    runningTag = runningTag.replace(aM[0], '').trim();
+                }
+
+                classValues = contains(runningTag, ' ') ? runningTag.split(' ') : [runningTag];
+
+                i = 0;
+                x = classValues.length;
+                while (i < x) {
+                    val = classValues[i].trim();
+
+                    animationRef = "";
+                    if (val in animationShortHand) {
+                        animationRef = animationShortHand[val];
+                        animationVals[animationRef[0]] = animationRef[1];
+                    }
+                    else if (["linear", "ease", "ease-in", "ease-out", "ease-in-out"].includes(val)) { animationVals["timing-function"] = val; }
+                    else if (["forwards", "backwards", "both"].includes(val)) { animationVals["fill-mode"] = val; }
+                    else if (["reverse", "alternate", "alternate-reverse", "normal"].includes(val)) { animationVals["direction"] = val; }
+                    else if (["infinite"].includes(val) || /^\d+$/.test(val)) { animationVals["iteration-count"] = val; }
+                    else if (/^\d+s$/.test(val)) { animationVals["duration"] = val; }
+                    else if (/^\d*(\.\d+)+s$/.test(val)) { animationVals["duration"] = val; }
+                    else if (/^d\d+s$/.test(val)) { animationVals["delay"] = val.replace('d', ''); }
+                    else if (/^d\d*(\.\d+)+s$/.test(val)) { animationVals["delay"] = val.replace('d', ''); }
+                    else if (contains(val, "last-") && "100" in keyFrames) {
+                        animationLast = val.split('-', 2).pop();
+                        if (animationLast in keyFrames) { keyFrames["100"] = keyFrames[animationLast]; }
+                    }
+                    else if (contains(val, "first-") && "0" in keyFrames) {
+                        animationLast = val.split('-', 2).pop();
+                        if (animationLast in keyFrames) { keyFrames["0"] = keyFrames[animationLast]; }
+                    }
+                    else if (contains(val, "restart-")) {
+                        animationReplay = val.split('-', 2).pop().replace('s', '');
+                        if (isNaN(animationReplay)) { animationReplay = 0; }
+                    }
+                    else { animationPossible.push(val); }
+                    i++;
+                };
+
+                if (animationPossible.length > 0) {
+                    i = 0;
+                    x = animationPossible.length;
+                    while (i < x) {
+                        val = animationPossible[i].trim();
+                        if (val.length > 0) { animationInitial.push(ctxprop.getfinalstyle(val)); }
+                        i++;
+                    }
+                }
+
+                x = Object.keys(keyFrames).length;
+                if (x > 0) {
+                    if (x > 1) {
+                        keyFrames = Object.keys(keyFrames).sort(function (a, b) {
+                            if (parseInt(a) > parseInt(b)) { return 1; }
+                            else { return -1; }
+                        }).reduce((obj, key) => { obj[key] = keyFrames[key]; return obj; }, {});
+                    }
+                    keyFramesCSS = ["@keyframes " + animationID + "{"];
+                    keyFrameValues = [];
+                    for (var keyFrame in keyFrames) {
+                        keyFrameValues = [];
+                        classValues = keyFrames[keyFrame].split(' ');
+                        i = 0;
+                        x = classValues.length;
+                        while (i < x) {
+                            keyFrameValues.push(ctxprop.getfinalstyle(classValues[i]));
+                            i++;
+                        };
+                        if (keyFrameValues.length > 0) { keyFramesCSS.push(" " + keyFrame + "% { " + keyFrameValues.join('; ') + "; }"); }
+                    }
+                    keyFramesCSS.push("}");
+                    ret.keys[key].keyframes = keyFramesCSS.join('');
+                }
+
+                animationKeys = animationInitial;
+                for (var animationKey in animationVals) {
+                    if (animationVals[animationKey].length > 0) { animationKeys.push(animationPrefix + animationKey + ": " + animationVals[animationKey].replace(/[\/|\||\_]/g, ' ')); }
+                }
+
+                if (animationKeys.length > 0) {
+                    if (screen != 'n') {
+                        if (contains(screen, 'down')) { screenPrefix = 'max-width:' + screenSizes[screen][1] + 'px'; }
+                        else if (contains(screen, 'up')) { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px'; }
+                        else { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px) and (max-width:' + screenSizes[screen][1] + 'px'; }
+                        ret.keys[key].values = "@media (" + screenPrefix + ") { ." + animationID + " { " + animationKeys.join('; ') + '; } }';
+                    }
+                    else { ret.keys[key].values = "." + animationID + " { " + animationKeys.join('; ') + '; }'; }
+
+                    ret.restart = animationReplay > 0 ? parseFloat(animationReplay) * 1000 : 0;
+                    ret.found = true;
+                }
+            }
+        }
+        return ret;
+    }
+};
 
 const knowID = 'know';
 
 var greps = null;
 var letter = "";
+var letters = {};
 var conditionals = [];
 var config = {
     vars: typeof knowVars !== 'undefined' && knowVars != null ? knowVars : {},
@@ -605,6 +870,25 @@ const parser = {
             }
         }
         return [groups, ret];
+    },
+    getletter: (val) => {
+        if (val.length == 0) { val = "a"; }
+        else {
+            var i = val.length - 1, chr = val.charCodeAt(i), z = "z".charCodeAt(), chr = "", vals = [];
+            do {
+                chr = val.charCodeAt(i);
+                vals = val.split("");
+                if (vals[i] == "z") {
+                    vals[i] = "a";
+                    if (i == 0) { vals.unshift("a"); }
+                }
+                else { vals[i] = String.fromCharCode(chr + 1); }
+                val = vals.join("");
+                i--;
+            }
+            while (chr == z);
+        }
+        return val;
     }
 };
 
@@ -642,6 +926,11 @@ const property = {
             prop = parts.shift();
         }
         return [prop, value];
+    },
+    getfinalstyle: function (val) {
+        var prop = "", value = "";
+        [prop, value] = this.getpropvalue(val);
+        return prop + ': ' + this.getvalue(value);
     },
     getpropvalue: (val) => {
         var prop = "", value = "";
@@ -879,15 +1168,14 @@ const colors = {
 
 const knowCSS = {
     render: function () {
-        const ctx = parser;
-        const forThis = this;
-
         this.scan();
-
         configuration.init();
+
+        const ctx = parser;
+
         var startTime = new Date().getTime();
-        var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
-        var x = elems.length, i = 0, letters = {};
+        var groups = {}, elems = document.querySelectorAll(this.key), smart = {};
+        var x = elems.length, i = 0;
         while (i < x) {
             groups = ctx.execute(elems[i].getAttribute(knowID));
             elems[i].removeAttribute(knowID);
@@ -896,6 +1184,19 @@ const knowCSS = {
             }
             i++;
         }
+        this.inject(this, elems, smart);
+
+        var endTime = new Date().getTime();
+        console.log('compiled in: ' + (endTime - startTime) + 'ms');
+        return this;
+    },
+    scan: () => {
+        if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
+    },
+    inject: (ctx, elems, smart) => {
+        var val = "", flat = {};
+        var ctxparser = parser;
+
         for (var key in smart) {
             val = smart[key].join("_");
             if (val in flat === false) { flat[val] = []; }
@@ -908,8 +1209,8 @@ const knowCSS = {
             var keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
-                var segment = forThis.getsegment(modifier, parent);
-                style = forThis.getstyle(style, reversion);
+                var segment = ctx.getsegment(modifier, parent);
+                style = ctx.getstyle(style, reversion);
 
                 var parentLevel = 0;
                 if (parent != "n") { parentLevel = parseInt(parent); }
@@ -920,10 +1221,10 @@ const knowCSS = {
                     var ref = j, elem = elems[j];
                     if (parentLevel > 0) {
                         ref = j + "__" + parentLevel;
-                        elem = forThis.getparent(elem, parentLevel);
+                        elem = ctx.getparent(elem, parentLevel);
                     }
                     if (ref in letters == false) {
-                        letter = this.getletter(letter);
+                        letter = ctxparser.getletter(letter);
                         elem.classList.add(letter);
                         letters[ref] = letter;
                     }
@@ -945,7 +1246,7 @@ const knowCSS = {
         var cssGroup = {};
         var styles = [], start = "", end = "", tab = "", masterLine = "\n";
         for (var screen in css) {
-            [start, end, tab] = ctx.getwrapper(screen);
+            [start, end, tab] = ctxparser.getwrapper(screen);
             styles.push(masterLine + start);
             for (var action in css[screen]) {
                 cssGroup = {};
@@ -969,16 +1270,11 @@ const knowCSS = {
             delete css[screen];
         }
 
+        styles = knowMotion.init(styles);
+
         var cssTag = document.createElement('style');
         cssTag.innerHTML = styles.join('');
         document.getElementsByTagName('head')[0].appendChild(cssTag);
-
-        var endTime = new Date().getTime();
-        console.log('compiled in: ' + (endTime - startTime) + 'ms');
-        return this;
-    },
-    scan: () => {
-        if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
     },
     splitclasses: (elem, key, vals, smart) => {
         var classes = vals.split(' ');
@@ -1000,25 +1296,6 @@ const knowCSS = {
             }
         }
         return classes.split(/(\s+)/).filter(e => e.trim().length > 0);
-    },
-    getletter: (val) => {
-        if (val.length == 0) { val = "a"; }
-        else {
-            var i = val.length - 1, chr = val.charCodeAt(i), z = "z".charCodeAt(), chr = "", vals = [];
-            do {
-                chr = val.charCodeAt(i);
-                vals = val.split("");
-                if (vals[i] == "z") {
-                    vals[i] = "a";
-                    if (i == 0) { vals.unshift("a"); }
-                }
-                else { vals[i] = String.fromCharCode(chr + 1); }
-                val = vals.join("");
-                i--;
-            }
-            while (chr == z);
-        }
-        return val;
     },
     getstyle: (style, reversion) => {
         var parts = style.split('=', 2);
