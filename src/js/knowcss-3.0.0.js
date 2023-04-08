@@ -11,6 +11,8 @@ Repo: https://github.com/knowcss/knowcss
 const knowMotionID = 'knowmotion';
 var knowMotionLetter = '';
 
+const compatible = false;
+
 const knowMotion = {
     init: function (styles) {
         var classes = {}, line = '\n';
@@ -584,8 +586,9 @@ const parser = {
         return component;
     },
     getbrackets: (val) => {
-        if (contains(val, '[')) {
-            var grep = new RegExp('\\[(.*?)\\]', 'i'), key = "", any = [], extra = "";
+        if (contains(val, compatible ? '{{' : '[')) {
+            var grep = new RegExp(compatible ? '\\{\\{(.*?)\\}\\}' : '\\[(.*?)\\]', 'i');
+            var key = "", any = [], extra = "";
             while ((key = grep.exec(val)) !== null) {
                 if (key[1] in config.brackets) { extra += ' ' + config.brackets[key[1]]; }
                 else { any.push(key[1]); }
@@ -924,6 +927,10 @@ const property = {
         var prop = "", value = "";
         if (contains(val, ':')) { [prop, value] = val.split(':', 2); }
         else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
+        else if (contains(val, '--')) {
+            [prop, value] = val.split('--', 2);
+            value = 'var(--' + value + ')';
+        }
         else if (contains(val, '-')) {
             var parts = val.split('-');
             if (parts[0] in config.prop) {
@@ -1180,6 +1187,9 @@ const knowCSS = {
     },
     scan: () => {
         if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
+    },
+    compatibility: function () {
+        return this;
     },
     inject: (ctx, elems, smart) => {
         var val = "", flat = {};
