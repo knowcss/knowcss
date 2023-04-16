@@ -1,3 +1,31 @@
+const knowBrackets = {
+    "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+    "nr": "color-2D862D font-weight-400",
+    "nt": "color-2D862D font-weight-400",
+    "go": "color-339 font-weight-400",
+    "hd": "font-size-32px aligncenter normal-important",
+    "mi": "margin-10px/auto/10px/auto margin-top-10px!",
+    "mx": "center",
+    "ft": "font-size-16px aligncenter",
+    "hr": "border-top-3px/solid/#f3f3f3 center",
+    "bx": "padding-15px/5px {{$box}}",
+    "hx": "margin-20px/auto/10px/auto padding-0",
+    "ic": "padding-5px/5px all{color-666}",
+    "na": "hover>a{color-933}",
+    "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
+    "nv": "color-666 font-size-18px nounderline",
+    "ys": "aligncenter center",
+    "ml": "padding-left-20px",
+    "mm": "padding-left-40px",
+    "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+    "ct": "table center aligncenter margin-top-10px max-width-96%",
+    "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
+    "blue": "{{$blue}}",
+    "orange": "{{$orange}}",
+    "pink": "{{$pink}}",
+    "red": "{{$red}}",
+    "black": "{{$black}}"
+};
 const knowVars = {
     "one": "border-top-1px",
     "box": "box-sizing=border-box",
@@ -16,7 +44,10 @@ const knowMixins = {
     /* grid model */
     "container": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto max-width-100% 1230{max-width-1550} 1200{max-width-1140} 1024{max-width-940} 768{max-width-720}",
     "container-fluid": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto",
-    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap"
+    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap",
+
+    /* screen reader */
+    "sr": "absolute inside w-1 h-1 p-0 bd-0 m=-1 rect-0"
 };
 
 const knowVariable = {
@@ -30,7 +61,19 @@ const knowComponents = {
     "tlbr": "top-$1 left-$1 bottom-$3 right-$4",
     "sq": "top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6",
     "wh": "width-$1 height-$2",
-    "hw": "height-$1 width-$2"
+    "hw": "height-$1 width-$2",
+    "rect": "clip-rect($1,$2,$3,$4)",
+
+    // TODO - move into regexp component */
+    "py": "pl-$1 pr-$2",
+    "px": "pt-$1 pb-$2",
+    "pxy": "pt-$1 pr-$2 pb-$3 pl-$4",
+    "my": "ml-$1 mr-$2",
+    "mx": "mt-$1 mb-$2",
+    "mxy": "xt-$1 xr-$2 xb-$3 xl-$4",
+    "by": "bl-$1 br-$2",
+    "bx": "bt-$1 bb-$2",
+    "bxy": "bt-$1 br-$2 bb-$3 bl-$4",
 };
 
 const knowProp = {
@@ -62,8 +105,9 @@ const knowProp = {
     "bb": "border-bottom",
     "bl": "border-left",
     "br": "border-right",
-    "rad": "border-radius",
     "bs": "border-spacing",
+    "bc": "border-radius",
+    "rad": "border-radius",
 
     /* color */
     "c": "color",
@@ -284,37 +328,10 @@ const knowShort = {
     /* overflow */
     "clip": "overflow-clip",
     "scroll": "overflow-scroll",
-    "auto": "overflow-auto"
-};
-
-const knowBrackets = {
-    "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-    "nr": "color-2D862D font-weight-400",
-    "nt": "color-2D862D font-weight-400",
-    "go": "color-339 font-weight-400",
-    "hd": "font-size-32px aligncenter normal-important",
-    "mi": "margin-10px/auto/10px/auto margin-top-10px!",
-    "mx": "center",
-    "ft": "font-size-16px aligncenter",
-    "hr": "border-top-3px/solid/#f3f3f3 center",
-    "bx": "padding-15px/5px {{$box}}",
-    "hx": "margin-20px/auto/10px/auto padding-0",
-    "ic": "padding-5px/5px all{color-666}",
-    "na": "hover>a{color-933}",
-    "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
-    "nv": "color-666 font-size-18px nounderline",
-    "ys": "aligncenter center",
-    "ml": "padding-left-20px",
-    "mm": "padding-left-40px",
-    "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-    "ct": "table center aligncenter margin-top-10px max-width-96%",
-    "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
-    "blue": "{{$blue}}",
-    "orange": "{{$orange}}",
-    "pink": "{{$pink}}",
-    "red": "{{$red}}",
-    "black": "{{$black}}"
-};
+    "auto": "overflow-auto",
+    "outside": "overflow-visible",
+    "inside": "overflow-hidden"
+}
 
 const knowConditionals = {};
 

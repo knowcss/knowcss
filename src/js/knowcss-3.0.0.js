@@ -575,7 +575,7 @@ const parser = {
         return component;
     },
     getcomponents: (component, val) => {
-        var vals = contains(val, '/') ? val.split('/') : [val];
+        var vals = containsAny(val, ['/', '|', '_']) ? val.replace(/[\/|\||\_]/g, ' ').split(' ') : [val];
         var j = vals.length;
         var i = 1, x = j + 10;
         while (i <= x) {
