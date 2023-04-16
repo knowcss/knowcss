@@ -47,7 +47,7 @@ const knowMixins = {
     "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap",
 
     /* screen reader */
-    "sr": "absolute inside w-1 h-1 p-0 bd-0 m=-1 rect-0"
+    "sr": "abs in w-1 h-1 p-0 bd-0 m=-1 rect-0"
 };
 
 const knowVariable = {
@@ -217,8 +217,11 @@ const knowShort = {
     /* position */
     "static": "position-static",
     "absolute": "position-absolute",
+    "abs": "position-absolute",
     "fixed": "position-fixed",
+    "fix": "position-fixed",
     "relative": "position-relative",
+    "rel": "position-relative",
     "sticky": "position-sticky",
 
     /* alignment */
@@ -330,7 +333,9 @@ const knowShort = {
     "scroll": "overflow-scroll",
     "auto": "overflow-auto",
     "outside": "overflow-visible",
-    "inside": "overflow-hidden"
+    "inside": "overflow-hidden",
+    "out": "overflow-visible",
+    "in": "overflow-hidden"
 }
 
 const knowConditionals = {};
