@@ -315,7 +315,7 @@ const knowShort = {
 
     /* object-cover */
     "fill": "object-cover-fill",
-    "contain": "object-cover--contain",
+    "contain": "object-cover-contain",
     "cover": "object-cover-cover",
     "scale-down": "object-cover=scale-down",
     "scale": "object-cover=scale-down",
