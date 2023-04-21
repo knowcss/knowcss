@@ -10,6 +10,7 @@ Repo: https://github.com/knowcss/knowcss
 
 const knowMotionID = 'knowmotion';
 var knowMotionLetter = '';
+var knowLibraryClasses = {};
 
 const compatible = false;
 
@@ -1191,6 +1192,72 @@ const knowCSS = {
     compatibility: function () {
         return this;
     },
+    libraries: function () {
+        if (typeof window.knowLibrary !== 'undefined') {
+            if (Object.keys(window.knowLibrary).length > 0) {
+                var startTime = new Date().getTime();
+                var val = "class";
+                var elems = document.querySelectorAll("[" + val + "]"), classes = {};
+                var x = elems.length, i = 0;
+                while (i < x) {
+                    if (!elems[i].hasAttribute("know-library")) {
+                        var vals = elems[i].getAttribute(val).split(" ");
+                        vals.forEach(key => { classes[key] = true; });
+                        elems[i].setAttribute("know-library", "true");
+                    }
+                    i++;
+                }
+                var library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
+                for (var key in window.knowLibrary) {
+                    library = window.knowLibrary[key], cssTag = null;
+                    if ("tag" in library) {
+                        id = "know_" + key, styles = [], html = "", ids = "";
+                        if (!document.getElementById(id)) {
+                            for (var keys in library.tag) {
+                                for (var tags in library.tag[keys]) {
+                                    html = "{" + library.tag[keys][tags].join(";") + "}";
+                                    if (tags == "_") { styles.push(keys + html); }
+                                    else { styles.push(tags + "{" + keys + html + "}"); }
+                                }
+                            }
+                            if (styles.length > 0) {
+                                cssTag = document.createElement('style');
+                                cssTag.innerHTML = styles.join(' ');
+                                cssTag.id = id;
+                                document.getElementsByTagName('head')[0].appendChild(cssTag);
+                            }
+                        }
+
+                        styles = [];
+                        for (var keys in classes) {
+                            ids = key + '_' + keys;
+                            if (ids in knowLibraryClasses === false && keys in library.elem) {
+                                for (var tags in library.elem[keys]) {
+                                    htmls = [];
+                                    library.elem[keys][tags].forEach(val => {
+                                        val = val.replace(/\!/, '!important');
+                                        if (val.indexOf("&") == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
+                                        else { htmls.push("{" + val + "}"); }
+                                    });
+                                    if (tags == "_") { styles.push("." + keys + htmls.join("\n")); }
+                                    else { styles.push(tags + "{" + "." + keys + htmls.join("\n") + "}"); }
+                                }
+                                knowLibraryClasses[ids] = true;
+                            }
+                        }
+                        if (styles.length > 0) {
+                            cssTag = document.createElement('style');
+                            cssTag.innerHTML = styles.join('\n');
+                            document.getElementsByTagName('head')[0].appendChild(cssTag);
+                        }
+                    }
+                }
+                var endTime = new Date().getTime();
+                console.log('libraries in: ' + (endTime - startTime) + 'ms');
+            }
+        }
+        return this;
+    },
     inject: (ctx, elems, smart) => {
         var val = "", flat = {};
         var ctxparser = parser;
@@ -1312,7 +1379,7 @@ const knowCSS = {
         }
         return ret;
     },
-    init: function () { return this.render(); },
+    init: function () { return this.libraries().render(); },
     constructor: knowCSSProto
 };
 

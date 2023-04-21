@@ -106,12 +106,14 @@ const knowProp = {
     "bl": "border-left",
     "br": "border-right",
     "bs": "border-spacing",
-    "bc": "border-radius",
+    "bc": "border-color",
     "rad": "border-radius",
 
     /* color */
     "c": "color",
     "bg": "background-color",
+    "shadow": "box-shadow",
+    "op": "opacity",
 
     /* font */
     "px": "font-size",
