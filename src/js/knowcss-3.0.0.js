@@ -57,7 +57,6 @@ const knowMotion = {
 
         if (knowMotion) {
             var foundMotions = typeof knowMotions !== 'undefined';
-            //var ctx = parser;
             var ctxprop = property;
 
             var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
@@ -1269,7 +1268,6 @@ const knowCSS = {
 
         var css = {};
         for (var key in flat) {
-            //console.log(JSON.stringify(flat[key], null, 2));
             var keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
