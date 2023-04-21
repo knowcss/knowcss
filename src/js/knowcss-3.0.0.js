@@ -1192,16 +1192,24 @@ const knowCSS = {
     compatibility: function () {
         return this;
     },
+    stylesheet: (styles, id) => {
+        if (styles.length > 0) {
+            var cssTag = document.createElement('style');
+            cssTag.innerHTML = styles.join(' ');
+            if (id) { cssTag.id = id; }
+            document.getElementsByTagName('head')[0].appendChild(cssTag);
+        }
+    },
     libraries: function () {
         if (typeof window.knowLibrary !== 'undefined') {
             if (Object.keys(window.knowLibrary).length > 0) {
                 var startTime = new Date().getTime();
-                var val = "class";
+                var val = "class", vals = [];
                 var elems = document.querySelectorAll("[" + val + "]"), classes = {};
                 var x = elems.length, i = 0;
                 while (i < x) {
                     if (!elems[i].hasAttribute("know-library")) {
-                        var vals = elems[i].getAttribute(val).split(" ");
+                        vals = elems[i].getAttribute(val).split(" ");
                         vals.forEach(key => { classes[key] = true; });
                         elems[i].setAttribute("know-library", "true");
                     }
@@ -1220,12 +1228,7 @@ const knowCSS = {
                                     else { styles.push(tags + "{" + keys + html + "}"); }
                                 }
                             }
-                            if (styles.length > 0) {
-                                cssTag = document.createElement('style');
-                                cssTag.innerHTML = styles.join(' ');
-                                cssTag.id = id;
-                                document.getElementsByTagName('head')[0].appendChild(cssTag);
-                            }
+                            this.stylesheet(styles, id);
                         }
 
                         styles = [];
@@ -1245,11 +1248,7 @@ const knowCSS = {
                                 knowLibraryClasses[ids] = true;
                             }
                         }
-                        if (styles.length > 0) {
-                            cssTag = document.createElement('style');
-                            cssTag.innerHTML = styles.join('\n');
-                            document.getElementsByTagName('head')[0].appendChild(cssTag);
-                        }
+                        this.stylesheet(styles);
                     }
                 }
                 var endTime = new Date().getTime();
@@ -1335,11 +1334,7 @@ const knowCSS = {
             delete css[screen];
         }
 
-        styles = knowMotion.init(styles);
-
-        var cssTag = document.createElement('style');
-        cssTag.innerHTML = styles.join('');
-        document.getElementsByTagName('head')[0].appendChild(cssTag);
+        ctx.stylesheet(knowMotion.init(styles));
     },
     splitclasses: (elem, key, vals, smart) => {
         var classes = vals.split(' ');
