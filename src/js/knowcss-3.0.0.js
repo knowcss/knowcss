@@ -1214,6 +1214,9 @@ const knowCSS = {
                     }
                     i++;
                 }
+
+                console.log(classes);
+
                 var library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
                 for (var key in window.knowLibrary) {
                     library = window.knowLibrary[key], cssTag = null;
@@ -1229,20 +1232,24 @@ const knowCSS = {
                             }
                             this.stylesheet(styles, id);
                         }
-
+                    }
+                    if ("elem" in library) {
                         styles = [];
                         for (var keys in classes) {
                             ids = key + '_' + keys;
                             if (ids in knowLibraryClasses === false && keys in library.elem) {
-                                for (var tags in library.elem[keys]) {
-                                    htmls = [];
-                                    library.elem[keys][tags].forEach(val => {
-                                        val = val.replace(/\!/, '!important');
-                                        if (val.indexOf("&") == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
-                                        else { htmls.push("{" + val + "}"); }
-                                    });
-                                    if (tags == "_") { styles.push("." + keys + htmls.join("\n")); }
-                                    else { styles.push(tags + "{" + "." + keys + htmls.join("\n") + "}"); }
+                                if (typeof library.elem[keys] === 'string') { styles.push("." + keys + "{" + library.elem[keys] + "}"); }
+                                else {
+                                    for (var tags in library.elem[keys]) {
+                                        htmls = [];
+                                        library.elem[keys][tags].forEach(val => {
+                                            val = val.replace(/\!/, '!important');
+                                            if (val.indexOf("&") == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
+                                            else { htmls.push("{" + val + "}"); }
+                                        });
+                                        if (tags == "_") { styles.push("." + keys + htmls.join("\n")); }
+                                        else { styles.push(tags + "{" + "." + keys + htmls.join("\n") + "}"); }
+                                    }
                                 }
                                 knowLibraryClasses[ids] = true;
                             }
