@@ -31,14 +31,8 @@ const knowMotion = {
                 var keys = {};
                 for (var key in classes.keys) {
                     keys = classes.keys[key];
-                    if (keys.keyframes.length > 0) {
-                        console.log(keys.keyframes);
-                        styles.push(line + keys.keyframes);
-                    }
-                    if (keys.values.length > 0) {
-                        console.log(keys.values);
-                        styles.push(line + keys.values);
-                    }
+                    if (keys.keyframes.length > 0) { styles.push(line + keys.keyframes); }
+                    if (keys.values.length > 0) { styles.push(line + keys.values); }
                     elems[i].classList.add(keys.class);
                 }
                 elems[i].removeAttribute(knowMotionID);
@@ -1214,9 +1208,6 @@ const knowCSS = {
                     }
                     i++;
                 }
-
-                console.log(classes);
-
                 var library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
                 for (var key in window.knowLibrary) {
                     library = window.knowLibrary[key], cssTag = null;
