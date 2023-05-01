@@ -1305,6 +1305,19 @@ const knowCSS = {
                     var classNew = letters[ref];
                     if (modifier == 'n') { modifier = ''; }
                     if (screen in css === false) { css[screen] = {}; }
+
+                    /*
+                    if (action != 'n' && action.indexOf('[') == 0) {
+                        if (elem.hasAttribute("know-click") === false) {
+                            elem.setAttribute("know-click", "off");
+                            elem.addEventListener('click', () => {
+                                var val = elem.getAttribute('know-click');
+                                elem.setAttribute("know-click", val == "off" ? "on" : "off");
+                            });
+                        }
+                    }
+                    */
+
                     if (action in css[screen] === false) { css[screen][action] = {}; }
                     if (segment in css[screen][action] === false) { css[screen][action][segment] = {}; }
                     if (style in css[screen][action][segment] === false) { css[screen][action][segment][style] = []; }
