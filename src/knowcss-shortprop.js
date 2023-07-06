@@ -74,7 +74,33 @@ const knowComponents = {
     "by": "bl-$1 br-$2",
     "bx": "bt-$1 bb-$2",
     "bxy": "bt-$1 br-$2 bb-$3 bl-$4",
+
+    /* hamburger nav */
+    "hamburger": [
+        "none hidden position-relative xsmdown{visible block}",
+        "center aligncenter w-32px h-32px overflow-hidden pt-3px",
+        "pointer nohighlight",
+        "hover>span{bg-933}",
+        ">input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
+        ">span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
+        "first-child>span{origin-0%/0%}",
+        "last-child>span{origin-0%/100%}"
+    ],
+    "toggle-hamburger": [
+        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative background-933 origin=66.6666%/0}",
+        "checked~span-nth-last-child-2{opacity-0}",
+        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative background-933 origin=66.6666%/0%}",
+    ]
 };
+
+/*
+window.knowLibrary = window.knowLibrary || {};
+window.knowLibrary.prism = {};
+*/
+/* convert css string to knowcss component */
+/*
+var prismCss = "code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#272822}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#8292a2}.token.punctuation{color:#f8f8f2}.token.namespace{opacity:.7}.token.constant,.token.deleted,.token.property,.token.symbol,.token.tag{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#a6e22e}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value,.token.class-name,.token.function{color:#e6db74}.token.keyword{color:#66d9ef}.token.important,.token.regex{color:#fd971f}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}";
+*/
 
 const knowProp = {
     /* dimensions */

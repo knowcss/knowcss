@@ -1401,6 +1401,27 @@ const knowCSS = {
     constructor: knowCSSProto
 };
 
+/*
+var progressbar = {
+    init: function (elem) {
+        var progress = document.createElement('div');
+        progress.classList.add('progressbar');
+        progress.innerHTML = '<div class="progressbar__bar"></div>';
+        // add style for progress bar transition
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '.progressbar__bar { transition: width 0.25s ease-in-out; }';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        elem.appendChild(progress);
+        return progress;
+    },
+    update: function (elem, percent) {
+        elem.querySelector('.progressbar__bar').style.width = percent + '%';
+    },
+    constructor: progressbar
+};
+*/
+
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
     var knowCSSProto = function (key) { this.key = key || "[" + knowID + "]"; };
