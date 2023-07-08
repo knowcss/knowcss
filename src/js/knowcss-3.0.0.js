@@ -415,7 +415,15 @@ const parser = {
     execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr, level) {
         level = level || 0;
+
+        // JAA FIX - initial component check
+        var attrClasses = contains(attr, ' ') ? attr.split(' ') : [attr];
+        var attrMany = [];
+        attrClasses.forEach((attrClass) => { attrMany.push(this.getmixins(false, attrClass, this)[1]); });
+        attr = attrMany.join(' ');
+
         attr = this.getbrackets(this.getvars(cleanup(attr)));
+
         var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
             var containersfirst = this.containers(key[1], null, 0);
@@ -607,8 +615,8 @@ const parser = {
             }
             any = true;
         }
-        else if (val.indexOf('-') > -1) {
-            var parts = val.split('-');
+        else {
+            var parts = val.indexOf('-') > -1 ? val.split('-') : [val];
             var key = parts.shift();
             if (key in config.components) {
                 var component = config.components[key];
@@ -632,7 +640,7 @@ const parser = {
             "environments": {}
         };
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
+        var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~\>]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
         var vals = [], parts = [], retain = "";
         if (level == 3) {
             var equal = wrapper.indexOf('=') > -1 ? '=' : '-';
@@ -645,7 +653,7 @@ const parser = {
         }
         while ((key = grep.exec(wrapper)) !== null) {
             val = key[1].toString();
-            len = val.length + 1;
+            len = val.length;
             keepval = wrapper.substr(offset, len);
             offset += len;
             if (level > 1) { ret.allow = true; }
@@ -653,8 +661,8 @@ const parser = {
             if (ret.allow) {
                 [any, val, retain, ret.reversions] = this.getreversions(val, retain, ret.reversions);
                 [any, val, ret.parents] = this.getparents(val, ret.parents);
-                [any, val, ret.actions] = this.getactions(val, ret.actions);
                 [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
+                [any, val, ret.actions] = this.getactions(val, ret.actions);
                 [any, val, ret.screens, keepval] = this.getscreens(val, ret.screens, level, keepval);
                 if (val) { vals.push(keepval + retain); }
             }
@@ -725,10 +733,17 @@ const parser = {
                     val = 'nth' + val;
                 }
                 var colon = ':' + (keep ? action + sub + tag + ':' : '');
-                if (contains(val, 'nth-child')) { modifier = colon + 'nth-child(' + val.replace('nth-child-', '') + ')'; }
-                else if (contains(val, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + val.replace('nth-last-child-', '') + ')'; }
-                else if (contains(val, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + val.replace('nth-of-type-', '') + ')'; }
-                else if (contains(val, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + val.replace('nth-last-of-type-', '') + ')'; }
+                var types = ['nth-last-of-type', 'nth-last-child', 'nth-child', 'nth-of-type'];
+                var x = types.length, i = 0, key = "";
+                while (i < x) {
+                    key = types[i];
+                    if (contains(val, key)) {
+                        modifier = colon + key + '(' + val.replace(key + '-', '') + ')';
+                        val = "";
+                        break;
+                    }
+                    i++;
+                }
             }
         }
         if (modifier.length > 0) { ret[modifier] = true; }
@@ -809,7 +824,6 @@ const parser = {
             }
             i++;
         }
-
         if (num == 0 && mU.length > 0) {
             ret[mU + mD] = "";
             num++;

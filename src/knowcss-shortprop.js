@@ -74,6 +74,22 @@ const knowComponents = {
     "by": "bl-$1 br-$2",
     "bx": "bt-$1 bb-$2",
     "bxy": "bt-$1 br-$2 bb-$3 bl-$4",
+
+    "hamburger": [
+        "visible block position-relative xsmdown{visible block}",
+        "center aligncenter w-32px h-32px overflow-hidden pt-3px",
+        "pointer nohighlight",
+        "hover>span{bg-933}",
+        "all-input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
+        "all-span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
+        "first-child>span{transform-origin-0%/0%}",
+        "last-child>span{transform-origin-0%/100%}"
+    ],
+    "togglehamburger": [
+        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative background-933 transform-origin=66.6666%/0}",
+        "checked~span-nth-last-child-2{opacity-0}",
+        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative background-933 transform-origin=66.6666%/0%}",
+    ]
 };
 
 const knowProp = {
