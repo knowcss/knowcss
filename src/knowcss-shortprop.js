@@ -57,6 +57,24 @@ const knowVariable = {
     "translateXY": "transform=translate($1,$2)"
 };
 
+const knowUI = {
+    "hamburger": [
+        "visible block smup{hidden none} relative",
+        "center aligncenter w-32px h-32px inside pt-3px",
+        "pointer nohighlight",
+        "hover>span{bg-933}",
+        "all-input{block w-32px h-32px mw-32px mh-32px absolute t=-4px l=-4px pointer window zi-2}",
+        "all-span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
+        "first-child>span{transform-origin-0%/0%}",
+        "last-child>span{transform-origin-0%/100%}"
+    ],
+    "togglehamburger": [
+        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative bg-933 transform-origin=66.6666%/0}",
+        "checked~span-nth-last-child-2{window}",
+        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative bg-933 transform-origin=66.6666%/0%}",
+    ]
+};
+
 const knowComponents = {
     "tlbr": "top-$1 left-$1 bottom-$3 right-$4",
     "sq": "top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6",
@@ -73,23 +91,7 @@ const knowComponents = {
     "mxy": "xt-$1 xr-$2 xb-$3 xl-$4",
     "by": "bl-$1 br-$2",
     "bx": "bt-$1 bb-$2",
-    "bxy": "bt-$1 br-$2 bb-$3 bl-$4",
-
-    "hamburger": [
-        "visible block position-relative xsmdown{visible block}",
-        "center aligncenter w-32px h-32px overflow-hidden pt-3px",
-        "pointer nohighlight",
-        "hover>span{bg-933}",
-        "all-input{block w-32px h-32px mw-32px mh-32px absolute top=-4px left=-4px cursor-pointer opacity-0 z-index-2}",
-        "all-span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
-        "first-child>span{transform-origin-0%/0%}",
-        "last-child>span{transform-origin-0%/100%}"
-    ],
-    "togglehamburger": [
-        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative background-933 transform-origin=66.6666%/0}",
-        "checked~span-nth-last-child-2{opacity-0}",
-        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative background-933 transform-origin=66.6666%/0%}",
-    ]
+    "bxy": "bt-$1 br-$2 bb-$3 bl-$4"
 };
 
 /*
@@ -193,6 +195,11 @@ const knowShort = {
     "nopoint": "pointer-events-none",
     "point": "pointer-events-all",
     "nohighlight": "user-select-none touch-callout-none tap-highlight-color-transparent",
+
+    /* opacity */
+    "door": "opacity-1",
+    "ghost": "opacity-0.5",
+    "window": "opacity-0",
 
     /* normalize */
     "border-box": "box-sizing=border-box",

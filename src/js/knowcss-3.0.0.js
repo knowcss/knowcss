@@ -1,4 +1,6 @@
 'use strict';
+'esversion: 6';
+/*jshint esversion: 6 */
 
 /*
 KnowCSS Version 3.0.0 by Jay Doublay
@@ -157,7 +159,7 @@ const knowMotion = {
                                     if (key !== keyNew) {
                                         if (keyNew in classList) { classList[keyNew] += ' ' + keys[2] + reversion; }
                                         else { classList[keyNew] = keys[2] + reversion; }
-                                        if (classListCheck.indexOf(keyNew) == -1) { classListCheck.push(keyNew); }
+                                        if (contans(classListCheck, keyNew)) { classListCheck.push(keyNew); }
                                     }
                                 }
                             });
@@ -179,12 +181,12 @@ const knowMotion = {
                     if (val in shorthand) { attributes[shorthand[val][0]] = shorthand[val][1]; }
                     else if (["linear", "ease", "ease-in", "ease-out", "ease-in-out"].includes(val)) { attributes["timing-function"] = val; }
                     else if (["forwards", "backwards", "both"].includes(val)) { attributes["fill-mode"] = val; }
-                    else if (["reverse", "alternate", "alternate-reverse", "normal"].includes(val)) { attributes["direction"] = val; }
+                    else if (["reverse", "alternate", "alternate-reverse", "normal"].includes(val)) { attributes.direction = val; }
                     else if (["infinite"].includes(val) || /^\d+$/.test(val)) { attributes["iteration-count"] = val; }
-                    else if (/^\d+s$/.test(val)) { attributes["duration"] = val; }
-                    else if (/^\d*(\.\d+)+s$/.test(val)) { attributes["duration"] = val; }
-                    else if (/^d\d+s$/.test(val)) { attributes["delay"] = val.replace('d', ''); }
-                    else if (/^d\d*(\.\d+)+s$/.test(val)) { attributes["delay"] = val.replace('d', ''); }
+                    else if (/^\d+s$/.test(val)) { attributes.duration = val; }
+                    else if (/^\d*(\.\d+)+s$/.test(val)) { attributes.duration = val; }
+                    else if (/^d\d+s$/.test(val)) { attributes.delay = val.replace('d', ''); }
+                    else if (/^d\d*(\.\d+)+s$/.test(val)) { attributes.delay = val.replace('d', ''); }
                     else if (contains(val, "last-") && "100" in keyFrames) {
                         last = val.split('-', 2).pop();
                         if (last in keyFrames) { keyFrames["100"] = keyFrames[last]; }
@@ -199,7 +201,7 @@ const knowMotion = {
                     }
                     else { possible.push(val); }
                     i++;
-                };
+                }
 
                 if (possible.length > 0) {
                     i = 0, x = possible.length;
@@ -227,7 +229,7 @@ const knowMotion = {
                         while (i < x) {
                             keyFrameValues.push(ctxprop.getfinalstyle(classValues[i]));
                             i++;
-                        };
+                        }
                         if (keyFrameValues.length > 0) { keyFramesCSS.push(" " + keyFrame + "% { " + keyFrameValues.join('; ') + "; }"); }
                     }
                     keyFramesCSS.push("}");
@@ -259,24 +261,41 @@ const knowMotion = {
 
 const knowID = 'know';
 
+var defined = (val) => typeof val !== 'undefined' && val != null;
+var checkvar = (val) => defined(val) ? val : {};
+var contains = (val, vals) => val.indexOf(vals) > -1;
+var begins = (val, vals) => val.indexOf(vals) == 0;
+var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
+var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
+var containsAny = (val, vals) => {
+    var x = vals.length, i = 0;
+    while (i < x) {
+        if (contains(val, vals[i])) { return true; }
+        i++;
+    }
+    return false;
+};
+
 var greps = null;
 var letter = "";
 var letters = {};
 var config = {
-    vars: typeof knowVars !== 'undefined' && knowVars != null ? knowVars : {},
-    mixins: typeof knowMixins !== 'undefined' && knowMixins != null ? knowMixins : {},
-    colors: typeof knowColors !== 'undefined' && knowColors != null ? knowColors : {},
-    prop: typeof knowProp !== 'undefined' && knowProp != null ? knowProp : {},
-    short: typeof knowShort !== 'undefined' && knowShort != null ? knowShort : {},
-    variable: typeof knowVariable !== 'undefined' && knowVariable != null ? knowVariable : {},
-    components: typeof knowComponents !== 'undefined' && knowComponents != null ? knowComponents : {},
-    brackets: typeof knowBrackets !== 'undefined' && knowBrackets != null ? knowBrackets : {},
-    conditionals: typeof knowConditionals !== 'undefined' && knowConditionals != null ? knowConditionals : {}
+    vars: checkvar(knowVars),
+    mixins: checkvar(knowMixins),
+    colors: checkvar(knowColors),
+    prop: checkvar(knowProp),
+    short: checkvar(knowShort),
+    variable: checkvar(knowVariable),
+    components: checkvar(knowComponents),
+    ui: checkvar(knowUI),
+    brackets: checkvar(knowBrackets),
+    conditionals: checkvar(knowConditionals)
 };
 
 /*
 const library = {
     defined: (val) => typeof val !== 'undefined' && val != null,
+    checkvar: (val) => typeof val !== 'undefined' && val != null ? val : {},
     contains: (val, vals) => val.indexOf(vals) > -1,
     begins: (val, vals) => val.indexOf(vals) == 0,
     hyphens: (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str,
@@ -291,20 +310,6 @@ const library = {
     }
 }
 */
-
-var defined = (val) => typeof val !== 'undefined' && val != null;
-var contains = (val, vals) => val.indexOf(vals) > -1;
-var begins = (val, vals) => val.indexOf(vals) == 0;
-var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
-var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
-var containsAny = (val, vals) => {
-    var x = vals.length, i = 0;
-    while (i < x) {
-        if (val.indexOf(vals[i]) > -1) { return true; }
-        i++;
-    }
-    return false;
-};
 
 const configuration = {
     init: function () { this.greps().environments().brackets(); },
@@ -395,7 +400,7 @@ const configuration = {
                 screens[num + "down"] = [1, val];
                 screens[num + "up"] = [num, xxl];
                 num = val + 0.02;
-            };
+            }
 
             greps = {
                 media: "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$",
@@ -422,7 +427,7 @@ const parser = {
         // JAA FIX - initial component check
         var attrClasses = contains(attr, ' ') ? attr.split(' ') : [attr];
         var attrMany = [];
-        attrClasses.forEach((attrClass) => { attrMany.push(this.getmixins(false, attrClass, this)[1]); });
+        attrClasses.forEach((attrClass) => { attrMany.push(this.getui(false, attrClass, 'ui', this)[1]); });
         attr = attrMany.join(' ');
 
         attr = this.getbrackets(this.getvars(cleanup(attr)));
@@ -434,8 +439,8 @@ const parser = {
                 classes = cleanup(key[2]);
                 var toplevel = JSON.stringify(containersfirst);
                 var containerssecond = JSON.parse(toplevel);
-                delete containerssecond.screens["n"];
-                delete containerssecond.modifiers["n"];
+                delete containerssecond.screens.n;
+                delete containerssecond.modifiers.n;
                 containerssecond.parents = {};
                 var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
                 var subWrap = classes.toString();
@@ -444,7 +449,7 @@ const parser = {
                     var classessecond = cleanup(keysecond[2]);
                     containers = this.containers(keysecond[1], containerssecond, 1);
                     if (containers.allow) { [groups, classessecond] = this.group(groups, classessecond, containers, master); }
-                };
+                }
 
                 original = original.replace(key[0], '');
                 var subClasses = [];
@@ -491,11 +496,11 @@ const parser = {
                     val = val.replace(key + '-', '').replace(key, '');
                 }
             }
-            var media = new RegExp(greps.media).exec(val);
-            if (media) {
-                val = media[1];
-                media[2] = media[2].replace(/-/g, '').replace(/\//g, ' ');
-                if (media[2].length > 0) { val += ':' + media[2]; }
+            var mediawrap = new RegExp(greps.media).exec(val);
+            if (mediawrap) {
+                val = mediawrap[1];
+                mediawrap[2] = mediawrap[2].replace(/-/g, '').replace(/\//g, ' ');
+                if (mediawrap[2].length > 0) { val += ':' + mediawrap[2]; }
             }
             ret.push('@' + media + '(' + val + ') {');
         }
@@ -562,8 +567,8 @@ const parser = {
         else if (begins(val, 'offset-')) {
             var whichOffset = val.replace(/^offset-/, '');
             if (whichOffset.length == 0) { whichOffset = 12; }
-            var whichPct = (parseInt(whichOffset) / 12) * 100;
-            val = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
+            var whichOffsetPct = (parseInt(whichOffset) / 12) * 100;
+            val = "margin-left-" + parseFloat(whichOffsetPct.toFixed(6)) + "%";
             any = true;
         }
         return [any, val];
@@ -604,6 +609,19 @@ const parser = {
         }
         return val;
     },
+    getui: (any, val, type, ctx) => {
+        var parts = contains(val, '-') ? val.split('-') : [val];
+        var key = parts.shift();
+        if (key in config[type]) {
+            var ui = config[type][key];
+            if (typeof ui !== 'string') {
+                ui = ui.join(' ');
+                config[type][key] = ui;
+            }
+            val = ctx.getcomponents(ui, parts.join('-'));
+        }
+        return [any, val];
+    },
     getmixins: (any, val, ctx) => {
         if (val in config.mixins) {
             val = config.mixins[val];
@@ -611,25 +629,14 @@ const parser = {
         }
         else if (val in config.short) {
             val = config.short[val];
-            if (val.indexOf(' ') > -1) {
+            if (contains(val, ' ')) {
                 var vals = [];
                 val.split(' ').forEach(value => { vals.push(ctx.getmixins(any, value, ctx)[1]); });
                 val = vals.join(' ');
             }
             any = true;
         }
-        else {
-            var parts = val.indexOf('-') > -1 ? val.split('-') : [val];
-            var key = parts.shift();
-            if (key in config.components) {
-                var component = config.components[key];
-                if (typeof component !== 'string') {
-                    component = component.join(' ');
-                    config.components[key] = component;
-                }
-                val = ctx.getcomponents(component, parts.join('-'));
-            }
-        }
+        else { [any, val] = ctx.getui(any, val, 'components', ctx); }
         return [any, val];
     },
     containers: function (wrapper, ret, level) {
@@ -646,7 +653,7 @@ const parser = {
         var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~\>]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
         var vals = [], parts = [], retain = "";
         if (level == 3) {
-            var equal = wrapper.indexOf('=') > -1 ? '=' : '-';
+            var equal = contains(wrapper, '=') ? '=' : '-';
             parts = wrapper.split(equal);
             if (parts.length > 1) {
                 retain = equal + parts.pop();
@@ -658,6 +665,7 @@ const parser = {
             val = key[1].toString();
             len = val.length;
             keepval = wrapper.substr(offset, len);
+            if (begins(keepval, '-')) { keepval = keepval.substr(1); }
             offset += len;
             if (level > 1) { ret.allow = true; }
             else { [val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
@@ -804,7 +812,7 @@ const parser = {
         var key = '', grep = null, zS = '', zY = false, num = 0;
         var mA = '*';
         var mP = mA;
-        var mU = val.indexOf("^") > -1 ? "^" : "";
+        var mU = contains(val, '^') ? "^" : "";
         ['>', '~', '+'].forEach((symbol) => {
             if (contains(val, symbol)) {
                 mP = val.split(symbol, 2).pop();
@@ -860,7 +868,7 @@ const parser = {
     },
     group: (groups, classes, containers, master) => {
         greps.group.forEach(key => {
-            if (Object.keys(containers[key]).length == 0) { containers[key]["n"] = ""; }
+            if (Object.keys(containers[key]).length == 0) { containers[key].n = ""; }
         });
         classes = cleanup(classes);
         var ret = classes;
@@ -887,7 +895,7 @@ const parser = {
     getletter: (val) => {
         if (val.length == 0) { val = "a"; }
         else {
-            var i = val.length - 1, chr = val.charCodeAt(i), z = "z".charCodeAt(), chr = "", vals = [];
+            var i = val.length - 1, z = "z".charCodeAt(), chr = "", vals = [];
             do {
                 chr = val.charCodeAt(i);
                 vals = val.split("");
@@ -1054,7 +1062,7 @@ const property = {
             if (any) {
                 var val = value.replace('px', '');
                 var important = "";
-                if (val.indexOf('!') > -1) {
+                if (contains(val, '!')) {
                     val = val.replace(/\!/g, '');
                     important = "!";
                 }
@@ -1067,7 +1075,7 @@ const property = {
         }
         return [value, extras];
     }
-}
+};
 
 const colors = {
     parse: function (prop, value) {
@@ -1236,14 +1244,14 @@ const knowCSS = {
                     }
                     i++;
                 }
-                var library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
+                var keys = null, tags = null, library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
                 for (var key in window.knowLibrary) {
                     library = window.knowLibrary[key], cssTag = null;
                     if ("tag" in library) {
                         id = "know_" + key, styles = [], html = "", ids = "";
                         if (!document.getElementById(id)) {
-                            for (var keys in library.tag) {
-                                for (var tags in library.tag[keys]) {
+                            for (keys in library.tag) {
+                                for (tags in library.tag[keys]) {
                                     html = "{" + library.tag[keys][tags].join(";") + "}";
                                     if (tags == "_") { styles.push(keys + html); }
                                     else { styles.push(tags + "{" + keys + html + "}"); }
@@ -1254,16 +1262,16 @@ const knowCSS = {
                     }
                     if ("elem" in library) {
                         styles = [];
-                        for (var keys in classes) {
+                        for (keys in classes) {
                             ids = key + '_' + keys;
                             if (ids in knowLibraryClasses === false && keys in library.elem) {
                                 if (typeof library.elem[keys] === 'string') { styles.push("." + keys + "{" + library.elem[keys] + "}"); }
                                 else {
-                                    for (var tags in library.elem[keys]) {
+                                    for (tags in library.elem[keys]) {
                                         htmls = [];
                                         library.elem[keys][tags].forEach(val => {
                                             val = val.replace(/\!/, '!important');
-                                            if (val.indexOf("&") == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
+                                            if (beings(val, '&') == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
                                             else { htmls.push("{" + val + "}"); }
                                         });
                                         if (tags == "_") { styles.push("." + keys + htmls.join("\n")); }
@@ -1283,18 +1291,18 @@ const knowCSS = {
         return this;
     },
     inject: (ctx, elems, smart) => {
-        var val = "", flat = {};
+        var val = "", flat = {}, key = "";
         var ctxparser = parser;
 
-        for (var key in smart) {
+        for (key in smart) {
             val = smart[key].join("_");
             if (val in flat === false) { flat[val] = []; }
             flat[val].push(key);
         }
 
-        var css = {};
-        for (var key in flat) {
-            var keys = key.split('_');
+        var css = { "n": {} }, keys = [];
+        for (key in flat) {
+            keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
                 var segment = ctx.getsegment(modifier, parent);
@@ -1346,6 +1354,7 @@ const knowCSS = {
 
         var cssGroup = {};
         var styles = [], start = "", end = "", tab = "", masterLine = "\n";
+        if (Object.keys(css).length > 1) { css = { '': css.n, ...css }; }
         for (var screen in css) {
             [start, end, tab] = ctxparser.getwrapper(screen);
             styles.push(masterLine + start);
@@ -1353,7 +1362,7 @@ const knowCSS = {
                 cssGroup = {};
                 for (var segment in css[screen][action]) {
                     for (var style in css[screen][action][segment]) {
-                        var actionAdd = (action != 'n' ? (action.indexOf('[') == 0 ? '' : ':') + action : '');
+                        var actionAdd = (action != 'n' ? (begins(action, '[') ? '' : ':') + action : '');
                         var classJoin = "." + css[screen][action][segment][style].join(actionAdd + ', .') + actionAdd;
                         var groupKey = screen + '_' + action + '_' + segment;
                         if (groupKey in cssGroup === false) { cssGroup[groupKey] = {}; }
@@ -1396,7 +1405,7 @@ const knowCSS = {
     },
     getstyle: (style, reversion) => {
         var parts = style.split('=', 2);
-        var style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
+        style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
         if (new RegExp(greps.webkit).test(parts[0]) === true) { style += ['; -webkit-' + style, '; -moz-' + style, '; -ms-' + style, '; -o-' + style].join(''); }
         return style;
     },
