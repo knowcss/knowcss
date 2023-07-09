@@ -1354,7 +1354,7 @@ const knowCSS = {
 
         var cssGroup = {};
         var styles = [], start = "", end = "", tab = "", masterLine = "\n";
-        if (Object.keys(css).length > 1) { css = { '': css.n, ...css }; }
+        //if (Object.keys(css).length > 1) { css = { '': css.n, ...css }; }
         for (var screen in css) {
             [start, end, tab] = ctxparser.getwrapper(screen);
             styles.push(masterLine + start);
