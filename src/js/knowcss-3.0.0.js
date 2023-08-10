@@ -266,7 +266,7 @@ var checkvar = (val) => defined(val) ? val : {};
 var contains = (val, vals) => val.indexOf(vals) > -1;
 var begins = (val, vals) => val.indexOf(vals) == 0;
 var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
-var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
+var cleanup = (str) => str ? str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim() : '';
 var containsAny = (val, vals) => {
     var x = vals.length, i = 0;
     while (i < x) {
@@ -432,8 +432,11 @@ const parser = {
 
         attr = this.getbrackets(this.getvars(cleanup(attr)));
 
-        var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
+        //var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis')
+        var grep = new RegExp('([^\ \{]*?)\{(.*?)\}', 'gis');
+        var master = "n_n_n_n_n", groups = {}, original = attr, key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
+            console.log(['new', key[0], key[1], key[2]]);
             var containersfirst = this.containers(key[1], null, 0);
             if (containersfirst.allow) {
                 classes = cleanup(key[2]);
@@ -442,12 +445,16 @@ const parser = {
                 delete containerssecond.screens.n;
                 delete containerssecond.modifiers.n;
                 containerssecond.parents = {};
-                var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
+                var grepsecond = new RegExp('([^\ |\(]*?)\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
+                //var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
                 var subWrap = classes.toString();
                 while ((keysecond = grepsecond.exec(subWrap)) !== null) {
+                    console.log(['new keysecond', keysecond[1], keysecond[2]]);
+
                     classes = classes.replace(keysecond[0], '');
                     var classessecond = cleanup(keysecond[2]);
                     containers = this.containers(keysecond[1], containerssecond, 1);
+
                     if (containers.allow) { [groups, classessecond] = this.group(groups, classessecond, containers, master); }
                 }
 
@@ -477,6 +484,9 @@ const parser = {
 
         original = cleanup(original);
         if (original) { groups[master] = original; }
+
+        console.log(groups);
+
         return groups;
     },
     getwrapper: (val) => {
@@ -934,7 +944,7 @@ const property = {
             retain = '!';
         }
         var values = ctx.getmixins(false, value.replace(/\^/g, ''), ctx)[1].split(' ');
-        value = values.shift();
+        value = values.shift() + retain;
         if (values.length > 0) {
             values.forEach(val => { extras.push(val + retain); });
         }
@@ -1017,7 +1027,11 @@ const property = {
         return value;
     },
     px: (prop, value) => {
-        var any = false, px = prop.replace("px", "");
+        var any = false, retain = "", px = prop.replace("px", "");
+        if (px && containsAny(px, ['!', 'important'])) {
+            px = px.replace('important', '').replace(/\!/g, '');
+            retain = '!important';
+        }
         if (value === "" && !isNaN(px)) {
             prop = parseInt(px);
             if (prop > 0 && (prop % 100) == 0) {
@@ -1036,7 +1050,7 @@ const property = {
             else if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(prop.substring(0, 5))) { any = true; }
             if (any) { value += 'px'; }
         }
-        return [any, prop, value];
+        return [any, prop, value + retain];
     },
     color: (prop, value) => colors.parse(prop, value),
     family: (prop, value) => {
@@ -1383,6 +1397,7 @@ const knowCSS = {
         ctx.stylesheet(knowMotion.init(styles));
     },
     splitclasses: (elem, key, vals, smart) => {
+        console.log(vals);
         var classes = vals.split(' ');
         var prop = "", value = "", extras = [], smartkey = "";
         while (classes.length > 0) {
@@ -1392,8 +1407,11 @@ const knowCSS = {
             smart[smartkey].push(elem);
             if (extras.length > 0) { extras.forEach(extra => { classes.push(extra); }); }
         }
+
+        console.log(smart);
         return smart;
     },
+    /*
     getclasses: (classes) => {
         var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis'), key = [], original = classes;
         while ((key = grep.exec(original)) !== null) {
@@ -1403,6 +1421,7 @@ const knowCSS = {
         }
         return classes.split(/(\s+)/).filter(e => e.trim().length > 0);
     },
+    */
     getstyle: (style, reversion) => {
         var parts = style.split('=', 2);
         style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
