@@ -436,7 +436,6 @@ const parser = {
         var grep = new RegExp('([^\ \{]*?)\{(.*?)\}', 'gis');
         var master = "n_n_n_n_n", groups = {}, original = attr, key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
-            console.log(['new', key[0], key[1], key[2]]);
             var containersfirst = this.containers(key[1], null, 0);
             if (containersfirst.allow) {
                 classes = cleanup(key[2]);
@@ -449,8 +448,6 @@ const parser = {
                 //var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
                 var subWrap = classes.toString();
                 while ((keysecond = grepsecond.exec(subWrap)) !== null) {
-                    console.log(['new keysecond', keysecond[1], keysecond[2]]);
-
                     classes = classes.replace(keysecond[0], '');
                     var classessecond = cleanup(keysecond[2]);
                     containers = this.containers(keysecond[1], containerssecond, 1);
@@ -484,9 +481,6 @@ const parser = {
 
         original = cleanup(original);
         if (original) { groups[master] = original; }
-
-        console.log(groups);
-
         return groups;
     },
     getwrapper: (val) => {
@@ -568,10 +562,12 @@ const parser = {
             var whichCol = val.replace(/^col-/, '');
             var alignCol = whichCol;
             if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
-            if (['left', 'right', 'center'].includes(alignCol)) { classesFound.push('justify-content-' + alignCol); }
             if (whichCol.length == 0) { whichCol = 12; }
             var whichPct = (parseInt(whichCol) / 12) * 100;
-            val = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + val, "position-relative"].join(' ');
+            var vals = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + whichCol, "position-relative"];
+            if (['left', 'right', 'center'].includes(alignCol)) { vals.push('justify-content-' + alignCol); }
+            else if (alignCol == 'tight') { vals.push("flex-unset!"); }
+            val = vals.join(' ');
             any = true;
         }
         else if (begins(val, 'offset-')) {
@@ -635,10 +631,12 @@ const parser = {
     getmixins: (any, val, ctx) => {
         if (val in config.mixins) {
             val = config.mixins[val];
+            if (typeof val !== 'string') { val = val.join(" "); }
             any = true;
         }
         else if (val in config.short) {
             val = config.short[val];
+            if (typeof val !== 'string') { val = val.join(" "); }
             if (contains(val, ' ')) {
                 var vals = [];
                 val.split(' ').forEach(value => { vals.push(ctx.getmixins(any, value, ctx)[1]); });
@@ -747,6 +745,7 @@ const parser = {
             else if (begins(val, 'all')) {
                 if (begins(val, 'all-')) { modifier = ' ' + val.replace('all-', ''); }
                 else if (begins(val, 'all>')) { modifier = ' ' + val.replace('all>', '> '); }
+                modifier = modifier.replace(/\_/g, ' ').replace(/\>/g, '> ');
             }
             else if (contains(val, 'nth')) {
                 var tag = '';
@@ -1019,6 +1018,20 @@ const property = {
             value = pre + 'width' + '-' + width;
             extras.push(pre + 'height-' + height);
         }
+        else if (contains(value, '/')) {
+            var pxLine = RegExp('^([0-9]{1,10})([|px|em|rem])\/([0-9]{1,10})([|px|em|rem])$', 'i').exec(value);
+            var pxShort = !pxLine;
+            if (pxShort) { pxLine = RegExp('^([0-9]{1,10})\/([0-9]{1,10})$', 'i').exec(value); }
+            if (pxLine) {
+                var full = "", px = "", line = "", pxVal = "", lineVal = "";
+                if (pxShort) { [full, px, line] = pxLine; }
+                else { [full, px, pxVal, line, lineVal] = pxLine; }
+                if (!pxVal && !isNaN(px) && px !== '0') { pxVal = 'px'; }
+                if (!lineVal && !isNaN(line) && line !== '0') { lineVal = 'px'; }
+                value = 'font-size-' + px + (pxVal || "");
+                extras.push('line-height-' + line + (lineVal || ""));
+            }
+        }
         return [value, extras];
     },
     reversion: (value, key) => {
@@ -1060,8 +1073,11 @@ const property = {
             any = true;
             if (contains(value, ',')) {
                 var fonts = [];
-                value.split(',').forEach((val) => { fonts.push(contains(val, ' ') ? '"' + val + '"' : val); });
-                value = hS.join(',');
+                value.split(',').forEach((val) => {
+                    val = val.trim();
+                    fonts.push(contains(val, ' ') ? '"' + val + '"' : val);
+                });
+                value = fonts.join(',');
             }
         }
         return [any, prop, value];
@@ -1260,7 +1276,7 @@ const knowCSS = {
                 }
                 var keys = null, tags = null, library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
                 for (var key in window.knowLibrary) {
-                    library = window.knowLibrary[key], cssTag = null;
+                    library = window.knowLibrary[key], cssTag = null, forced = "force" in library && library.force;
                     if ("tag" in library) {
                         id = "know_" + key, styles = [], html = "", ids = "";
                         if (!document.getElementById(id)) {
@@ -1276,6 +1292,9 @@ const knowCSS = {
                     }
                     if ("elem" in library) {
                         styles = [];
+                        if (forced) {
+                            for (var key in library.elem) { classes[key] = true; }
+                        }
                         for (keys in classes) {
                             ids = key + '_' + keys;
                             if (ids in knowLibraryClasses === false && keys in library.elem) {
@@ -1285,10 +1304,12 @@ const knowCSS = {
                                         htmls = [];
                                         library.elem[keys][tags].forEach(val => {
                                             val = val.replace(/\!/, '!important');
-                                            if (beings(val, '&') == 0) { htmls.push(val.replace(/^\&/, "." + keys)); }
-                                            else { htmls.push("{" + val + "}"); }
+                                            if (begins(val, '&')) { htmls.push(val.replace(/^\&/, "." + keys)); }
+                                            else { htmls.push("." + keys + "{" + val + "}"); }
                                         });
-                                        if (tags == "_") { styles.push("." + keys + htmls.join("\n")); }
+
+                                        if (tags == "_") { styles.push(htmls.join("\n")); }
+                                        else if (tags == "=") { styles.push(htmls.join("\n")); }
                                         else { styles.push(tags + "{" + "." + keys + htmls.join("\n") + "}"); }
                                     }
                                 }
@@ -1325,10 +1346,11 @@ const knowCSS = {
                 var parentLevel = 0;
                 if (parent != "n") { parentLevel = parseInt(parent); }
 
-                var x = keys.length, i = 0, j = 0;
+                var x = keys.length, i = 0, j = 0, ref = null, elem = null, classNew = null;
                 while (i < x) {
                     j = keys[i];
-                    var ref = j, elem = elems[j];
+                    ref = j;
+                    elem = elems[j];
                     if (parentLevel > 0) {
                         ref = j + "__" + parentLevel;
                         elem = ctx.getparent(elem, parentLevel);
@@ -1338,22 +1360,9 @@ const knowCSS = {
                         elem.classList.add(letter);
                         letters[ref] = letter;
                     }
-                    var classNew = letters[ref];
+                    classNew = letters[ref];
                     if (modifier == 'n') { modifier = ''; }
                     if (screen in css === false) { css[screen] = {}; }
-
-                    /*
-                    if (action != 'n' && action.indexOf('[') == 0) {
-                        if (elem.hasAttribute("know-click") === false) {
-                            elem.setAttribute("know-click", "off");
-                            elem.addEventListener('click', () => {
-                                var val = elem.getAttribute('know-click');
-                                elem.setAttribute("know-click", val == "off" ? "on" : "off");
-                            });
-                        }
-                    }
-                    */
-
                     if (action in css[screen] === false) { css[screen][action] = {}; }
                     if (segment in css[screen][action] === false) { css[screen][action][segment] = {}; }
                     if (style in css[screen][action][segment] === false) { css[screen][action][segment][style] = []; }
@@ -1397,7 +1406,6 @@ const knowCSS = {
         ctx.stylesheet(knowMotion.init(styles));
     },
     splitclasses: (elem, key, vals, smart) => {
-        console.log(vals);
         var classes = vals.split(' ');
         var prop = "", value = "", extras = [], smartkey = "";
         while (classes.length > 0) {
@@ -1407,8 +1415,6 @@ const knowCSS = {
             smart[smartkey].push(elem);
             if (extras.length > 0) { extras.forEach(extra => { classes.push(extra); }); }
         }
-
-        console.log(smart);
         return smart;
     },
     /*
@@ -1438,6 +1444,10 @@ const knowCSS = {
             level--;
         }
         return ret;
+    },
+    react: function () {
+        letters = {};
+        return this.libraries().render();
     },
     init: function () { return this.libraries().render(); },
     constructor: knowCSSProto
