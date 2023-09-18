@@ -265,6 +265,7 @@ var defined = (val) => typeof val !== 'undefined' && val != null;
 var checkvar = (val) => defined(val) ? val : {};
 var contains = (val, vals) => val.indexOf(vals) > -1;
 var begins = (val, vals) => val.indexOf(vals) == 0;
+var ends = (val, vals) => val.endsWith(vals);
 var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
 var cleanup = (str) => str ? str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim() : '';
 var containsAny = (val, vals) => {
@@ -602,6 +603,20 @@ const parser = {
         return component;
     },
     getbrackets: (val) => {
+        if (contains(val, '[')) {
+            var grep = new RegExp('([^\ \\[]*?)\\[(.*?)\\]', 'gis');
+            var key = "", vals = "";
+            while ((key = grep.exec(val)) !== null) {
+                if (key[1].endsWith('-')) { vals = key[1] + key[2].split(' ').join(' ' + key[1]); }
+                else {
+                    if (key[1] in config.mixins === false) { config.mixins[key[1]] = key[2]; }
+                    else { config.mixins[key[1]] += ' ' + key[2]; }
+                    vals = key[2];
+                }
+                val = val.replace(key[0], vals);
+            }
+        }
+        /*
         if (contains(val, compatible ? '{{' : '[')) {
             var grep = new RegExp(compatible ? '\\{\\{(.*?)\\}\\}' : '\\[(.*?)\\]', 'i');
             var key = "", any = [], extra = "";
@@ -613,6 +628,7 @@ const parser = {
             if (any.length > 0) { any.forEach(key => { config.brackets[key] = val; }); }
             val += extra;
         }
+        */
         return val;
     },
     getui: (any, val, type, ctx) => {
@@ -659,7 +675,7 @@ const parser = {
         };
 
         var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~\>]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
-        var vals = [], parts = [], retain = "";
+        var vals = [], parts = [], retain = "", joined = false;
         if (level == 3) {
             var equal = contains(wrapper, '=') ? '=' : '-';
             parts = wrapper.split(equal);
@@ -670,6 +686,7 @@ const parser = {
             else if (new RegExp('([0-9a-f]{1,32})\~([0-9]{1,3})$', '').test(wrapper)) { return [ret, wrapper]; }
         }
         while ((key = grep.exec(wrapper)) !== null) {
+            joined = joined || contains(key.input, "|") == false;
             val = key[1].toString();
             len = val.length;
             keepval = wrapper.substr(offset, len);
@@ -682,7 +699,7 @@ const parser = {
                 [any, val, ret.parents] = this.getparents(val, ret.parents);
                 [any, val, ret.actions] = this.getevents(val, ret.actions);
                 [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
-                [any, val, ret.actions] = this.getactions(val, ret.actions);
+                [any, val, ret.actions] = this.getactions(val, ret.actions, joined);
                 [any, val, ret.screens, keepval] = this.getscreens(val, ret.screens, level, keepval);
                 if (val) { vals.push(keepval + retain); }
             }
@@ -817,7 +834,7 @@ const parser = {
         }
         return [num > 0, hyphens(val), ret, orig];
     },
-    getactions: (val, ret) => {
+    getactions: (val, ret, joined) => {
         var key = '', grep = null, zS = '', zY = false, num = 0;
         var mA = '*';
         var mP = mA;
@@ -848,6 +865,11 @@ const parser = {
         if (num == 0 && mU.length > 0) {
             ret[mU + mD] = "";
             num++;
+        }
+        if (joined) {
+            var newAction = Object.keys(ret).join(":");
+            ret = {};
+            ret[newAction] = ":";
         }
         return [num > 0, hyphens(val), ret];
     },

@@ -21,8 +21,23 @@
 
     <div id="root" role="main">
 
+        <!--
+            know=“key[a b{c((d))}]” to save key as a new component.
+            know=“key-[a b c]” to prefix all [] with key-$1 to use components or key-val.
+
+            first-child-hover{} to combine actions rather than split.
+            first-child|hover{} to split actions.
+        -->
+        <!--<div know="newcomponent[12 full]">new component</div>
+        <div know="newcomponent">used component</div>
+        <div know="margin-[top-1 right-2 bottom-3 left-4]">used component</div>-->
+
+        <div know="first-child-hover{12 full}">
+            <span>test</span>
+        </div>
+
         <!--<div know="sm|md|lg|xl{10 hover((red !32)) black full !((padding-10px))}">test</div>-->
-        <div know="smup{hover((!32 padding-10px!))}">test</div>
+        <!--<div know="smup{hover((!32 padding-10px!))}">test</div>-->
 
         <!--<div know="chrome{12 full} hires{margin-top-10px} desktop{margin-left-11px} mac{margin-right-12px} !chrome{margin-bottom-13px}">AA</div>-->
 
