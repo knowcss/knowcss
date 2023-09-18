@@ -299,6 +299,7 @@ const library = {
     checkvar: (val) => typeof val !== 'undefined' && val != null ? val : {},
     contains: (val, vals) => val.indexOf(vals) > -1,
     begins: (val, vals) => val.indexOf(vals) == 0,
+    ends: (val, vals) => val.endsWith(vals),
     hyphens: (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str,
     cleanup: (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim(),
     containsAny: (val, vals) => {
@@ -607,7 +608,7 @@ const parser = {
             var grep = new RegExp('([^\ \\[]*?)\\[(.*?)\\]', 'gis');
             var key = "", vals = "";
             while ((key = grep.exec(val)) !== null) {
-                if (key[1].endsWith('-')) { vals = key[1] + key[2].split(' ').join(' ' + key[1]); }
+                if (ends(key[1], '-')) { vals = key[1] + key[2].split(' ').join(' ' + key[1]); }
                 else {
                     if (key[1] in config.mixins === false) { config.mixins[key[1]] = key[2]; }
                     else { config.mixins[key[1]] += ' ' + key[2]; }
