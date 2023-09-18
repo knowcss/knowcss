@@ -866,7 +866,7 @@ const parser = {
             ret[mU + mD] = "";
             num++;
         }
-        if (joined) {
+        if (joined && Object.keys(ret).length > 0) {
             var newAction = Object.keys(ret).join(":");
             ret = {};
             ret[newAction] = ":";
