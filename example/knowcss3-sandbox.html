@@ -12,13 +12,21 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Create responsive, modern, optimized, dynamic layouts fast!" />
     <meta property="og:url" content="https://www.knowcss.com/" />
-    <script src="../src/knowcss-shortprop.js"></script>
-    <script src="../src/js/knowcss-3.0.0.js"></script>
+    <script defer src="../src/knowcss-shortprop.js"></script>
+    <script defer src="../src/knowmotion-core.js"></script>
+    <script defer src="../src/js/knowcss-3.0.0.js"></script>
 </head>
 
 <body bgcolor="#ffffff" text="#333333" link="#000099" alink="#000099" vlink="#000099" style="margin:0px; padding:0px">
     <div id="root" role="main" class="knowvars">
 
+        <style>
+            :root {
+                --whatever: red;
+            }
+        </style>
+        <div know="[redish] color--whatever">Parent Has Padding</div>
+        <div know="[redish]">Parent Has Padding 2</div>
         <!--
             <div know="h1">h1</div>
             <div know="h2">h2</div>
@@ -57,6 +65,12 @@
                     md-parent{font-size-14}
                     lg-parent{font-size-12}
                 ">Parent Has Media Queries</div>
+        </div>-->
+
+        <!--<div know="p-32 relative >{border=1px/solid/red of-hidden absolute top-50% left-50%}">
+            <div knowmotion="ticker">ticker</div>
+            <div knowmotion="bounce">bounce</div>
+            <div knowmotion="flash">flash</div>
         </div>-->
 
         <div know="center all{font-weight-300 {{$box}} {{$family}}}" class="noshift3">

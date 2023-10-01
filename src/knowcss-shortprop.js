@@ -1,3 +1,31 @@
+const knowBrackets = {
+    "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
+    "nr": "color-2D862D font-weight-400",
+    "nt": "color-2D862D font-weight-400",
+    "go": "color-339 font-weight-400",
+    "hd": "font-size-32px aligncenter normal-important",
+    "mi": "margin-10px/auto/10px/auto margin-top-10px!",
+    "mx": "center",
+    "ft": "font-size-16px aligncenter",
+    "hr": "border-top-3px/solid/#f3f3f3 center",
+    "bx": "padding-15px/5px {{$box}}",
+    "hx": "margin-20px/auto/10px/auto padding-0",
+    "ic": "padding-5px/5px all{color-666}",
+    "na": "hover>a{color-933}",
+    "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
+    "nv": "color-666 font-size-18px nounderline",
+    "ys": "aligncenter center",
+    "ml": "padding-left-20px",
+    "mm": "padding-left-40px",
+    "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
+    "ct": "table center aligncenter margin-top-10px max-width-96%",
+    "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
+    "blue": "{{$blue}}",
+    "orange": "{{$orange}}",
+    "pink": "{{$pink}}",
+    "red": "{{$red}}",
+    "black": "{{$black}}"
+};
 const knowVars = {
     "one": "border-top-1px",
     "box": "box-sizing=border-box",
@@ -16,7 +44,10 @@ const knowMixins = {
     /* grid model */
     "container": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto max-width-100% 1230{max-width-1550} 1200{max-width-1140} 1024{max-width-940} 768{max-width-720}",
     "container-fluid": "width-100% padding-right-15px padding-left-15px margin-right-auto margin-left-auto",
-    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap"
+    "row": "width-100% display=-webkit-box display=-ms-flexbox display-flex -ms-flex-wrap-wrap flex-wrap-wrap",
+
+    /* screen reader */
+    "sr": "abs in w-1 h-1 p-0 bd-0 m=-1 rect-0"
 };
 
 const knowVariable = {
@@ -26,12 +57,51 @@ const knowVariable = {
     "translateXY": "transform=translate($1,$2)"
 };
 
+const knowUI = {
+    "hamburger": [
+        "visible block smup{hidden none} relative",
+        "center aligncenter w-32px h-32px inside pt-3px",
+        "pointer nohighlight",
+        "hover>span{bg-933}",
+        "all-input{block w-32px h-32px mw-32px mh-32px absolute t=-4px l=-4px pointer window zi-2}",
+        "all-span{bg-$1 block w-32px h-4px mb-5px relative br-3px transition=all/.4s/ease-in-out}",
+        "first-child>span{transform-origin-0%/0%}",
+        "last-child>span{transform-origin-0%/100%}"
+    ],
+    "togglehamburger": [
+        "checked~span-nth-last-child-1{transform=rotate(-45deg) translate=-3px/-13px! relative bg-933 transform-origin=66.6666%/0}",
+        "checked~span-nth-last-child-2{window}",
+        "checked~span-nth-last-child-3{transform=rotate(45deg) translate=0px/13px! relative bg-933 transform-origin=66.6666%/0%}",
+    ]
+};
+
 const knowComponents = {
     "tlbr": "top-$1 left-$1 bottom-$3 right-$4",
     "sq": "top-$1 left-$1 bottom-$3 right-$4 width-$5 height-$6",
     "wh": "width-$1 height-$2",
-    "hw": "height-$1 width-$2"
+    "hw": "height-$1 width-$2",
+    "rect": "clip-rect($1,$2,$3,$4)",
+
+    // TODO - move into regexp component */
+    "py": "pl-$1 pr-$2",
+    "px": "pt-$1 pb-$2",
+    "pxy": "pt-$1 pr-$2 pb-$3 pl-$4",
+    "my": "ml-$1 mr-$2",
+    "mx": "mt-$1 mb-$2",
+    "mxy": "xt-$1 xr-$2 xb-$3 xl-$4",
+    "by": "bl-$1 br-$2",
+    "bx": "bt-$1 bb-$2",
+    "bxy": "bt-$1 br-$2 bb-$3 bl-$4"
 };
+
+/*
+window.knowLibrary = window.knowLibrary || {};
+window.knowLibrary.prism = {};
+*/
+/* convert css string to knowcss component */
+/*
+var prismCss = "code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#272822}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#8292a2}.token.punctuation{color:#f8f8f2}.token.namespace{opacity:.7}.token.constant,.token.deleted,.token.property,.token.symbol,.token.tag{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#a6e22e}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value,.token.class-name,.token.function{color:#e6db74}.token.keyword{color:#66d9ef}.token.important,.token.regex{color:#fd971f}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}";
+*/
 
 const knowProp = {
     /* dimensions */
@@ -62,12 +132,15 @@ const knowProp = {
     "bb": "border-bottom",
     "bl": "border-left",
     "br": "border-right",
-    "rad": "border-radius",
     "bs": "border-spacing",
+    "bc": "border-color",
+    "rad": "border-radius",
 
     /* color */
     "c": "color",
     "bg": "background-color",
+    "shadow": "box-shadow",
+    "op": "opacity",
 
     /* font */
     "px": "font-size",
@@ -123,6 +196,11 @@ const knowShort = {
     "point": "pointer-events-all",
     "nohighlight": "user-select-none touch-callout-none tap-highlight-color-transparent",
 
+    /* opacity */
+    "door": "opacity-1",
+    "ghost": "opacity-0.5",
+    "window": "opacity-0",
+
     /* normalize */
     "border-box": "box-sizing=border-box",
     "tight": "m-0 p-0",
@@ -173,8 +251,11 @@ const knowShort = {
     /* position */
     "static": "position-static",
     "absolute": "position-absolute",
+    "abs": "position-absolute",
     "fixed": "position-fixed",
+    "fix": "position-fixed",
     "relative": "position-relative",
+    "rel": "position-relative",
     "sticky": "position-sticky",
 
     /* alignment */
@@ -268,7 +349,7 @@ const knowShort = {
 
     /* object-cover */
     "fill": "object-cover-fill",
-    "contain": "object-cover--contain",
+    "contain": "object-cover-contain",
     "cover": "object-cover-cover",
     "scale-down": "object-cover=scale-down",
     "scale": "object-cover=scale-down",
@@ -284,37 +365,12 @@ const knowShort = {
     /* overflow */
     "clip": "overflow-clip",
     "scroll": "overflow-scroll",
-    "auto": "overflow-auto"
-};
-
-const knowBrackets = {
-    "bi": "font-size-48px margin-3px color-333 margin-left-10px all{color-333} width-48px height-55px",
-    "nr": "color-2D862D font-weight-400",
-    "nt": "color-2D862D font-weight-400",
-    "go": "color-339 font-weight-400",
-    "hd": "font-size-32px aligncenter normal-important",
-    "mi": "margin-10px/auto/10px/auto margin-top-10px!",
-    "mx": "center",
-    "ft": "font-size-16px aligncenter",
-    "hr": "border-top-3px/solid/#f3f3f3 center",
-    "bx": "padding-15px/5px {{$box}}",
-    "hx": "margin-20px/auto/10px/auto padding-0",
-    "ic": "padding-5px/5px all{color-666}",
-    "na": "hover>a{color-933}",
-    "ni": "hover>i{color-933} min-width-48px min-height-55px display=inline-block",
-    "nv": "color-666 font-size-18px nounderline",
-    "ys": "aligncenter center",
-    "ml": "padding-left-20px",
-    "mm": "padding-left-40px",
-    "cd": "cell center text-align-left border-1px/solid/#eee border-radius-6px background-color-fefefe padding-10px",
-    "ct": "table center aligncenter margin-top-10px max-width-96%",
-    "bn": "inline-block border-radius-10px padding-5px/10px margin-5px font-size-18px white-space-nowrap",
-    "blue": "{{$blue}}",
-    "orange": "{{$orange}}",
-    "pink": "{{$pink}}",
-    "red": "{{$red}}",
-    "black": "{{$black}}"
-};
+    "auto": "overflow-auto",
+    "outside": "overflow-visible",
+    "inside": "overflow-hidden",
+    "out": "overflow-visible",
+    "in": "overflow-hidden"
+}
 
 const knowConditionals = {};
 

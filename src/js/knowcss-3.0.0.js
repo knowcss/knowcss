@@ -1,4 +1,6 @@
 'use strict';
+'esversion: 6';
+/*jshint esversion: 6 */
 
 /*
 KnowCSS Version 3.0.0 by Jay Doublay
@@ -8,29 +10,296 @@ NPM: https://www.npmjs.com/package/knowcss
 Repo: https://github.com/knowcss/knowcss
 */
 
+const knowMotionID = 'knowmotion';
+var knowMotionLetter = '';
+var knowLibraryClasses = {};
+
+const compatible = false;
+
+const knowMotion = {
+    init: function (styles) {
+        var classes = {}, line = '\n';
+        var elems = document.querySelectorAll("[" + knowMotionID + "]");
+        var i = 0, x = elems.length;
+        var setAnimation = function (elem, delay) {
+            setInterval(function () {
+                elem.style.animation = "n";
+                setTimeout(function () { elem.style.animation = ""; }, 10);
+            }, delay);
+        };
+        while (i < x) {
+            classes = this.render(elems[i].getAttribute(knowMotionID));
+            if (classes.found) {
+                var keys = {};
+                for (var key in classes.keys) {
+                    keys = classes.keys[key];
+                    if (keys.keyframes.length > 0) { styles.push(line + keys.keyframes); }
+                    if (keys.values.length > 0) { styles.push(line + keys.values); }
+                    elems[i].classList.add(keys.class);
+                }
+                elems[i].removeAttribute(knowMotionID);
+                if (classes.restart > 0) { setAnimation(elems[i], classes.restart); }
+            }
+            i++;
+        }
+        return styles;
+    },
+    render: (knowMotion) => {
+        var ret = {
+            "found": false,
+            "keys": {},
+            "restart": ""
+        };
+
+        if (knowMotion) {
+            var foundMotions = typeof knowMotions !== 'undefined';
+            var ctxprop = property;
+
+            var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\/\|\_\,\%]{1,255})\{(.*?)\}', 'gis');
+            var subgrep = null, keys = [], subkeys = [], any = false, subcontainer = "", splitter = "", parts = [], val = "", i = 0, x = 0;
+            var classList = { 'n_n_n_': knowMotion }, classListCheck = [], grepTag = '', keyFrames = {}, keyFramesCSS = [], keyFrameValues = [], runningTag = '', classValues = [], running = [];
+            var id = "", attributes = {}, wrappers = [], initial = [], possible = [], last = "", replay = 0;
+            var container = "", screen = "", modifier = "", action = "", reversion = "", screens = [], actions = [];
+            var keyNew = "", previous = "", letter = "", screenPrefix = "";
+
+            var prefix = 'animation-';
+            var shorthand = {
+                "fwd": ["fill-mode", "forwards"],
+                "bwd": ["fill-mode", "backwards"],
+                "rev": ["direction", "reverse"],
+                "alt": ["direction", "alternate"],
+                "altrev": ["direction", "alternate-reverse"],
+                "in": ["timing-function", "ease-in"],
+                "out": ["timing-function", "ease-out"],
+                "in-out": ["timing-function", "ease-in-out"],
+                "once": ["iteration-count", "1"],
+                "twice": ["titeration-count", "2"]
+            };
+
+            for (var key in classList) { classListCheck.push(key); }
+            while (classListCheck.length > 0) {
+                key = classListCheck.pop();
+
+                if (foundMotions) {
+                    running = [];
+                    classValues = classList[key].split(' ');
+                    i = 0, x = classValues.length;
+                    while (i < x) {
+                        val = classValues[i];
+                        if (val in knowMotions) { running.push(knowMotions[val].join(' ')); }
+                        else { running.push(val); }
+                        i++;
+                    }
+                    grepTag = running.join(' ');
+                }
+                else { grepTag = classList[key]; }
+                runningTag = grepTag;
+
+                keyFrames = {};
+                [screen, modifier, action, previous] = key.split('_', 4);
+
+                if (previous.length > 0) { letter = previous; }
+                else {
+                    knowMotionLetter = parser.getletter(knowMotionLetter);
+                    letter = knowMotionLetter;
+                }
+                id = "km" + letter;
+
+                if (key in ret.keys == false) {
+                    ret.keys[key] = {
+                        class: id,
+                        values: "",
+                        keyframes: ""
+                    };
+                }
+
+                attributes = {
+                    "name": id,
+                    "duration": "3s", //timing - [0-9]s
+                    "delay": "0s", // delay - d[0-9]s
+                    "iteration-count": "infinite", // count - [0-9] or [infinte|once|twice]
+                    "direction": "", // direction - [rev|alt|altrev|reverse|alternate|alternate-reverse|normal]
+                    "timing-function": "", // curve - cubic-bezier - cb(a,b,c,d) or [linear|ease|ease-in|ease-out|ease-in-out|in|out|in-out]
+                    "fill-mode": "" // mode - [fwd|bwd|both|forwards|backwards]
+                };
+                initial = [];
+                possible = [];
+                replay = 0;
+
+                while ((keys = grep.exec(grepTag)) !== null) {
+                    container = keys[1];
+                    subgrep = new RegExp(/^([a-z0-9\/\-\,\%]{1,255})$/, 'gis');
+                    subkeys = subgrep.exec(keys[1]);
+                    any = true;
+                    if (subkeys) {
+                        subcontainer = subkeys[1];
+                        splitter = "";
+                        if (contains(subcontainer, '-')) { splitter = "-"; }
+                        else if (contains(subcontainer, '/')) { splitter = "/"; }
+                        else if (contains(subcontainer, ',')) { splitter = ","; }
+                        parts = splitter.length > 0 ? subcontainer.split(splitter) : [subcontainer];
+                        parts.forEach(function (val) {
+                            if (val == "from") { keyFrames["0"] = keys[2]; }
+                            else if (val == "to") { keyFrames["100"] = keys[2]; }
+                            else if (containsAny(val, ['%', '/', ',', '-'])) { keyFrames[val.replace("%", "")] = keys[2]; }
+                            else if (!isNaN(val)) { keyFrames[val] = keys[2]; }
+                            else if (val in screenSizes) { any = false; }
+                            else { any = false; }
+                        });
+                    }
+                    else { any = false; }
+
+                    if (!any) {
+                        actions = getActions(container, action);
+                        [screens, reversion] = getScreens(container, screen);
+                        for (var screenKey in screens) {
+                            actions.forEach(function (actionSet) {
+                                for (var actionKey in actionSet) {
+                                    keyNew = screenKey + '_' + modifier + '_' + actionKey + '_' + letter;
+                                    if (key !== keyNew) {
+                                        if (keyNew in classList) { classList[keyNew] += ' ' + keys[2] + reversion; }
+                                        else { classList[keyNew] = keys[2] + reversion; }
+                                        if (contans(classListCheck, keyNew)) { classListCheck.push(keyNew); }
+                                    }
+                                }
+                            });
+                        }
+
+                        // loop through attributes to determine events and add listeners
+                        // play-state = [pause|play|stop|restart]
+
+                    }
+                    runningTag = runningTag.replace(keys[0], '').trim();
+                }
+
+                classValues = contains(runningTag, ' ') ? runningTag.split(' ') : [runningTag];
+
+                i = 0, x = classValues.length;
+                while (i < x) {
+                    val = classValues[i].trim();
+
+                    if (val in shorthand) { attributes[shorthand[val][0]] = shorthand[val][1]; }
+                    else if (["linear", "ease", "ease-in", "ease-out", "ease-in-out"].includes(val)) { attributes["timing-function"] = val; }
+                    else if (["forwards", "backwards", "both"].includes(val)) { attributes["fill-mode"] = val; }
+                    else if (["reverse", "alternate", "alternate-reverse", "normal"].includes(val)) { attributes.direction = val; }
+                    else if (["infinite"].includes(val) || /^\d+$/.test(val)) { attributes["iteration-count"] = val; }
+                    else if (/^\d+s$/.test(val)) { attributes.duration = val; }
+                    else if (/^\d*(\.\d+)+s$/.test(val)) { attributes.duration = val; }
+                    else if (/^d\d+s$/.test(val)) { attributes.delay = val.replace('d', ''); }
+                    else if (/^d\d*(\.\d+)+s$/.test(val)) { attributes.delay = val.replace('d', ''); }
+                    else if (contains(val, "last-") && "100" in keyFrames) {
+                        last = val.split('-', 2).pop();
+                        if (last in keyFrames) { keyFrames["100"] = keyFrames[last]; }
+                    }
+                    else if (contains(val, "first-") && "0" in keyFrames) {
+                        last = val.split('-', 2).pop();
+                        if (last in keyFrames) { keyFrames["0"] = keyFrames[last]; }
+                    }
+                    else if (contains(val, "restart-")) {
+                        replay = val.split('-', 2).pop().replace('s', '');
+                        if (isNaN(replay)) { replay = 0; }
+                    }
+                    else { possible.push(val); }
+                    i++;
+                }
+
+                if (possible.length > 0) {
+                    i = 0, x = possible.length;
+                    while (i < x) {
+                        val = possible[i].trim();
+                        if (val.length > 0) { initial.push(ctxprop.getfinalstyle(val)); }
+                        i++;
+                    }
+                }
+
+                x = Object.keys(keyFrames).length;
+                if (x > 0) {
+                    if (x > 1) {
+                        keyFrames = Object.keys(keyFrames).sort(function (a, b) {
+                            if (parseInt(a) > parseInt(b)) { return 1; }
+                            else { return -1; }
+                        }).reduce((obj, key) => { obj[key] = keyFrames[key]; return obj; }, {});
+                    }
+                    keyFramesCSS = ["@keyframes " + id + "{"];
+                    keyFrameValues = [];
+                    for (var keyFrame in keyFrames) {
+                        keyFrameValues = [];
+                        classValues = keyFrames[keyFrame].split(' ');
+                        i = 0, x = classValues.length;
+                        while (i < x) {
+                            keyFrameValues.push(ctxprop.getfinalstyle(classValues[i]));
+                            i++;
+                        }
+                        if (keyFrameValues.length > 0) { keyFramesCSS.push(" " + keyFrame + "% { " + keyFrameValues.join('; ') + "; }"); }
+                    }
+                    keyFramesCSS.push("}");
+                    ret.keys[key].keyframes = keyFramesCSS.join('');
+                }
+
+                wrappers = initial;
+                for (var animationKey in attributes) {
+                    if (attributes[animationKey].length > 0) { wrappers.push(prefix + animationKey + ": " + attributes[animationKey].replace(/[\/|\||\_]/g, ' ')); }
+                }
+
+                if (wrappers.length > 0) {
+                    if (screen != 'n') {
+                        if (contains(screen, 'down')) { screenPrefix = 'max-width:' + screenSizes[screen][1] + 'px'; }
+                        else if (contains(screen, 'up')) { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px'; }
+                        else { screenPrefix = 'min-width:' + screenSizes[screen][0] + 'px) and (max-width:' + screenSizes[screen][1] + 'px'; }
+                        ret.keys[key].values = "@media (" + screenPrefix + ") { ." + id + " { " + wrappers.join('; ') + '; } }';
+                    }
+                    else { ret.keys[key].values = "." + id + " { " + wrappers.join('; ') + '; }'; }
+
+                    ret.restart = replay > 0 ? parseFloat(replay) * 1000 : 0;
+                    ret.found = true;
+                }
+            }
+        }
+        return ret;
+    }
+};
 
 const knowID = 'know';
 
+var defined = (val) => typeof val !== 'undefined' && val != null;
+var checkvar = (val) => defined(val) ? val : {};
+var contains = (val, vals) => val.indexOf(vals) > -1;
+var begins = (val, vals) => val.indexOf(vals) == 0;
+var ends = (val, vals) => val.endsWith(vals);
+var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
+var cleanup = (str) => str ? str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim() : '';
+var containsAny = (val, vals) => {
+    var x = vals.length, i = 0;
+    while (i < x) {
+        if (contains(val, vals[i])) { return true; }
+        i++;
+    }
+    return false;
+};
+
 var greps = null;
 var letter = "";
-var conditionals = [];
+var letters = {};
 var config = {
-    vars: typeof knowVars !== 'undefined' && knowVars != null ? knowVars : {},
-    mixins: typeof knowMixins !== 'undefined' && knowMixins != null ? knowMixins : {},
-    colors: typeof knowColors !== 'undefined' && knowColors != null ? knowColors : {},
-    prop: typeof knowProp !== 'undefined' && knowProp != null ? knowProp : {},
-    short: typeof knowShort !== 'undefined' && knowShort != null ? knowShort : {},
-    variable: typeof knowVariable !== 'undefined' && knowVariable != null ? knowVariable : {},
-    components: typeof knowComponents !== 'undefined' && knowComponents != null ? knowComponents : {},
-    brackets: typeof knowBrackets !== 'undefined' && knowBrackets != null ? knowBrackets : {},
-    conditionals: typeof knowConditionals !== 'undefined' && knowConditionals != null ? knowConditionals : {}
+    vars: checkvar(knowVars),
+    mixins: checkvar(knowMixins),
+    colors: checkvar(knowColors),
+    prop: checkvar(knowProp),
+    short: checkvar(knowShort),
+    variable: checkvar(knowVariable),
+    components: checkvar(knowComponents),
+    ui: checkvar(knowUI),
+    brackets: checkvar(knowBrackets),
+    conditionals: checkvar(knowConditionals)
 };
 
 /*
 const library = {
     defined: (val) => typeof val !== 'undefined' && val != null,
+    checkvar: (val) => typeof val !== 'undefined' && val != null ? val : {},
     contains: (val, vals) => val.indexOf(vals) > -1,
     begins: (val, vals) => val.indexOf(vals) == 0,
+    ends: (val, vals) => val.endsWith(vals),
     hyphens: (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str,
     cleanup: (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim(),
     containsAny: (val, vals) => {
@@ -43,20 +312,6 @@ const library = {
     }
 }
 */
-
-var defined = (val) => typeof val !== 'undefined' && val != null;
-var contains = (val, vals) => val.indexOf(vals) > -1;
-var begins = (val, vals) => val.indexOf(vals) == 0;
-var hyphens = (str) => contains(str, '-') ? str.replace(/(^\-){1,20}/, '').replace(/(\-$){1,20}/, '') : str;
-var cleanup = (str) => str.replace(/[\n\t\r]/gi, ' ').replace(/\s{2,}/g, ' ').trim();
-var containsAny = (val, vals) => {
-    var x = vals.length, i = 0;
-    while (i < x) {
-        if (val.indexOf(vals[i]) > -1) { return true; }
-        i++;
-    }
-    return false;
-};
 
 const configuration = {
     init: function () { this.greps().environments().brackets(); },
@@ -113,7 +368,9 @@ const configuration = {
             touch: ('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch) || false
         };
 
-        conditionals = Object.keys(ret);
+        // JAA TODO - append config.conditionals here
+
+        greps.conditionals = ret;
         return this;
     },
     greps: function () {
@@ -129,7 +386,8 @@ const configuration = {
                 "actions": ["current", "past", "future", "playing", "paused", "active", "checked", "disabled", "empty", "enabled", "focus-visible", "focus-within", "focus", "hover", "in-range", "invalid", "link", "optional", "out-of-range", "read-only", "read-write", "required", "root", "target", "valid", "visited"],
                 "webkit": ["color", "font-size", "align-content", "align-items", "align-self", "alt", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "animation-trigger", "animation", "app-region", "appearance", "aspect-ratio", "backdrop-filter", "backface-visibility", "background-clip", "background-composite", "background-origin", "background-size", "border-after-color", "border-after-style", "border-after-width", "border-after", "border-before-color", "border-before-style", "border-before-width", "border-before", "border-bottom-left-radius", "border-bottom-right-radius", "border-end-color", "border-end-style", "border-end-width", "border-end", "border-fit", "border-horizontal-spacing", "border-image", "border-radius", "border-start-color", "border-start-style", "border-start-width", "border-start", "border-top-left-radius", "border-top-right-radius", "border-vertical-spacing", "box-align", "box-decoration-break", "box-direction", "box-flex-group", "box-flex", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "clip-path", "color-correction", "column-axis", "column-break-after", "column-break-before", "column-break-inside", "column-count", "column-fill", "column-gap", "column-progression", "column-rule", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "columns", "cursor-visibility", "dashboard-region", "device-pixel-ratio", "filter", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "flex", "flow-from", "flow-into", "font-feature-settings", "font-kerning", "font-size-delta", "font-smoothing", "font-variant-ligatures", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap", "grid-column-start", "grid-gap", "grid-row-end", "grid-row-gap", "grid-row-start", "grid-row", "grid-template-areas", "grid-template-columns", "grid-template-rows", "grid-template", "grid", "highlight", "hyphenate-character", "hyphenate-charset", "hyphenate-limit-after", "hyphenate-limit-before", "hyphenate-limit-lines", "hyphens", "initial-letter", "justify-content", "justify-items", "justify-self", "line-align", "line-box-contain", "line-break", "line-clamp", "line-grid", "line-snap", "locale", "logical-height", "logical-width", "margin-after-collapse", "margin-after", "margin-before-collapse", "margin-before", "margin-bottom-collapse", "margin-collapse", "margin-end", "margin-start", "margin-top-collapse", "marquee-direction", "marquee-increment", "marquee-repetition", "marquee-speed", "marquee-style", "marquee", "mask-attachment", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position-x", "mask-position-y", "mask-position", "mask-repeat-x", "mask-repeat-y", "mask-repeat", "mask-size", "mask-source-type", "mask", "match-nearest-mail-blockquote-color", "max-logical-height", "max-logical-width", "media-text-track-container", "min-logical-height", "min-logical-width", "nbsp-mode", "opacity", "order", "overflow-scrolling", "padding-after", "padding-before", "padding-end", "padding-start", "perspective-origin", "perspective-origin-x", "perspective-origin-y", "perspective", "print-color-adjust", "region-break-after", "region-break-before", "region-break-inside", "region-fragment", "rtl-ordering", "ruby-position", "scroll-snap-type", "shape-image-threshold", "shape-inside", "shape-margin", "shape-outside", "svg-shadow", "tap-highlight-color", "text-color-decoration", "text-combine", "text-decoration-line", "text-decoration-skip", "text-decoration-style", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-emphasis", "text-fill-color", "text-justify", "text-orientation", "text-security", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-stroke", "text-underline-position", "text-zoom", "transform-2d", "transform-3d", "transform-origin-x", "transform-origin-y", "transform-origin-z", "transform-origin", "transform-style", "transform", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "transition", "user-drag", "user-modify", "user-select", "touch-callout", "animating-full-screen-transition", "any-link", "autofill", "autofill-strong-password", "drag", "full-page-media", "full-screen-ancestor", "full-screen-controls-hidden", "full-screen-document", "full-screen", "file-upload-button", "inner-spin-button", "input-placeholder", "media-controls-current-time-display", "media-controls-enclosure", "media-controls-fullscreen-button", "media-controls-mute-button", "media-controls-overlay-enclosure", "media-controls-panel", "media-controls-play-button", "media-controls-time-remaining-display", "media-controls-timeline", "media-controls-toggle-closed-captions-button", "media-controls-volume-control-container", "media-controls-volume-control-hover-background", "media-controls-volume-slider", "media-controls", "meter-bar", "meter-even-less-good-value", "meter-inner-element", "meter-optimum-value", "meter-suboptimum-value", "outer-spin-button", "progress-bar", "progress-inner-element", "progress-value", "search-cancel-button", "search-results-button", "slider-runnable-track", "slider-thumb"],
                 "screens": ["media", "print", "screen", "speech", "!print", "!screen", "!speech", "notprint", "notscreen", "notspeech", "onlyprint", "onlyscreen", "onlyspeech"],
-                "breakpoints": { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 }
+                "breakpoints": { "xxsm": 479, "xsm": 639, "sm": 767, "md": 1023, "lg": 1535, "xl": 1919, "xxl": 99999 },
+                "events": ["click"]
             };
 
             var num = 1, val = 0, screens = {};
@@ -144,7 +402,7 @@ const configuration = {
                 screens[num + "down"] = [1, val];
                 screens[num + "up"] = [num, xxl];
                 num = val + 0.02;
-            };
+            }
 
             greps = {
                 media: "^(" + getLists.media.join("|").replace('/-/gi', '\\-') + ")(.*)$",
@@ -154,6 +412,7 @@ const configuration = {
                 screenTypes: getLists.screens,
                 screen: "^(" + getLists.screens.join("|").replace('/-/gi', '\\-') + ")$",
                 reversion: "(" + getLists.reversions.join("|").replace('/-/gi', '\\-') + ")",
+                events: "^(" + getLists.events.join("|").replace('/-/gi', '\\-') + ")$",
                 rules: getLists.at,
                 group: getLists.group
             };
@@ -166,25 +425,37 @@ const parser = {
     execute: function (attr) { return this.wrappers(attr); },
     wrappers: function (attr, level) {
         level = level || 0;
+
+        // JAA FIX - initial component check
+        var attrClasses = contains(attr, ' ') ? attr.split(' ') : [attr];
+        var attrMany = [];
+        attrClasses.forEach((attrClass) => { attrMany.push(this.getui(false, attrClass, 'ui', this)[1]); });
+        attr = attrMany.join(' ');
+
         attr = this.getbrackets(this.getvars(cleanup(attr)));
-        var master = "n_n_n_n_n", groups = {}, original = attr, grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis'), key = null, containers = {}, classes = [];
+
+        //var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!\<\^\|]{1,255})\{(.*?)\}', 'gis')
+        var grep = new RegExp('([^\ \{]*?)\{(.*?)\}', 'gis');
+        var master = "n_n_n_n_n", groups = {}, original = attr, key = null, containers = {}, classes = [];
         while ((key = grep.exec(attr)) !== null) {
             var containersfirst = this.containers(key[1], null, 0);
             if (containersfirst.allow) {
                 classes = cleanup(key[2]);
                 var toplevel = JSON.stringify(containersfirst);
                 var containerssecond = JSON.parse(toplevel);
-                delete containerssecond.screens["n"];
-                delete containerssecond.modifiers["n"];
+                delete containerssecond.screens.n;
+                delete containerssecond.modifiers.n;
                 containerssecond.parents = {};
-                var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
+                var grepsecond = new RegExp('([^\ |\(]*?)\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
+                //var grepsecond = new RegExp('([a-zA-Z0-9\-]{1,255})\\(\\((.*?)\\)\\)', 'gis'), keysecond = null;
                 var subWrap = classes.toString();
                 while ((keysecond = grepsecond.exec(subWrap)) !== null) {
                     classes = classes.replace(keysecond[0], '');
                     var classessecond = cleanup(keysecond[2]);
                     containers = this.containers(keysecond[1], containerssecond, 1);
+
                     if (containers.allow) { [groups, classessecond] = this.group(groups, classessecond, containers, master); }
-                };
+                }
 
                 original = original.replace(key[0], '');
                 var subClasses = [];
@@ -231,11 +502,11 @@ const parser = {
                     val = val.replace(key + '-', '').replace(key, '');
                 }
             }
-            var media = new RegExp(greps.media).exec(val);
-            if (media) {
-                val = media[1];
-                media[2] = media[2].replace(/-/g, '').replace(/\//g, ' ');
-                if (media[2].length > 0) { val += ':' + media[2]; }
+            var mediawrap = new RegExp(greps.media).exec(val);
+            if (mediawrap) {
+                val = mediawrap[1];
+                mediawrap[2] = mediawrap[2].replace(/-/g, '').replace(/\//g, ' ');
+                if (mediawrap[2].length > 0) { val += ':' + mediawrap[2]; }
             }
             ret.push('@' + media + '(' + val + ') {');
         }
@@ -293,17 +564,19 @@ const parser = {
             var whichCol = val.replace(/^col-/, '');
             var alignCol = whichCol;
             if (contains(alignCol, '-')) { [whichCol, alignCol] = alignCol.split('-', 2); }
-            if (['left', 'right', 'center'].includes(alignCol)) { classesFound.push('justify-content-' + alignCol); }
             if (whichCol.length == 0) { whichCol = 12; }
             var whichPct = (parseInt(whichCol) / 12) * 100;
-            val = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + val, "position-relative"].join(' ');
+            var vals = ["width-" + parseFloat(whichPct.toFixed(6)) + "%", "display-flex", "align-items-center", "flex-0/0/auto", "flex-basis-0", "-webkit-box-flex-1", "-ms-flex-positive-1", "flex-grow-1", "max-" + whichCol, "position-relative"];
+            if (['left', 'right', 'center'].includes(alignCol)) { vals.push('justify-content-' + alignCol); }
+            else if (alignCol == 'tight') { vals.push("flex-unset!"); }
+            val = vals.join(' ');
             any = true;
         }
         else if (begins(val, 'offset-')) {
             var whichOffset = val.replace(/^offset-/, '');
             if (whichOffset.length == 0) { whichOffset = 12; }
-            var whichPct = (parseInt(whichOffset) / 12) * 100;
-            val = "margin-left-" + parseFloat(whichPct.toFixed(6)) + "%";
+            var whichOffsetPct = (parseInt(whichOffset) / 12) * 100;
+            val = "margin-left-" + parseFloat(whichOffsetPct.toFixed(6)) + "%";
             any = true;
         }
         return [any, val];
@@ -320,7 +593,7 @@ const parser = {
         return component;
     },
     getcomponents: (component, val) => {
-        var vals = contains(val, '/') ? val.split('/') : [val];
+        var vals = containsAny(val, ['/', '|', '_']) ? val.replace(/[\/|\||\_]/g, ' ').split(' ') : [val];
         var j = vals.length;
         var i = 1, x = j + 10;
         while (i <= x) {
@@ -332,7 +605,22 @@ const parser = {
     },
     getbrackets: (val) => {
         if (contains(val, '[')) {
-            var grep = new RegExp('\\[(.*?)\\]', 'i'), key = "", any = [], extra = "";
+            var grep = new RegExp('([^\ \\[]*?)\\[(.*?)\\]', 'gis');
+            var key = "", vals = "";
+            while ((key = grep.exec(val)) !== null) {
+                if (ends(key[1], '-')) { vals = key[1] + key[2].split(' ').join(' ' + key[1]); }
+                else {
+                    if (key[1] in config.mixins === false) { config.mixins[key[1]] = key[2]; }
+                    else { config.mixins[key[1]] += ' ' + key[2]; }
+                    vals = key[2];
+                }
+                val = val.replace(key[0], vals);
+            }
+        }
+        /*
+        if (contains(val, compatible ? '{{' : '[')) {
+            var grep = new RegExp(compatible ? '\\{\\{(.*?)\\}\\}' : '\\[(.*?)\\]', 'i');
+            var key = "", any = [], extra = "";
             while ((key = grep.exec(val)) !== null) {
                 if (key[1] in config.brackets) { extra += ' ' + config.brackets[key[1]]; }
                 else { any.push(key[1]); }
@@ -341,34 +629,39 @@ const parser = {
             if (any.length > 0) { any.forEach(key => { config.brackets[key] = val; }); }
             val += extra;
         }
+        */
         return val;
+    },
+    getui: (any, val, type, ctx) => {
+        var parts = contains(val, '-') ? val.split('-') : [val];
+        var key = parts.shift();
+        if (key in config[type]) {
+            var ui = config[type][key];
+            if (typeof ui !== 'string') {
+                ui = ui.join(' ');
+                config[type][key] = ui;
+            }
+            val = ctx.getcomponents(ui, parts.join('-'));
+        }
+        return [any, val];
     },
     getmixins: (any, val, ctx) => {
         if (val in config.mixins) {
             val = config.mixins[val];
+            if (typeof val !== 'string') { val = val.join(" "); }
             any = true;
         }
         else if (val in config.short) {
             val = config.short[val];
-            if (val.indexOf(' ') > -1) {
+            if (typeof val !== 'string') { val = val.join(" "); }
+            if (contains(val, ' ')) {
                 var vals = [];
                 val.split(' ').forEach(value => { vals.push(ctx.getmixins(any, value, ctx)[1]); });
                 val = vals.join(' ');
             }
             any = true;
         }
-        else if (val.indexOf('-') > -1) {
-            var parts = val.split('-');
-            var key = parts.shift();
-            if (key in config.components) {
-                var component = config.components[key];
-                if (typeof component !== 'string') {
-                    component = component.join(' ');
-                    config.components[key] = component;
-                }
-                val = ctx.getcomponents(component, parts.join('-'));
-            }
-        }
+        else { [any, val] = ctx.getui(any, val, 'components', ctx); }
         return [any, val];
     },
     containers: function (wrapper, ret, level) {
@@ -382,10 +675,10 @@ const parser = {
             "environments": {}
         };
 
-        var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
-        var vals = [], parts = [], retain = "";
+        var grep = new RegExp('([A-Za-z0-9\-\!\^\@\~\>]+){1,255}', 'gis'), key = null, any = false, val = null, keepval = null, offset = 0, len = 0;
+        var vals = [], parts = [], retain = "", joined = false;
         if (level == 3) {
-            var equal = wrapper.indexOf('=') > -1 ? '=' : '-';
+            var equal = contains(wrapper, '=') ? '=' : '-';
             parts = wrapper.split(equal);
             if (parts.length > 1) {
                 retain = equal + parts.pop();
@@ -394,17 +687,20 @@ const parser = {
             else if (new RegExp('([0-9a-f]{1,32})\~([0-9]{1,3})$', '').test(wrapper)) { return [ret, wrapper]; }
         }
         while ((key = grep.exec(wrapper)) !== null) {
+            joined = joined || contains(key.input, "|") == false;
             val = key[1].toString();
-            len = val.length + 1;
+            len = val.length;
             keepval = wrapper.substr(offset, len);
+            if (begins(keepval, '-')) { keepval = keepval.substr(1); }
             offset += len;
             if (level > 1) { ret.allow = true; }
             else { [val, ret.environments, ret.allow] = this.getenvironments(val, ret.environments); }
             if (ret.allow) {
                 [any, val, retain, ret.reversions] = this.getreversions(val, retain, ret.reversions);
                 [any, val, ret.parents] = this.getparents(val, ret.parents);
-                [any, val, ret.actions] = this.getactions(val, ret.actions);
+                [any, val, ret.actions] = this.getevents(val, ret.actions);
                 [any, val, ret.modifiers] = this.getmodifiers(val, ret.modifiers);
+                [any, val, ret.actions] = this.getactions(val, ret.actions, joined);
                 [any, val, ret.screens, keepval] = this.getscreens(val, ret.screens, level, keepval);
                 if (val) { vals.push(keepval + retain); }
             }
@@ -467,6 +763,7 @@ const parser = {
             else if (begins(val, 'all')) {
                 if (begins(val, 'all-')) { modifier = ' ' + val.replace('all-', ''); }
                 else if (begins(val, 'all>')) { modifier = ' ' + val.replace('all>', '> '); }
+                modifier = modifier.replace(/\_/g, ' ').replace(/\>/g, '> ');
             }
             else if (contains(val, 'nth')) {
                 var tag = '';
@@ -475,10 +772,17 @@ const parser = {
                     val = 'nth' + val;
                 }
                 var colon = ':' + (keep ? action + sub + tag + ':' : '');
-                if (contains(val, 'nth-child')) { modifier = colon + 'nth-child(' + val.replace('nth-child-', '') + ')'; }
-                else if (contains(val, 'nth-last-child')) { modifier = colon + 'nth-last-child(' + val.replace('nth-last-child-', '') + ')'; }
-                else if (contains(val, 'nth-of-type')) { modifier = colon + 'nth-of-type(' + val.replace('nth-of-type-', '') + ')'; }
-                else if (contains(val, 'nth-last-of-type')) { modifier = colon + 'nth-last-of-type(' + val.replace('nth-last-of-type-', '') + ')'; }
+                var types = ['nth-last-of-type', 'nth-last-child', 'nth-child', 'nth-of-type'];
+                var x = types.length, i = 0, key = "";
+                while (i < x) {
+                    key = types[i];
+                    if (contains(val, key)) {
+                        modifier = colon + key + '(' + val.replace(key + '-', '') + ')';
+                        val = "";
+                        break;
+                    }
+                    i++;
+                }
             }
         }
         if (modifier.length > 0) { ret[modifier] = true; }
@@ -531,11 +835,11 @@ const parser = {
         }
         return [num > 0, hyphens(val), ret, orig];
     },
-    getactions: (val, ret) => {
+    getactions: (val, ret, joined) => {
         var key = '', grep = null, zS = '', zY = false, num = 0;
         var mA = '*';
         var mP = mA;
-        var mU = val.indexOf("^") > -1 ? "^" : "";
+        var mU = contains(val, '^') ? "^" : "";
         ['>', '~', '+'].forEach((symbol) => {
             if (contains(val, symbol)) {
                 mP = val.split(symbol, 2).pop();
@@ -559,10 +863,14 @@ const parser = {
             }
             i++;
         }
-
         if (num == 0 && mU.length > 0) {
             ret[mU + mD] = "";
             num++;
+        }
+        if (joined && Object.keys(ret).length > 0) {
+            var newAction = Object.keys(ret).join(":");
+            ret = {};
+            ret[newAction] = ":";
         }
         return [num > 0, hyphens(val), ret];
     },
@@ -573,16 +881,26 @@ const parser = {
             reverse = true;
             env = env.replace('!', '');
         }
-        if (contains(conditionals, env)) {
-            ret[env] = true;
+        if (env in greps.conditionals) {
+            ret[env] = greps.conditionals[env];
             if (reverse) { allow = !allow; }
             val = "0";
         }
         return [val, ret, allow];
     },
+    getevents: (val, ret) => {
+        var num = 0;
+        var event = new RegExp(greps.events).exec(val);
+        if (event) {
+            val = "[know-" + event[1] + "='on']";
+            ret[val] = true;
+            num++;
+        }
+        return [num > 0, val, ret];
+    },
     group: (groups, classes, containers, master) => {
         greps.group.forEach(key => {
-            if (Object.keys(containers[key]).length == 0) { containers[key]["n"] = ""; }
+            if (Object.keys(containers[key]).length == 0) { containers[key].n = ""; }
         });
         classes = cleanup(classes);
         var ret = classes;
@@ -605,6 +923,25 @@ const parser = {
             }
         }
         return [groups, ret];
+    },
+    getletter: (val) => {
+        if (val.length == 0) { val = "a"; }
+        else {
+            var i = val.length - 1, z = "z".charCodeAt(), chr = "", vals = [];
+            do {
+                chr = val.charCodeAt(i);
+                vals = val.split("");
+                if (vals[i] == "z") {
+                    vals[i] = "a";
+                    if (i == 0) { vals.unshift("a"); }
+                }
+                else { vals[i] = String.fromCharCode(chr + 1); }
+                val = vals.join("");
+                i--;
+            }
+            while (chr == z);
+        }
+        return val;
     }
 };
 
@@ -629,7 +966,7 @@ const property = {
             retain = '!';
         }
         var values = ctx.getmixins(false, value.replace(/\^/g, ''), ctx)[1].split(' ');
-        value = values.shift();
+        value = values.shift() + retain;
         if (values.length > 0) {
             values.forEach(val => { extras.push(val + retain); });
         }
@@ -643,10 +980,19 @@ const property = {
         }
         return [prop, value];
     },
+    getfinalstyle: function (val) {
+        var prop = "", value = "";
+        [prop, value] = this.getpropvalue(val);
+        return prop + ': ' + this.getvalue(value);
+    },
     getpropvalue: (val) => {
         var prop = "", value = "";
         if (contains(val, ':')) { [prop, value] = val.split(':', 2); }
         else if (contains(val, '=')) { [prop, value] = val.split('=', 2); }
+        else if (contains(val, '--')) {
+            [prop, value] = val.split('--', 2);
+            value = 'var(--' + value + ')';
+        }
         else if (contains(val, '-')) {
             var parts = val.split('-');
             if (parts[0] in config.prop) {
@@ -695,6 +1041,20 @@ const property = {
             value = pre + 'width' + '-' + width;
             extras.push(pre + 'height-' + height);
         }
+        else if (contains(value, '/')) {
+            var pxLine = RegExp('^([0-9]{1,10})([|px|em|rem])\/([0-9]{1,10})([|px|em|rem])$', 'i').exec(value);
+            var pxShort = !pxLine;
+            if (pxShort) { pxLine = RegExp('^([0-9]{1,10})\/([0-9]{1,10})$', 'i').exec(value); }
+            if (pxLine) {
+                var full = "", px = "", line = "", pxVal = "", lineVal = "";
+                if (pxShort) { [full, px, line] = pxLine; }
+                else { [full, px, pxVal, line, lineVal] = pxLine; }
+                if (!pxVal && !isNaN(px) && px !== '0') { pxVal = 'px'; }
+                if (!lineVal && !isNaN(line) && line !== '0') { lineVal = 'px'; }
+                value = 'font-size-' + px + (pxVal || "");
+                extras.push('line-height-' + line + (lineVal || ""));
+            }
+        }
         return [value, extras];
     },
     reversion: (value, key) => {
@@ -703,7 +1063,11 @@ const property = {
         return value;
     },
     px: (prop, value) => {
-        var any = false, px = prop.replace("px", "");
+        var any = false, retain = "", px = prop.replace("px", "");
+        if (px && containsAny(px, ['!', 'important'])) {
+            px = px.replace('important', '').replace(/\!/g, '');
+            retain = '!important';
+        }
         if (value === "" && !isNaN(px)) {
             prop = parseInt(px);
             if (prop > 0 && (prop % 100) == 0) {
@@ -722,7 +1086,7 @@ const property = {
             else if (['heigh', 'width', 'margi', 'borde', 'spaci', 'paddi'].includes(prop.substring(0, 5))) { any = true; }
             if (any) { value += 'px'; }
         }
-        return [any, prop, value];
+        return [any, prop, value + retain];
     },
     color: (prop, value) => colors.parse(prop, value),
     family: (prop, value) => {
@@ -732,8 +1096,11 @@ const property = {
             any = true;
             if (contains(value, ',')) {
                 var fonts = [];
-                value.split(',').forEach((val) => { fonts.push(contains(val, ' ') ? '"' + val + '"' : val); });
-                value = hS.join(',');
+                value.split(',').forEach((val) => {
+                    val = val.trim();
+                    fonts.push(contains(val, ' ') ? '"' + val + '"' : val);
+                });
+                value = fonts.join(',');
             }
         }
         return [any, prop, value];
@@ -748,7 +1115,7 @@ const property = {
             if (any) {
                 var val = value.replace('px', '');
                 var important = "";
-                if (val.indexOf('!') > -1) {
+                if (contains(val, '!')) {
                     val = val.replace(/\!/g, '');
                     important = "!";
                 }
@@ -761,7 +1128,7 @@ const property = {
         }
         return [value, extras];
     }
-}
+};
 
 const colors = {
     parse: function (prop, value) {
@@ -879,15 +1246,14 @@ const colors = {
 
 const knowCSS = {
     render: function () {
-        const ctx = parser;
-        const forThis = this;
-
         this.scan();
-
         configuration.init();
+
+        const ctx = parser;
+
         var startTime = new Date().getTime();
-        var groups = {}, elems = document.querySelectorAll(this.key), smart = {}, val = "", flat = {};
-        var x = elems.length, i = 0, letters = {};
+        var groups = {}, elems = document.querySelectorAll(this.key), smart = {};
+        var x = elems.length, i = 0;
         while (i < x) {
             groups = ctx.execute(elems[i].getAttribute(knowID));
             elems[i].removeAttribute(knowID);
@@ -896,38 +1262,128 @@ const knowCSS = {
             }
             i++;
         }
-        for (var key in smart) {
+        this.inject(this, elems, smart);
+
+        var endTime = new Date().getTime();
+        console.log('compiled in: ' + (endTime - startTime) + 'ms');
+        return this;
+    },
+    scan: () => {
+        if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
+    },
+    compatibility: function () {
+        return this;
+    },
+    stylesheet: (styles, id) => {
+        if (styles.length > 0) {
+            var cssTag = document.createElement('style');
+            cssTag.innerHTML = styles.join(' ');
+            if (id) { cssTag.id = id; }
+            document.getElementsByTagName('head')[0].appendChild(cssTag);
+        }
+    },
+    libraries: function () {
+        if (typeof window.knowLibrary !== 'undefined') {
+            if (Object.keys(window.knowLibrary).length > 0) {
+                var startTime = new Date().getTime();
+                var val = "class", vals = [];
+                var elems = document.querySelectorAll("[" + val + "]"), classes = {};
+                var x = elems.length, i = 0;
+                while (i < x) {
+                    if (!elems[i].hasAttribute("know-library")) {
+                        vals = elems[i].getAttribute(val).split(" ");
+                        vals.forEach(key => { classes[key] = true; });
+                        elems[i].setAttribute("know-library", "true");
+                    }
+                    i++;
+                }
+                var keys = null, tags = null, library = null, cssTag = null, id = null, ids = "", styles = [], html = "", htmls = [];
+                for (var key in window.knowLibrary) {
+                    library = window.knowLibrary[key], cssTag = null, forced = "force" in library && library.force;
+                    if ("tag" in library) {
+                        id = "know_" + key, styles = [], html = "", ids = "";
+                        if (!document.getElementById(id)) {
+                            for (keys in library.tag) {
+                                for (tags in library.tag[keys]) {
+                                    html = "{" + library.tag[keys][tags].join(";") + "}";
+                                    if (tags == "_") { styles.push(keys + html); }
+                                    else { styles.push(tags + "{" + keys + html + "}"); }
+                                }
+                            }
+                            this.stylesheet(styles, id);
+                        }
+                    }
+                    if ("elem" in library) {
+                        styles = [];
+                        if (forced) {
+                            for (var key in library.elem) { classes[key] = true; }
+                        }
+                        for (keys in classes) {
+                            ids = key + '_' + keys;
+                            if (ids in knowLibraryClasses === false && keys in library.elem) {
+                                if (typeof library.elem[keys] === 'string') { styles.push("." + keys + "{" + library.elem[keys] + "}"); }
+                                else {
+                                    for (tags in library.elem[keys]) {
+                                        htmls = [];
+                                        library.elem[keys][tags].forEach(val => {
+                                            val = val.replace(/\!/, '!important');
+                                            if (begins(val, '&')) { htmls.push(val.replace(/^\&/, "." + keys)); }
+                                            else { htmls.push("." + keys + "{" + val + "}"); }
+                                        });
+
+                                        if (tags == "_") { styles.push(htmls.join("\n")); }
+                                        else if (tags == "=") { styles.push(htmls.join("\n")); }
+                                        else { styles.push(tags + "{" + "." + keys + htmls.join("\n") + "}"); }
+                                    }
+                                }
+                                knowLibraryClasses[ids] = true;
+                            }
+                        }
+                        this.stylesheet(styles);
+                    }
+                }
+                var endTime = new Date().getTime();
+                console.log('libraries in: ' + (endTime - startTime) + 'ms');
+            }
+        }
+        return this;
+    },
+    inject: (ctx, elems, smart) => {
+        var val = "", flat = {}, key = "";
+        var ctxparser = parser;
+
+        for (key in smart) {
             val = smart[key].join("_");
             if (val in flat === false) { flat[val] = []; }
             flat[val].push(key);
         }
 
-        var css = {};
-        for (var key in flat) {
-            //console.log(JSON.stringify(flat[key], null, 2));
-            var keys = key.split('_');
+        var css = { "n": {} }, keys = [];
+        for (key in flat) {
+            keys = key.split('_');
             flat[key].forEach(val => {
                 var [screen, modifier, action, parent, reversion, style] = val.split('_', 6);
-                var segment = forThis.getsegment(modifier, parent);
-                style = forThis.getstyle(style, reversion);
+                var segment = ctx.getsegment(modifier, parent);
+                style = ctx.getstyle(style, reversion);
 
                 var parentLevel = 0;
                 if (parent != "n") { parentLevel = parseInt(parent); }
 
-                var x = keys.length, i = 0, j = 0;
+                var x = keys.length, i = 0, j = 0, ref = null, elem = null, classNew = null;
                 while (i < x) {
                     j = keys[i];
-                    var ref = j, elem = elems[j];
+                    ref = j;
+                    elem = elems[j];
                     if (parentLevel > 0) {
                         ref = j + "__" + parentLevel;
-                        elem = forThis.getparent(elem, parentLevel);
+                        elem = ctx.getparent(elem, parentLevel);
                     }
                     if (ref in letters == false) {
-                        letter = this.getletter(letter);
+                        letter = ctxparser.getletter(letter);
                         elem.classList.add(letter);
                         letters[ref] = letter;
                     }
-                    var classNew = letters[ref];
+                    classNew = letters[ref];
                     if (modifier == 'n') { modifier = ''; }
                     if (screen in css === false) { css[screen] = {}; }
                     if (action in css[screen] === false) { css[screen][action] = {}; }
@@ -944,14 +1400,15 @@ const knowCSS = {
 
         var cssGroup = {};
         var styles = [], start = "", end = "", tab = "", masterLine = "\n";
+        //if (Object.keys(css).length > 1) { css = { '': css.n, ...css }; }
         for (var screen in css) {
-            [start, end, tab] = ctx.getwrapper(screen);
+            [start, end, tab] = ctxparser.getwrapper(screen);
             styles.push(masterLine + start);
             for (var action in css[screen]) {
                 cssGroup = {};
                 for (var segment in css[screen][action]) {
                     for (var style in css[screen][action][segment]) {
-                        var actionAdd = (action != 'n' ? ':' + action : '');
+                        var actionAdd = (action != 'n' ? (begins(action, '[') ? '' : ':') + action : '');
                         var classJoin = "." + css[screen][action][segment][style].join(actionAdd + ', .') + actionAdd;
                         var groupKey = screen + '_' + action + '_' + segment;
                         if (groupKey in cssGroup === false) { cssGroup[groupKey] = {}; }
@@ -969,16 +1426,7 @@ const knowCSS = {
             delete css[screen];
         }
 
-        var cssTag = document.createElement('style');
-        cssTag.innerHTML = styles.join('');
-        document.getElementsByTagName('head')[0].appendChild(cssTag);
-
-        var endTime = new Date().getTime();
-        console.log('compiled in: ' + (endTime - startTime) + 'ms');
-        return this;
-    },
-    scan: () => {
-        if (root && root.classList.contains('knowvars') && contains(root.innerHTML, '$')) { root.innerHTML = parser.getvars(root.innerHTML); }
+        ctx.stylesheet(knowMotion.init(styles));
     },
     splitclasses: (elem, key, vals, smart) => {
         var classes = vals.split(' ');
@@ -992,6 +1440,7 @@ const knowCSS = {
         }
         return smart;
     },
+    /*
     getclasses: (classes) => {
         var grep = new RegExp('([a-zA-Z0-9\-\+\>\~\*\!]{1,32})\\(\\((.*?)\\)\\)', 'gis'), key = [], original = classes;
         while ((key = grep.exec(original)) !== null) {
@@ -1001,28 +1450,10 @@ const knowCSS = {
         }
         return classes.split(/(\s+)/).filter(e => e.trim().length > 0);
     },
-    getletter: (val) => {
-        if (val.length == 0) { val = "a"; }
-        else {
-            var i = val.length - 1, chr = val.charCodeAt(i), z = "z".charCodeAt(), chr = "", vals = [];
-            do {
-                chr = val.charCodeAt(i);
-                vals = val.split("");
-                if (vals[i] == "z") {
-                    vals[i] = "a";
-                    if (i == 0) { vals.unshift("a"); }
-                }
-                else { vals[i] = String.fromCharCode(chr + 1); }
-                val = vals.join("");
-                i--;
-            }
-            while (chr == z);
-        }
-        return val;
-    },
+    */
     getstyle: (style, reversion) => {
         var parts = style.split('=', 2);
-        var style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
+        style = parts.join(':') + (contains(reversion, '!') ? '!important' : '');
         if (new RegExp(greps.webkit).test(parts[0]) === true) { style += ['; -webkit-' + style, '; -moz-' + style, '; -ms-' + style, '; -o-' + style].join(''); }
         return style;
     },
@@ -1037,9 +1468,34 @@ const knowCSS = {
         }
         return ret;
     },
-    init: function () { return this.render(); },
+    react: function () {
+        letters = {};
+        return this.libraries().render();
+    },
+    init: function () { return this.libraries().render(); },
     constructor: knowCSSProto
 };
+
+/*
+var progressbar = {
+    init: function (elem) {
+        var progress = document.createElement('div');
+        progress.classList.add('progressbar');
+        progress.innerHTML = '<div class="progressbar__bar"></div>';
+        // add style for progress bar transition
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '.progressbar__bar { transition: width 0.25s ease-in-out; }';
+        document.getElementsByTagName('head')[0].appendChild(style);
+        elem.appendChild(progress);
+        return progress;
+    },
+    update: function (elem, percent) {
+        elem.querySelector('.progressbar__bar').style.width = percent + '%';
+    },
+    constructor: progressbar
+};
+*/
 
 if (typeof window !== 'undefined') {
     window.$know = function (key) { return new knowCSSProto(key); };
